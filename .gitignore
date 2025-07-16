@@ -1,74 +1,53 @@
-atns-backend/HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+##############################
+# Java / Maven (Backend)
+##############################
+atns-backend/target/
+atns-backend/.mvn/
+atns-backend/.mvn/wrapper/
+atns-backend/mvnw
+atns-backend/mvnw.cmd
+*.class
+*.jar
+*.war
+*.log
 
-### STS ###
-.apt_generated
+# IDEs (IntelliJ, VS Code, STS, Eclipse)
+*.iml
+.idea/
+.project
 .classpath
 .factorypath
-.project
-.settings
+.settings/
 .springBeans
 .sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+.apt_generated
 .vscode/
 
-# Ignore Maven build artifacts
-**/target/
-.mvn/wrapper/
+# NetBeans
+nbbuild/
+dist/
+nbdist/
+nbproject/private/
 
-# Ignore frontend dependencies
+##############################
+# Node / React / Vite (Frontend)
+##############################
 node_modules/
 atns-frontend/node_modules/
 atns-frontend/dist/
 atns-frontend/build/
 
-# Misc
-.DS_Store
-*.log
-
-/.pnp
-.pnp.js
-
-# testing
-/coverage
-
-# production
-/build
-
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
+# Env & Debug
+.env
+.env.*.local
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Java
-*.class
-*.jar
-*.war
-.mvn/
-.idea/
+##############################
+# OS / Editor / Misc
+##############################
+.DS_Store
+.pnp
+.pnp.js
+coverage/
