@@ -1,8 +1,8 @@
 package com.atns.atns.service.impl;
 
-import com.atns.atns.converter.UserRequestConverter;
+import com.atns.atns.converter.RegisterRequestConverter;
 import com.atns.atns.converter.UserResponseConverter;
-import com.atns.atns.dto.UserRequestDto;
+import com.atns.atns.dto.RegisterRequestDto;
 import com.atns.atns.dto.UserResponseDto;
 import com.atns.atns.dto.UserUpdateDto;
 import com.atns.atns.entity.User;
@@ -12,10 +12,8 @@ import com.atns.atns.repo.UserRepo;
 import com.atns.atns.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PatchMapping;
 
 import java.util.List;
 import java.util.Set;
@@ -27,13 +25,13 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo;
-    private final UserRequestConverter userRequestConverter;
+    private final RegisterRequestConverter registerRequestConverter;
     private final UserResponseConverter userResponseConverter;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-    public UserResponseDto save(UserRequestDto userRequestDto) {
-        User user = userRequestConverter.toEntity(userRequestDto);
+    public UserResponseDto save(RegisterRequestDto registerRequestDto) {
+        User user = registerRequestConverter.toEntity(registerRequestDto);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         User saved = userRepo.save(user);
         log.info("Saved user with ID: {}", saved.getId());

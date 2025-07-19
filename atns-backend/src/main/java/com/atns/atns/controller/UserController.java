@@ -1,6 +1,6 @@
 package com.atns.atns.controller;
 
-import com.atns.atns.dto.UserRequestDto;
+import com.atns.atns.dto.RegisterRequestDto;
 import com.atns.atns.dto.UserResponseDto;
 import com.atns.atns.dto.UserUpdateDto;
 import com.atns.atns.enums.Role;
@@ -25,9 +25,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserResponseDto> create(@RequestBody @Valid UserRequestDto userRequestDto) {
-        log.info("Creating user: {}", userRequestDto);
-        UserResponseDto saved = userService.save(userRequestDto);
+    public ResponseEntity<UserResponseDto> create(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
+        log.info("Creating user: {}", registerRequestDto);
+        UserResponseDto saved = userService.save(registerRequestDto);
         log.info("Saved user: {}", saved);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }

@@ -1,6 +1,6 @@
 package com.atns.atns.service;
 
-import com.atns.atns.dto.UserRequestDto;
+import com.atns.atns.dto.RegisterRequestDto;
 import com.atns.atns.dto.UserResponseDto;
 import com.atns.atns.dto.UserUpdateDto;
 import com.atns.atns.enums.Role;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface UserService {
-    UserResponseDto save(UserRequestDto userRequestDto);
+    UserResponseDto save(RegisterRequestDto registerRequestDto);
     UserResponseDto findById(Integer id);
     List<UserResponseDto> findAll();
     void delete(Integer id);
