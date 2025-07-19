@@ -6,6 +6,7 @@ import com.atns.atns.dto.UserUpdateDto;
 import com.atns.atns.enums.Role;
 import com.atns.atns.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,11 +25,12 @@ public class UserController {
 
     private final UserService userService;
 
+//    @Operation(summary = "Create a new User")
     @PostMapping
     public ResponseEntity<UserResponseDto> create(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
-        log.info("Creating user: {}", registerRequestDto);
+        log.info("Creating user with email: {}", registerRequestDto.getEmail());
         UserResponseDto saved = userService.save(registerRequestDto);
-        log.info("Saved user: {}", saved);
+        log.info("Saved user with id: {}", saved.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
@@ -39,30 +41,32 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDto>> getAll() {
+    public ResponseEntity<List<UserResponseDto>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "20") int size) {
         log.info("Fetching all users");
         return ResponseEntity.ok(userService.findAll());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDto> update(@PathVariable Integer id, @RequestBody @Valid UserUpdateDto userUpdateDto) {
-        log.info("Updating user with Id: {}", id);
+        log.info("Updating user ID: {}", id);
         UserResponseDto updated = userService.update(userUpdateDto, id);
-        log.info("Updated user: {}", updated);
+        log.info("Updated user ID: {}", updated.getId());
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        log.info("Deleting user with Id: {}", id);
+        log.info("Deleting user ID: {}", id);
         userService.delete(id);
-        log.info("Deleted user: {}", id);
+        log.info("Deleted user ID: {}", id);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('ADMIIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/roles")
-    public UserResponseDto updateUserRoles(@PathVariable Integer id, @RequestBody @Valid Set<Role> newRoles) {
-        return userService.updateRoles(id, newRoles);
+    public ResponseEntity<UserResponseDto> updateUserRoles(@PathVariable Integer id, @RequestBody @NotEmpty @Valid Set<Role> newRoles) {
+        log.info("Updating roles for user ID: {}", id);
+        return ResponseEntity.ok(userService.updateRoles(id, newRoles));
     }
 }
