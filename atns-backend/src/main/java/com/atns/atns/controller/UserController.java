@@ -25,7 +25,6 @@ public class UserController {
 
     private final UserService userService;
 
-//    @Operation(summary = "Create a new User")
     @PostMapping
     public ResponseEntity<UserResponseDto> create(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
         log.info("Creating user with email: {}", registerRequestDto.getEmail());
@@ -55,8 +54,17 @@ public class UserController {
         return ResponseEntity.ok(updated);
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteSelf() {
+        Integer userId = getAuthenticatedUserId();
+        userService.delete(userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         log.info("Deleting user ID: {}", id);
         userService.delete(id);
         log.info("Deleted user ID: {}", id);
@@ -65,7 +73,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/roles")
-    public ResponseEntity<UserResponseDto> updateUserRoles(@PathVariable Integer id, @RequestBody @NotEmpty @Valid Set<Role> newRoles) {
+    public ResponseEntity<UserResponseDto> updateUserRoles(@PathVariable Integer id, @RequestBody @NotEmpty Set<@Valid Role> newRoles) {
         log.info("Updating roles for user ID: {}", id);
         return ResponseEntity.ok(userService.updateRoles(id, newRoles));
     }
