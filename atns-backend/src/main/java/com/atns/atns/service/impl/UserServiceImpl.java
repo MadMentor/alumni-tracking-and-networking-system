@@ -9,9 +9,12 @@ import com.atns.atns.entity.User;
 import com.atns.atns.enums.Role;
 import com.atns.atns.exception.UserNotFoundException;
 import com.atns.atns.repo.UserRepo;
+import com.atns.atns.security.CustomUserDetails;
 import com.atns.atns.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +64,7 @@ public class UserServiceImpl implements UserService {
         log.info("Deleted user with id {}", id);
     }
 
+    @Transactional
     @Override
     public UserResponseDto update(UserUpdateDto userUpdateDto, Integer id) {
         User existingUser = userRepo.findById(id).orElseThrow(() -> {
@@ -93,5 +97,11 @@ public class UserServiceImpl implements UserService {
         log.info("Role changed for user with id {} to roles {}", updatedUser.getId(), updatedUser.getRoles());
 
         return userResponseConverter.toDto(updatedUser);
+    }
+
+    public Integer getCurrentUserId() {
+        return ((CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal()).getId();
     }
 }

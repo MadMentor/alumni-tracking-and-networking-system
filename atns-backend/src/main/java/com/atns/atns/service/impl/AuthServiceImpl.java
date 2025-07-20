@@ -25,6 +25,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -59,6 +61,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponseDto register(RegisterRequestDto registerRequestDto) {
+        validateRegistrationInput(registerRequestDto);
+
         if (userRepo.findByUsername(registerRequestDto.getUsername()) != null) {
             throw new UsernameAlreadyExistsException("Username is already in use");
         }
@@ -67,17 +71,13 @@ public class AuthServiceImpl implements AuthService {
             throw new EmailAlreadyExistsException("Email is already in use");
         }
 
-        Role role = registerRequestDto.getRole() != null ? registerRequestDto.getRole() : Role.STUDENT;
-
-        if (registerRequestDto.getRole() == Role.ADMIN || registerRequestDto.getRole() == Role.MODERATOR) {
-            throw new UnauthorizedRoleException("You cannot register as Admin or Moderator!");
-        }
+        Set<Role> role =  processRoles(registerRequestDto.getRole());
 
         User user = new User();
         user.setUsername(registerRequestDto.getUsername());
         user.setPassword(bCryptPasswordEncoder.encode(registerRequestDto.getPassword()));
         user.setEmail(registerRequestDto.getEmail());
-        user.setRoles(Set.of(role));
+        user.setRoles(role);
 
         User savedUser = userRepo.save(user);
 
@@ -86,5 +86,37 @@ public class AuthServiceImpl implements AuthService {
         log.info("Successfully registered user {}", savedUser);
 
         return LoginResponseDto.builder().username(user.getUsername()).token(token).build();
+    }
+
+    private void validateRegistrationInput(RegisterRequestDto dto) {
+        if (dto.getUsername() != null || dto.getUsername().trim().isEmpty()) {
+            throw  new IllegalArgumentException("Username cannot be empty");
+        }
+        if (dto.getPassword() != null || dto.getPassword().trim().isEmpty() || dto.getPassword().length() < 8) {
+            throw  new IllegalArgumentException("Password must be at least 8 characters");
+        }
+        if (dto.getEmail() == null || dto.getEmail().matches(".+@.+\\..+")) {
+            throw  new IllegalArgumentException("Invalid email format");
+        }
+    }
+
+    private Set<Role> processRoles(Set<Role> requestedRoles) {
+        if(requestedRoles == null || requestedRoles.isEmpty()) {
+            return Set.of(Role.STUDENT);
+        }
+
+        Set<Role> filteredRoles = requestedRoles.stream()
+                .filter(role -> !isPrivilegedRole(role))
+                .collect(Collectors.toSet());
+
+        if(filteredRoles.isEmpty()) {
+            return Set.of(Role.STUDENT);
+        }
+
+        return filteredRoles;
+    }
+
+    private boolean isPrivilegedRole(Role role) {
+        return role == Role.ADMIN || role == Role.MODERATOR;
     }
 }
