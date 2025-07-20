@@ -1,13 +1,15 @@
 package com.atns.atns.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -15,7 +17,10 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "profiles")
+@Table(name = "profiles",indexes = {
+        @Index(name = "odx_profile_user", columnList = "user_id"),
+        @Index(name = "idx_profile_name", columnList = "lastName,firstName")
+})
 public class Profile {
 
     @Id
@@ -38,15 +43,17 @@ public class Profile {
 
     @NotBlank(message = "Phone Number is Mandatory!")
     @Column(nullable = false, length = 20)
+    @Pattern(regexp = "^\\+?[0-9\\s-]{10,}$")
     private String phoneNumber;
 
     @NotBlank(message = "Address is Mandatory!")
     @Column(nullable = false)
     private String address;
 
+    @Lob
     private String bio;
 
-    @Past(message = "Date of birth must be in past!")
+    @PastOrPresent(message = "Date of birth must be in past!")
     @Column(nullable = false)
     private LocalDate dateOfBirth;
 
@@ -56,12 +63,20 @@ public class Profile {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "profile_skills",
             joinColumns = @JoinColumn(name = "profile_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
-    private Set<Skill> skills = new HashSet<>();
+    private Set<Skill> skills;
 
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Event> events = new ArrayList<>();
 }
