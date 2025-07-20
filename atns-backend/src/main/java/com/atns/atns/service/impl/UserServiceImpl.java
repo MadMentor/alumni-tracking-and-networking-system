@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto save(RegisterRequestDto registerRequestDto) {
         User user = registerRequestConverter.toEntity(registerRequestDto);
+        passwordComplexityValidation(registerRequestDto.getPassword());
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         User saved = userRepo.save(user);
         log.info("Saved user with ID: {}", saved.getId());
@@ -81,6 +82,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isBlank()) {
+            passwordComplexityValidation(userUpdateDto.getPassword());
             existingUser.setPassword(bCryptPasswordEncoder.encode(userUpdateDto.getPassword()));
         }
 
@@ -103,5 +105,12 @@ public class UserServiceImpl implements UserService {
         return ((CustomUserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal()).getId();
+    }
+
+    public boolean passwordComplexityValidation(String password) {
+        if (!password.matches("^(?=.*[A-Z])(?=.*\\d).{8,}$")) {
+            throw new IllegalArgumentException("Password must contain at least 1 uppercase letter and number and 8 characters");
+        };
+        return true;
     }
 }

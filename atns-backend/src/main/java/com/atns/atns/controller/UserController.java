@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
+import static com.atns.atns.security.SecurityUtils.getCurrentUserId;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -57,8 +59,8 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/me")
     public ResponseEntity<Void> deleteSelf() {
-        Integer userId = getAuthenticatedUserId();
-        userService.delete(userId);
+        log.info("User deleted: {}", getCurrentUserId());
+        userService.delete(getCurrentUserId());
         return ResponseEntity.noContent().build();
     }
 
