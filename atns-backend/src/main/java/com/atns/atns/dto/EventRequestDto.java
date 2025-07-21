@@ -22,6 +22,7 @@ public class EventRequestDto {
     private String eventDescription;
 
     private EventLocationDto eventLocation;
+
     @FutureOrPresent(message = "Start time must be in future")
     private LocalDateTime startTime;
 
