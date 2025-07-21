@@ -28,11 +28,11 @@ public class Event {
 
     @NotBlank
     @Column(nullable = false)
-    private String title;
+    private String eventName;
 
     @Lob
     @Column(columnDefinition = "TEXT")
-    private String description;
+    private String eventDescription;
 
     @FutureOrPresent
     @Column(nullable = false)
