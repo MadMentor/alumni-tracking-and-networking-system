@@ -6,6 +6,7 @@ atns-backend/.mvn/
 atns-backend/.mvn/wrapper/
 atns-backend/mvnw
 atns-backend/mvnw.cmd
+atns-backend/src/main/resources.secret.env
 *.class
 *.jar
 *.war
