@@ -1,15 +1,11 @@
 package com.atns.atns.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Lob;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
@@ -43,11 +39,8 @@ public class EventUpdateRequestDto {
     @NotNull(message = "Organizer ID is required")
     private Integer organizerProfileId;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
     @Builder.Default
-    private boolean active = true;
+    private Boolean active = true;
 
     @AssertTrue(message = "End time must be after start time")
     private boolean isTimeRangeValid() {
