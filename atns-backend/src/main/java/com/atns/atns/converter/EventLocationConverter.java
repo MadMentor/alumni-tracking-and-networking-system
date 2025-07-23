@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class EventLocationConverter extends AbstractConverter<EventLocationDto, EventLocation {
+public class EventLocationConverter extends AbstractConverter<EventLocationDto, EventLocation> {
     @Override
     public EventLocationDto toDto(EventLocation eventLocation) {
         return EventLocationDto.builder()
