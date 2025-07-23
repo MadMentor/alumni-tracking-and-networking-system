@@ -27,6 +27,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UserResponseDto> create(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
         log.info("Creating user with email: {}", registerRequestDto.getEmail());

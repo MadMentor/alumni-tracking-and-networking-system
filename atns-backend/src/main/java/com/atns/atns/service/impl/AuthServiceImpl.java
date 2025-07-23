@@ -86,13 +86,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private void validateRegistrationInput(RegisterRequestDto dto) {
-        if (dto.getUsername() != null || dto.getUsername().trim().isEmpty()) {
+        if (dto.getUsername() == null || dto.getUsername().trim().isEmpty()) {
             throw  new IllegalArgumentException("Username cannot be empty");
         }
-        if (dto.getPassword() != null || dto.getPassword().trim().isEmpty() || dto.getPassword().length() < 8) {
+        if (dto.getPassword() == null || dto.getPassword().trim().isEmpty() || dto.getPassword().length() < 8) {
             throw  new IllegalArgumentException("Password must be at least 8 characters");
         }
-        if (dto.getEmail() == null || dto.getEmail().matches(".+@.+\\..+")) {
+        if (dto.getEmail() == null) {
+//                || dto.getEmail().matches(".+@.+\\..+")) {
             throw  new IllegalArgumentException("Invalid email format");
         }
     }

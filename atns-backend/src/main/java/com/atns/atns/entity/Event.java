@@ -63,6 +63,10 @@ public class Event {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean active = true;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organizer_profile_id")
+    private Profile profile;
+
     @AssertTrue(message = "End time must be after start time")
     private boolean isTimeRangeValid() {
         return endTime == null || endTime.isAfter(startTime);

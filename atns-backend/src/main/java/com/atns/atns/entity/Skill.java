@@ -26,7 +26,7 @@ public class Skill {
     private Integer id;
 
     @NotBlank(message = "Skill name is mandatory!")
-    @Column(columnDefinition = "VARCHAR(50) COLLATE NOCASE")
+    @Column(length =50, unique = true, columnDefinition = "citext")
     private String name;
 
     @ManyToMany(mappedBy = "skills")

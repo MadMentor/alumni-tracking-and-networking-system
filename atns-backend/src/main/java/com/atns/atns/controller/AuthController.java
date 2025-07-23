@@ -7,6 +7,7 @@ import com.atns.atns.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +31,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<LoginResponseDto> registerUser(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
         log.info("Register request: {}", registerRequestDto);
-        return ResponseEntity.ok(authService.register(registerRequestDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(registerRequestDto));
     }
 }
