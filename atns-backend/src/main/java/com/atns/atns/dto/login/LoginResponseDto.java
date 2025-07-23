@@ -1,4 +1,4 @@
-package com.atns.atns.dto;
+package com.atns.atns.dto.login;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

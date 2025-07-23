@@ -1,7 +1,7 @@
 package com.atns.atns.service;
 
-import com.atns.atns.dto.LoginRequestDto;
-import com.atns.atns.dto.LoginResponseDto;
+import com.atns.atns.dto.login.LoginRequestDto;
+import com.atns.atns.dto.login.LoginResponseDto;
 import com.atns.atns.dto.RegisterRequestDto;
 
 public interface AuthService {

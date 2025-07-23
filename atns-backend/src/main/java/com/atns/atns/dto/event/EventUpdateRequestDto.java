@@ -1,4 +1,4 @@
-package com.atns.atns.dto;
+package com.atns.atns.dto.event;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;

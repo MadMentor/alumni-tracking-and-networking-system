@@ -1,4 +1,4 @@
-package com.atns.atns.dto;
+package com.atns.atns.dto.event;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Size;

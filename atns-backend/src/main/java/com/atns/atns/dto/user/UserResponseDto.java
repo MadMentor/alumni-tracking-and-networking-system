@@ -1,4 +1,4 @@
-package com.atns.atns.dto;
+package com.atns.atns.dto.user;
 
 import com.atns.atns.enums.Role;
 import lombok.AllArgsConstructor;

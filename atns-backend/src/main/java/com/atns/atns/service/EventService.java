@@ -1,15 +1,29 @@
 package com.atns.atns.service;
 
-import com.atns.atns.dto.EventRequestDto;
-import com.atns.atns.dto.EventUpdateRequestDto;
+import com.atns.atns.dto.event.EventRequestDto;
+import com.atns.atns.dto.event.EventResponseDto;
+import com.atns.atns.dto.event.EventUpdateRequestDto;
 import com.atns.atns.entity.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface EventService {
+    // Create Operations
     Event createEvent(EventRequestDto eventRequestDto, Integer organizerProfileId);
-    Event updateEvent(EventUpdateRequestDto eventUpdateRequestDto, Integer eventId);
-    Void cancelEvent(Integer eventId);
-    void reactivateEvent(Integer eventId);
+
+    // Update Operations
+    EventResponseDto updateEvent(EventUpdateRequestDto eventUpdateRequestDto, Integer eventId);
+    EventResponseDto changeEventStatus(Integer eventId, boolean isActive);
+
+    // Delete Operations
+    void deleteEvent(Integer eventId);
+
+    // Read Operations
+    EventResponseDto getEventById(Integer eventId);
     Page<Event> getAllEvents(Pageable pageable);
+    List<EventResponseDto> getEventsByOrganizer(Integer organizerProfileId);
+    List<EventResponseDto> getUpcomingEvent();
+    List<EventResponseDto> searchEvents(String keyword);
 }

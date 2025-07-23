@@ -1,9 +1,7 @@
-package com.atns.atns.dto;
+package com.atns.atns.dto.event;
 
-import com.atns.atns.entity.EventLocation;
-import com.atns.atns.entity.Profile;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,10 +15,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class EventRequestDto {
     @NotBlank(message = "Event title is required")
+    @Size(max = 200)
     private String eventName;
 
+    @Size(max = 5000)
     private String eventDescription;
 
+    @Valid
     private EventLocationDto eventLocation;
 
     @FutureOrPresent(message = "Start time must be in future")
@@ -28,8 +29,18 @@ public class EventRequestDto {
 
     private LocalDateTime endTime;
 
+    @Size(max = 50)
     private String category;
 
     @NotBlank(message = "Organization Profile Id is mandatory")
     private Integer organizerProfileId;
+
+    @NotNull
+    private Boolean active;
+
+    @AssertTrue(message = "Must provide address or online link")
+    public boolean isLocationValid() {
+        return eventLocation != null &&
+                (eventLocation.getAddress() != null || eventLocation.getOnlineLink() != null);
+    }
 }

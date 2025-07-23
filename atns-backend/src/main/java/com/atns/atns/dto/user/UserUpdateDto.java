@@ -1,4 +1,4 @@
-package com.atns.atns.dto;
+package com.atns.atns.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;

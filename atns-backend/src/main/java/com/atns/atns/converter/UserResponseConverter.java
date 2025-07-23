@@ -1,6 +1,6 @@
 package com.atns.atns.converter;
 
-import com.atns.atns.dto.UserResponseDto;
+import com.atns.atns.dto.user.UserResponseDto;
 import com.atns.atns.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

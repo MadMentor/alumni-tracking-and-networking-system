@@ -1,13 +1,12 @@
 package com.atns.atns.service.impl;
 
-import com.atns.atns.dto.LoginRequestDto;
-import com.atns.atns.dto.LoginResponseDto;
+import com.atns.atns.dto.login.LoginRequestDto;
+import com.atns.atns.dto.login.LoginResponseDto;
 import com.atns.atns.dto.RegisterRequestDto;
 import com.atns.atns.entity.User;
 import com.atns.atns.enums.Role;
 import com.atns.atns.exception.EmailAlreadyExistsException;
 import com.atns.atns.exception.InvalidCredentialsException;
-import com.atns.atns.exception.UnauthorizedRoleException;
 import com.atns.atns.exception.UsernameAlreadyExistsException;
 import com.atns.atns.repo.UserRepo;
 import com.atns.atns.security.CustomUserDetails;
@@ -25,8 +24,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 

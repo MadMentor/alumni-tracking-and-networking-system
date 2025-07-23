@@ -1,8 +1,8 @@
 package com.atns.atns.controller;
 
 import com.atns.atns.dto.RegisterRequestDto;
-import com.atns.atns.dto.UserResponseDto;
-import com.atns.atns.dto.UserUpdateDto;
+import com.atns.atns.dto.user.UserResponseDto;
+import com.atns.atns.dto.user.UserUpdateDto;
 import com.atns.atns.enums.Role;
 import com.atns.atns.service.UserService;
 import jakarta.validation.Valid;

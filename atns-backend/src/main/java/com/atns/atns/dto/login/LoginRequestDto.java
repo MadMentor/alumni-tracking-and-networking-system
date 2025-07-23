@@ -1,4 +1,4 @@
-package com.atns.atns.dto;
+package com.atns.atns.dto.login;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
