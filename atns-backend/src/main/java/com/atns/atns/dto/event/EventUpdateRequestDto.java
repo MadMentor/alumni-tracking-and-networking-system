@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class EventUpdateRequestDto {
     @NotNull(message = "Event ID is required")
-    private Integer id;
+    private Integer eventId;
 
     @NotBlank(message = "Event name is required")
     @Size(max = 200, message = "Event name must be less than 200 characters")

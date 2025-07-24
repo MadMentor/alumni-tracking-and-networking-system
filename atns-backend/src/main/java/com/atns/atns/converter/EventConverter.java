@@ -1,6 +1,7 @@
 package com.atns.atns.converter;
 
 import com.atns.atns.dto.event.EventRequestDto;
+import com.atns.atns.dto.event.EventResponseDto;
 import com.atns.atns.entity.Event;
 import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.repo.ProfileRepo;
@@ -48,4 +49,6 @@ public class EventConverter extends AbstractConverter<EventRequestDto, Event> {
                 .build();
 
     }
+
+
 }
