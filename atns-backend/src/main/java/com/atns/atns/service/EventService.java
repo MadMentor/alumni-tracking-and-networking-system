@@ -23,7 +23,7 @@ public interface EventService {
     // Read Operations
     EventResponseDto getEventById(Integer eventId);
     Page<Event> getAllEvents(Pageable pageable);
-    List<EventResponseDto> getEventsByOrganizer(Integer organizerProfileId);
+    Page<EventResponseDto> getEventsByOrganizer(Integer organizerProfileId, Pageable pageable);
     List<EventResponseDto> getUpcomingEvent();
     List<EventResponseDto> searchEvents(String keyword);
 }

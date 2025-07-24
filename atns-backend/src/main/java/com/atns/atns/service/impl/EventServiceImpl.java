@@ -138,8 +138,18 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventResponseDto> getEventsByOrganizer(Integer organizerProfileId) {
-        return List.of();
+    public Page<EventResponseDto> getEventsByOrganizer(Integer organizerProfileId, Pageable pageable) {
+        // Validate input
+        if (organizerProfileId == null) return null;
+
+        // Verify organizers existence
+        if (!profileRepo.findById(organizerProfileId).isPresent()) {
+            throw new ResourceNotFoundException("Organizer not found with Id " + organizerProfileId);
+        }
+
+        // Fetch and return paginated events
+        return eventRepo.findEventsByOrganizerProfileId(organizerProfileId, pageable)
+                .map(eventResponseConverter::toDto);
     }
 
     @Override

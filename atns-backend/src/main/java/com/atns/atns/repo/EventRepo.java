@@ -25,4 +25,7 @@ public interface EventRepo extends JpaRepository<Event, Integer> {
             AND e.startTime BETWEEN :start AND :end
             """)
     List<Event> findEventsBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT e FROM Event e WHERE e.profile.id = :organizerProfileId")
+    Page<Event> findEventsByOrganizerProfileId(@Param("organizerProfileId") Integer organizerProfileId, Pageable pageable);
 }
