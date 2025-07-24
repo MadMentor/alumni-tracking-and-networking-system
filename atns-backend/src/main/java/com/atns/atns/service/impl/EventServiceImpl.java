@@ -105,8 +105,19 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public void deleteEvent(Integer eventId) {
+        // Verify Existence
+        Event event = eventRepo.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
 
+        // Verify is the event has already started or not
+        if (event.getStartTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Cannot delete already started events");
+        }
+
+        // Perform deletion
+        eventRepo.delete(event);
     }
 
     @Override
