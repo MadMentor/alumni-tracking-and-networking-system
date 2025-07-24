@@ -117,17 +117,24 @@ public class EventServiceImpl implements EventService {
         }
 
         // Perform deletion
+        log.info("Deleted event Id: {}, Deleted by: {}", eventId);
         eventRepo.delete(event);
     }
 
     @Override
     public EventResponseDto getEventById(Integer eventId) {
-        return null;
+        // Verify Existence
+        Event event = eventRepo.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+
+        // Return the event
+        return eventResponseConverter.toDto(event);
     }
 
     @Override
     public Page<Event> getAllEvents(Pageable pageable) {
-        return null;
+        // Returning all events
+        return eventRepo.findAll(pageable);
     }
 
     @Override
