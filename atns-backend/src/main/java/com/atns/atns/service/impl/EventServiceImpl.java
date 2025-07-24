@@ -37,7 +37,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event createEvent(EventRequestDto eventRequestDto, Integer organizerProfileId) {
         // Time Validate
-        validateEvent(eventRequestDto.getStartTime(), eventRequestDto.getEndTime());
+        validateEventTimes(eventRequestDto.getStartTime(), eventRequestDto.getEndTime());
 
         // Fetch Profile by organizerProfileId
         Profile organizer = profileRepo.findById(organizerProfileId)
@@ -51,57 +51,48 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventResponseDto updateEvent(EventUpdateRequestDto eventUpdateRequestDto, Integer eventId) {
         Event existingEvent = eventRepo.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found" + eventId));
 
-        //validateEvent(eventUpdateRequestDto.getStartTime(), eventUpdateRequestDto.getEndTime());
+        // Handle field updates
+        updateIfPresent(eventUpdateRequestDto, existingEvent);
 
-        if (eventUpdateRequestDto.getEventName() != null) {
-            existingEvent.setEventName(eventUpdateRequestDto.getEventName());
-        }
+        // Validate and update times
+        handleTimeUpdates(eventUpdateRequestDto, existingEvent);
 
-        if (eventUpdateRequestDto.getEventDescription() != null) {
-            existingEvent.setEventDescription(eventUpdateRequestDto.getEventDescription());
-        }
-
-        if (eventUpdateRequestDto.getCategory() != null) {
-            existingEvent.setCategory(eventUpdateRequestDto.getCategory());
-        }
-
-        if (eventUpdateRequestDto.getLocation() != null) {
-            existingEvent.setLocation(eventLocationConverter.toEntity(eventUpdateRequestDto.getLocation()));
-        }
-
-        if (eventUpdateRequestDto.getStartTime() != null) {
-            if (eventUpdateRequestDto.getEndTime() == null) {
-                isStartBeforeEndTime(eventUpdateRequestDto.getStartTime(), existingEvent.getEndTime());
-                existingEvent.setStartTime(eventUpdateRequestDto.getStartTime());
-            } else {
-                isStartBeforeEndTime(eventUpdateRequestDto.getStartTime(), eventUpdateRequestDto.getEndTime());
-                existingEvent.setEndTime(eventUpdateRequestDto.getEndTime());
-            }
-        }
-
-        if (eventUpdateRequestDto.getEndTime() != null) {
-            isStartBeforeEndTime(existingEvent.getStartTime(), eventUpdateRequestDto.getEndTime());
-            existingEvent.setEndTime(eventUpdateRequestDto.getEndTime());
-        }
-
-        if (eventUpdateRequestDto.getOrganizerProfileId() != null) {
-            existingEvent.setOrganizer(profileRepo.findById(eventUpdateRequestDto.getOrganizerProfileId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Organizer with profile id {} not found" + eventUpdateRequestDto.getOrganizerProfileId())));
-        }
-
-        if (eventUpdateRequestDto.getActive() != null) {
-            existingEvent.setActive(eventUpdateRequestDto.getActive());
-        }
+        Optional.ofNullable(eventUpdateRequestDto.getOrganizerProfileId())
+                .ifPresent(profileId -> {
+                    Profile profile = profileRepo.findById(profileId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Profile not found" + profileId));
+                    existingEvent.setOrganizer(profile);
+                });
 
         return eventResponseConverter.toDto(eventRepo.save(existingEvent));
     }
 
     private void updateIfPresent(EventUpdateRequestDto eventUpdateRequestDto, Event event) {
         Optional.ofNullable(eventUpdateRequestDto.getEventName()).ifPresent(event::setEventName);
+        Optional.ofNullable(eventUpdateRequestDto.getEventDescription()).ifPresent(event::setEventDescription);
+        Optional.ofNullable(eventUpdateRequestDto.getCategory()).ifPresent(event::setCategory);
+        Optional.ofNullable(eventUpdateRequestDto.getLocation())
+                .map(eventLocationConverter::toEntity)
+                .ifPresent(event::setLocation);
+        Optional.ofNullable(eventUpdateRequestDto.getActive()).ifPresent(event::setActive);
+    }
+
+    private void handleTimeUpdates(EventUpdateRequestDto eventUpdateRequestDto, Event event) {
+        if (eventUpdateRequestDto.getStartTime() != null || eventUpdateRequestDto.getEndTime() != null) {
+            LocalDateTime newStartTime = Optional.ofNullable(eventUpdateRequestDto.getStartTime())
+                    .orElse(event.getStartTime());
+            LocalDateTime newEndTime = Optional.ofNullable(eventUpdateRequestDto.getEndTime())
+                    .orElse(event.getEndTime());
+
+            validateEventTimes(newStartTime, newEndTime);
+            event.setStartTime(newStartTime);
+            event.setEndTime(newEndTime);
+        }
     }
 
     @Override
@@ -143,17 +134,16 @@ public class EventServiceImpl implements EventService {
         return List.of();
     }
 
-    private void validateEvent(LocalDateTime startTime, LocalDateTime endTime) {
+    private void validateEventTimes(LocalDateTime startTime, LocalDateTime endTime) {
         // Validate Event is in future
-        if (startTime.isBefore(LocalDateTime.now())) {
+        if (startTime != null && startTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Event must be in future");
         }
-    }
 
-    // Validate Start Date is before End Date
-    private void isStartBeforeEndTime(LocalDateTime startTime, LocalDateTime endTime) {
+        // Validate Start Date is before End Date
         if (endTime != null && endTime.isBefore(startTime)) {
             throw new IllegalArgumentException("Start time must be before end time");
         }
     }
+
 }
