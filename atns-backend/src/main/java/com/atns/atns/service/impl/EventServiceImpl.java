@@ -153,8 +153,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventResponseDto> getUpcomingEvent() {
-        return List.of();
+    public Page<EventResponseDto> getUpcomingEvent(Pageable pageable) {
+        return null;
     }
 
     @Override
