@@ -17,7 +17,7 @@ public interface EventRepo extends JpaRepository<Event, Integer> {
     Page<Event> findAllActive(Pageable pageable);
 
     @Query("SELECT e FROM Event e WHERE e.active = true AND e.startTime > :now ORDER BY e.startTime ASC")
-    List<Event> findUpcomingEvent(@Param("now") LocalDateTime now);
+    Page<Event> findUpcomingEvent(@Param("now") LocalDateTime now, Pageable pageable);
 
     @Query("""
             SELECT e FROM Event e
