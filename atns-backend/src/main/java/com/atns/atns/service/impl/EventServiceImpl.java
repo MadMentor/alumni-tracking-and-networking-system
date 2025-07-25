@@ -12,6 +12,7 @@ import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.repo.EventRepo;
 import com.atns.atns.repo.ProfileRepo;
 import com.atns.atns.service.EventService;
+import com.atns.atns.utils.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -153,8 +154,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<EventResponseDto> getUpcomingEvent(Pageable pageable) {
-        return null;
+//        ValidationUtils.validatePageable(pageable, );
+        return eventRepo.findUpcomingEvent(LocalDateTime.now(), pageable)
+                .map(eventResponseConverter::toDto);
     }
 
     @Override
@@ -173,5 +177,7 @@ public class EventServiceImpl implements EventService {
             throw new IllegalArgumentException("Start time must be before end time");
         }
     }
+
+
 
 }
