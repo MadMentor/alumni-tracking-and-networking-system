@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/profiles")
+@RequestMapping("/api/v1/profiles")
 @RequiredArgsConstructor
 @Slf4j
 public class ProfileController {
