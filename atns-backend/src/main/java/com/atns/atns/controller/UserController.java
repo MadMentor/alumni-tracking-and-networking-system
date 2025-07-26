@@ -20,7 +20,7 @@ import java.util.Set;
 import static com.atns.atns.security.SecurityUtils.getCurrentUserId;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
