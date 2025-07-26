@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Objects;
 
-@RequestMapping("/api/skills")
+@RequestMapping("/api/v1/skills")
 @RestController
 @Slf4j
 @RequiredArgsConstructor
