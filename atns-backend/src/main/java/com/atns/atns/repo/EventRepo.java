@@ -28,4 +28,12 @@ public interface EventRepo extends JpaRepository<Event, Integer> {
 
     @Query("SELECT e FROM Event e WHERE e.profile.id = :organizerProfileId")
     Page<Event> findEventsByOrganizerProfileId(@Param("organizerProfileId") Integer organizerProfileId, Pageable pageable);
+
+    @Query("""
+            SELECT e FROM Event e WHERE 
+                LOWER(e.eventName) LIKE LOWER(:term) OR 
+                LOWER(e.eventDescription) LIKE LOWER(:term) OR 
+                LOWER(e.category) LIKE LOWER(:term)
+                """)
+    List<Event> findBySearchTerm(@Param("term") String term);
 }
