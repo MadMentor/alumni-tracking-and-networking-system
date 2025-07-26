@@ -2,12 +2,16 @@ package com.atns.atns.utils;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
+
 import java.util.Set;
 
+@Component
 public class ValidationUtils {
 
     //  System wide absolute limits
     private static final int MIN_PAGE_SIZE = 1;
+    private static final int DEFAULT_MAX_PAGE_SIZE = 100;
     private static final int ABSOLUTE_MAX_PAGE_SIZE = 500;
 
     private ValidationUtils() {
@@ -19,7 +23,7 @@ public class ValidationUtils {
      * @throws IllegalArgumentException for invalid requests
      */
     public static void validatePageable(Pageable pageable, Set<String> allowedSortFields) {
-        validatePageable(pageable, allowedSortFields, ABSOLUTE_MAX_PAGE_SIZE);
+        validatePageable(pageable, allowedSortFields, DEFAULT_MAX_PAGE_SIZE);
     }
 
     /**
