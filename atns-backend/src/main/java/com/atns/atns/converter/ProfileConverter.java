@@ -63,7 +63,7 @@ public class ProfileConverter extends AbstractConverter<ProfileDto, Profile> {
                 .dateOfBirth(profileDto.getDateOfBirth())
                 .profileImageUrl(profileDto.getProfileImageUrl())
                 .user(userRepo.findById(profileDto.getUserId())
-                        .orElseThrow(() -> new ResourceNotFoundException("User not found")))
+                        .orElseThrow(() -> new ResourceNotFoundException("User", profileDto.getUserId())))
                 .skills(profileDto.getSkills().stream()
                         .map(this::resolveSkill)
                         .collect(Collectors.toSet())
