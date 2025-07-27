@@ -1,7 +1,9 @@
 package com.atns.atns.exception;
 
-public class EmailAlreadyExistsException extends RuntimeException{
-    public EmailAlreadyExistsException(String message){
-        super(message);
+import org.springframework.http.HttpStatus;
+
+public class EmailAlreadyExistsException extends ApiException{
+    public EmailAlreadyExistsException(String email){
+        super(String.format("Email %s already exists", email), HttpStatus.CONFLICT);
     }
 }
