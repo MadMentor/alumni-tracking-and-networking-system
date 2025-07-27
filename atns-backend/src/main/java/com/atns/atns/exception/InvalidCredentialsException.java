@@ -1,7 +1,9 @@
 package com.atns.atns.exception;
 
-public class InvalidCredentialsException extends RuntimeException {
-    public InvalidCredentialsException(String message) {
-        super(message);
+import org.springframework.http.HttpStatus;
+
+public class InvalidCredentialsException extends ApiException {
+    public InvalidCredentialsException() {
+        super("Invalid username or password", HttpStatus.UNAUTHORIZED);
     }
 }
