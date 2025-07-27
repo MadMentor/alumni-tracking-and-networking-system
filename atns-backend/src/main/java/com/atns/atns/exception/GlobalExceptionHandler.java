@@ -81,4 +81,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, status);
     }
 
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ErrorResponse> handleApiExceptions(ApiException ex, WebRequest request) {
+        return buildErrorResponse(ex, ex.getStatus(), request);
+    }
+
 }
