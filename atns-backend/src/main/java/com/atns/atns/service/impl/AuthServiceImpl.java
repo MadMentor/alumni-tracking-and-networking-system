@@ -52,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
 
             return LoginResponseDto.builder().username(loginRequestDto.getUsername()).token(token).roles(roles).build();
         } catch (BadCredentialsException e) {
-            throw new InvalidCredentialsException("Invalid Username or Password");
+            throw new InvalidCredentialsException();
         }
     }
 
