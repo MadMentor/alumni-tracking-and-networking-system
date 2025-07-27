@@ -7,7 +7,7 @@ import com.atns.atns.dto.user.UserResponseDto;
 import com.atns.atns.dto.user.UserUpdateDto;
 import com.atns.atns.entity.User;
 import com.atns.atns.enums.Role;
-import com.atns.atns.exception.UserNotFoundException;
+import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.repo.UserRepo;
 import com.atns.atns.security.CustomUserDetails;
 import com.atns.atns.service.UserService;
@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto findById(Integer id) {
         return userRepo.findById(id).map(userResponseConverter::toDto).orElseThrow(() -> {
             log.error("User with id {} not found", id);
-            return new RuntimeException("User not found");
+            return new ResourceNotFoundException("User", id);
         });
     }
 
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
     public void delete(Integer id) {
         if (!userRepo.existsById(id)) {
             log.warn("Attempted to delete non-existing user with id {}", id);
-            throw new RuntimeException("User not found!");
+            throw new ResourceNotFoundException("User", id);
         }
         userRepo.deleteById(id);
         log.info("Deleted user with id {}", id);
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto update(UserUpdateDto userUpdateDto, Integer id) {
         User existingUser = userRepo.findById(id).orElseThrow(() -> {
             log.error("User with id {} not found", id);
-            return new UserNotFoundException("User not found");
+            return new ResourceNotFoundException("User", id);
         });
 
         if (userUpdateDto.getUsername() != null) {
@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto updateRoles(Integer id, Set<Role> newRoles) {
         User user = userRepo.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", id));
 
         user.setRoles(newRoles);
         User updatedUser = userRepo.save(user);
@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
     public boolean passwordComplexityValidation(String password) {
         if (!password.matches("^(?=.*[A-Z])(?=.*\\d).{8,}$")) {
             throw new IllegalArgumentException("Password must contain at least 1 uppercase letter and number and 8 characters");
-        };
+        }
         return true;
     }
 }
