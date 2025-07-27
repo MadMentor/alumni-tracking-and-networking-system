@@ -1,7 +1,10 @@
 package com.atns.atns.exception;
 
-public class UsernameAlreadyExistsException extends RuntimeException {
-    public UsernameAlreadyExistsException(String message) {
-        super(message);
+import org.springframework.http.HttpStatus;
+
+public class UsernameAlreadyExistsException extends ApiException {
+    public UsernameAlreadyExistsException(String username) {
+        super(String.format("Username %s already exists", username),
+                HttpStatus.CONFLICT);
     }
 }
