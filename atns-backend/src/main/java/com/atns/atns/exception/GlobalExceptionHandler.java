@@ -32,8 +32,7 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler({UserNotFoundException.class,
-            ResourceNotFoundException.class})
+    @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundExceptions(RuntimeException ex, WebRequest request) {
         return buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
     }
