@@ -51,7 +51,7 @@ public class EventServiceImpl implements EventService {
         Profile organizer = profileRepo.findById(organizerProfileId)
                 .orElseThrow(() -> {
                     log.error("Organizer not found with ID: {}", organizerProfileId);
-                    return new ResourceNotFoundException("Organizer not found" + organizerProfileId);
+                    return new ResourceNotFoundException("Organizer", organizerProfileId);
                 });
 
         // Convert DTo to entity and set organizer
@@ -73,7 +73,7 @@ public class EventServiceImpl implements EventService {
 
         // Fetch existing event
         Event existingEvent = eventRepo.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found" + eventId));
+                .orElseThrow(() -> new ResourceNotFoundException("Event", eventId));
 
         // Handle field updates
         updateIfPresent(eventUpdateRequestDto, existingEvent);
@@ -85,7 +85,7 @@ public class EventServiceImpl implements EventService {
         Optional.ofNullable(eventUpdateRequestDto.getOrganizerProfileId())
                 .ifPresent(profileId -> {
                     Profile profile = profileRepo.findById(profileId)
-                            .orElseThrow(() -> new ResourceNotFoundException("Profile not found" + profileId));
+                            .orElseThrow(() -> new ResourceNotFoundException("Profile", profileId));
                     existingEvent.setOrganizer(profile);
                 });
 
@@ -128,7 +128,7 @@ public class EventServiceImpl implements EventService {
         Event existingEvent = eventRepo.findById(eventId)
                 .orElseThrow(() -> {
                     eventNotFoundLog(eventId);
-                    return new ResourceNotFoundException("Event not found" + eventId);
+                    return new ResourceNotFoundException("Event", eventId);
                 });
 
         existingEvent.setActive(isActive);
@@ -148,7 +148,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepo.findById(eventId)
                 .orElseThrow(() -> {
                     eventNotFoundLog(eventId);
-                    return new ResourceNotFoundException("Event not found with id: " + eventId);
+                    return new ResourceNotFoundException("Event", eventId);
                 });
 
         // Verify is the event has already started or not
@@ -159,7 +159,7 @@ public class EventServiceImpl implements EventService {
 
         // Perform deletion
         eventRepo.delete(event);
-        log.info("Successfully deleted event with Id: {}, Deleted by: {}", eventId);
+        log.info("Successfully deleted event with Id: {}, Deleted by: {}", eventId, event.getOrganizer());
     }
 
     @Override
@@ -170,7 +170,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepo.findById(eventId)
                 .orElseThrow(() -> {
                     eventNotFoundLog(eventId);
-                    return new ResourceNotFoundException("Event not found with id: " + eventId);
+                    return new ResourceNotFoundException("Event", eventId);
                 });
 
         // Return the event
@@ -207,7 +207,7 @@ public class EventServiceImpl implements EventService {
         // Verify organizers existence
         if (profileRepo.existsById(organizerProfileId)) {
             log.error("Organizer profile not found with ID: {}", organizerProfileId);
-            throw new ResourceNotFoundException("Organizer not found with Id " + organizerProfileId);
+            throw new ResourceNotFoundException("Organizer", organizerProfileId);
         }
 
         // Fetch and return paginated events
@@ -258,7 +258,7 @@ public class EventServiceImpl implements EventService {
      * @param endTime the event end time
      * @throws IllegalArgumentException if timing constraints are violated
      */
-    private void validateEventTimes(LocalDateTime startTime, LocalDateTime endTime) {
+    public void validateEventTimes(LocalDateTime startTime, LocalDateTime endTime) {
         if (startTime == null || endTime == null) {
             log.error("Event times cannot be null");
             throw new IllegalArgumentException("Event times cannot be null");
