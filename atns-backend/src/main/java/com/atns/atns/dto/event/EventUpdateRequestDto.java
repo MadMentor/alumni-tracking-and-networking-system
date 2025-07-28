@@ -17,17 +17,16 @@ public class EventUpdateRequestDto {
     @NotNull(message = "Event ID is required")
     private Integer eventId;
 
-    @NotBlank(message = "Event name is required")
     @Size(max = 200, message = "Event name must be less than 200 characters")
     private String eventName;
 
     @Size(max = 5000, message = "Description must be less than 5000 characters")
     private String eventDescription;
 
-    @FutureOrPresent(message = "Start time must be in present or future")
+    @Future(message = "Start time must be in future")
     private LocalDateTime startTime;
 
-    @FutureOrPresent(message = "End time must be in the present or future")
+    @Future(message = "End time must be in future")
     private LocalDateTime endTime;
 
     @Valid
@@ -36,7 +35,6 @@ public class EventUpdateRequestDto {
     @Size(max = 50, message = "Category must be less than 50 characters")
     private String category;
 
-    @NotNull(message = "Organizer ID is required")
     private Integer organizerProfileId;
 
     @Builder.Default
