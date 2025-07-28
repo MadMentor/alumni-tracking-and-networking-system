@@ -21,12 +21,14 @@ public class EventRequestDto {
     @Size(max = 5000)
     private String eventDescription;
 
+    @NotNull
     @Valid
-    private EventLocationDto eventLocation;
+    private EventLocationDto location;
 
     @FutureOrPresent(message = "Start time must be in future")
     private LocalDateTime startTime;
 
+    @Future
     private LocalDateTime endTime;
 
     @Size(max = 50)
@@ -40,7 +42,7 @@ public class EventRequestDto {
 
     @AssertTrue(message = "Must provide address or online link")
     public boolean isLocationValid() {
-        return eventLocation != null &&
-                (eventLocation.getAddress() != null || eventLocation.getOnlineLink() != null);
+        return location != null &&
+                (location.getAddress() != null || location.getOnlineLink() != null);
     }
 }
