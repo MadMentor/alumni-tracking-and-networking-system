@@ -25,5 +25,5 @@ public interface EventService {
     Page<Event> getAllEvents(Pageable pageable);
     Page<EventResponseDto> getEventsByOrganizer(Integer organizerProfileId, Pageable pageable);
     Page<EventResponseDto> getUpcomingEvent(Pageable pageable);
-    List<EventResponseDto> searchEvents(String keyword);
+    Page<EventResponseDto> searchEvents(String keyword, Pageable pageable);
 }
