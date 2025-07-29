@@ -25,10 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -242,24 +239,22 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventResponseDto> searchEvents(String keyword) {
+    public Page<EventResponseDto> searchEvents(String keyword, Pageable pageable) {
         log.debug("Searching events with keyword: {}", keyword);
 
         // Validate input
         if (StringUtils.isBlank(keyword)) {
             log.debug("Empty search keyword provided, returning empty list");
-            return Collections.emptyList();
+            return Page.empty();
         }
         String searchTerm = "%" + keyword.toLowerCase() + "%";
 
         // Search across multiple fields
-        List<Event> events = eventRepo.findBySearchTerm(searchTerm);
-        log.debug("Found {} events matching search term: {}", events.size(), searchTerm);
+        Page<Event> events = eventRepo.findBySearchTerm(searchTerm, pageable);
+        log.debug("Found {} events matching search term: {}", events.getNumberOfElements(), searchTerm);
 
         // Convert to DTOs and return
-        return events.stream()
-                .map(eventResponseConverter::toDto)
-                .collect(Collectors.toList());
+        return events.map(eventResponseConverter::toDto);
     }
 
     /**
