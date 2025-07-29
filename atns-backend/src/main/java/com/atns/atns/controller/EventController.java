@@ -221,5 +221,17 @@ public class EventController {
         }
     }
 
+    @GetMapping("/search")
+    @Transactional(readOnly = true)
+    public ResponseEntity<Page<EventResponseDto>> searchEvents(@RequestParam String query,
+                                                               @PageableDefault(sort = "startTime", direction = Sort.Direction.ASC) Pageable pageable) {
+        log.info("Searching for events for query {}", query);
 
+        try {
+            return ResponseEntity.ok(eventService.searchEvents(query, pageable));
+        } catch (IllegalArgumentException ex) {
+            log.warn("Invalid query {}", query);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
+    }
 }
