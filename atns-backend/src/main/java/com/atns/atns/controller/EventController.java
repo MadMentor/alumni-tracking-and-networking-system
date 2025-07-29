@@ -175,8 +175,8 @@ public class EventController {
         log.info("Fetching events for profile id {}", profileId);
 
         try {
-            Page<EventResponseDto> events = (Page<EventResponseDto>) eventService.getAllEvents(pageable)
-                    .stream().map(eventResponseConverter::toDto);
+            Page<EventResponseDto> events = eventService.getAllEvents(pageable)
+                    .map(eventResponseConverter::toDto);
 
             log.debug("Found {} events", events.getNumberOfElements());
             return ResponseEntity.ok(events);
@@ -203,4 +203,23 @@ public class EventController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
     }
+
+    @GetMapping("/upcoming")
+    @Transactional(readOnly = true)
+    public ResponseEntity<Page<EventResponseDto>> getUpcomingEvent(@RequestHeader(value = "X-Profile-Id") @Min(1) Integer profileId,
+                                                                   @PageableDefault(size = 20, sort = "startTime", direction = Sort.Direction.ASC) Pageable pageable) {
+        log.info("Profile {} requesting for upcoming events", profileId);
+
+        try {
+            return ResponseEntity.ok(eventService.getUpcomingEvent(pageable));
+        } catch (ResourceNotFoundException ex) {
+            log.error("Profile {} not found ", profileId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            log.warn("Invalid pagination parameters");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid pagination request");
+        }
+    }
+
+
 }
