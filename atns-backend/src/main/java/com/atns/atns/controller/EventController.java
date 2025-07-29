@@ -8,6 +8,7 @@ import com.atns.atns.dto.event.EventUpdateRequestDto;
 import com.atns.atns.entity.Event;
 import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.exception.UnauthorizedOperationException;
+import com.atns.atns.repo.EventRepo;
 import com.atns.atns.service.EventService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -30,6 +31,7 @@ public class EventController {
 
     private final EventResponseConverter eventResponseConverter;
     private final EventService eventService;
+    private final EventRepo eventRepo;
 
     @PostMapping
     @Transactional
@@ -107,6 +109,38 @@ public class EventController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
         } catch (UnauthorizedOperationException ex) {
             log.warn("Unauthorized delete attempt by organizer {}: {}", organizerId, ex.getMessage());
+            throw new ResponseStatusException(ex.getStatus(), ex.getMessage());
+        }
+    }
+
+    @PatchMapping("/{eventId}/status")
+    @Transactional
+    @AuditLog(action = "TOGGLE_EVENT_STATUS")
+    public ResponseEntity<EventResponseDto> toggleEventStatus(@PathVariable @Min(1) Integer eventId,
+                                                              @RequestHeader("X-Organizer-Id") @Min(1) Integer organizerId) {
+        log.info("Organizer {} toggling status of event {}", organizerId, eventId);
+
+        try {
+            Event existingEvent = eventRepo.findById(eventId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Event", eventId));
+
+            if (!existingEvent.getOrganizer().getId().equals(organizerId)) {
+                throw UnauthorizedOperationException.forResource("event");
+            }
+
+            Boolean newStatus = !existingEvent.isActive();
+            EventResponseDto updatedEvent = eventService.changeEventStatus(eventId, newStatus);
+
+            log.info("Event {} status changed to {} by organizer {}", eventId, newStatus ? "ACTIVE" : "INACTIVE", organizerId);
+            return ResponseEntity.ok().body(updatedEvent);
+        } catch (ResourceNotFoundException ex) {
+            log.error("Event/Organizer {} not found for event {}", organizerId, eventId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            log.warn("Invalid change request for organizer {}: {}", organizerId, ex.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        } catch (UnauthorizedOperationException ex) {
+            log.warn("Unauthorized change attempt by organizer {}: {}", organizerId, ex.getMessage());
             throw new ResponseStatusException(ex.getStatus(), ex.getMessage());
         }
     }
