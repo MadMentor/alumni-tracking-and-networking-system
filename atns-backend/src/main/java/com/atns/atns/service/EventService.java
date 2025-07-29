@@ -18,7 +18,7 @@ public interface EventService {
     EventResponseDto changeEventStatus(Integer eventId, boolean isActive);
 
     // Delete Operations
-    void deleteEvent(Integer eventId);
+    void deleteEvent(Integer eventId, Integer organizerId);
 
     // Read Operations
     EventResponseDto getEventById(Integer eventId);
