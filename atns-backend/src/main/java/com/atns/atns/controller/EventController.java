@@ -14,6 +14,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +41,7 @@ public class EventController {
     @Transactional
     @AuditLog(action = "CREATE_EVENT")
     public ResponseEntity<EventResponseDto> createEvent(@Valid @RequestBody EventRequestDto eventRequestDto,
-                                                        @RequestHeader("X-Organizer-Id") @Min(1) Integer organizerId) {
+                                                        @RequestHeader(value = "X-Organizer-Id") @Min(1) Integer organizerId) {
         log.info("Creating event: {} for organizer {}", eventRequestDto.getEventName(), eventRequestDto.getEventName());
 
         try {
@@ -61,7 +65,7 @@ public class EventController {
     @Transactional
     @AuditLog(action = "UPDATE_EVENT")
     public ResponseEntity<EventResponseDto> updateEvent(@Valid @RequestBody EventUpdateRequestDto eventUpdateRequestDto,
-                                                        @RequestHeader("X-Organizer-Id") Integer organizerId,
+                                                        @RequestHeader(value = "X-Organizer-Id") Integer organizerId,
                                                         @PathVariable @Min(1) Integer eventId) {
         final String eventName = eventUpdateRequestDto.getEventName();
         log.info("Updating event: {}", eventUpdateRequestDto.getEventName());
@@ -93,7 +97,7 @@ public class EventController {
     @Transactional
     @AuditLog(action = "DELETE_EVENT")
     public ResponseEntity<Void> deleteEvent(@PathVariable @Min(1) Integer eventId,
-                                            @RequestHeader("X-Organizer-Id") @Min(1) Integer organizerId) {
+                                            @RequestHeader(value = "X-Organizer-Id") @Min(1) Integer organizerId) {
         log.info("Organizer {} requesting deletion of event {}", organizerId, eventId);
 
         try {
@@ -117,7 +121,7 @@ public class EventController {
     @Transactional
     @AuditLog(action = "TOGGLE_EVENT_STATUS")
     public ResponseEntity<EventResponseDto> toggleEventStatus(@PathVariable @Min(1) Integer eventId,
-                                                              @RequestHeader("X-Organizer-Id") @Min(1) Integer organizerId) {
+                                                              @RequestHeader(value = "X-Organizer-Id") @Min(1) Integer organizerId) {
         log.info("Organizer {} toggling status of event {}", organizerId, eventId);
 
         try {
@@ -147,8 +151,9 @@ public class EventController {
 
     @GetMapping("/{eventId}")
     @Transactional(readOnly = true)
-    public ResponseEntity<EventResponseDto> getById(@PathVariable @Min(1) Integer eventId) {
-        log.info("Request received for event by id {}", eventId);
+    public ResponseEntity<EventResponseDto> getById(@PathVariable @Min(1) Integer eventId,
+                                                    @RequestHeader(value = "X-Profile-Id") @Min(1) Integer profileId) {
+        log.info("Request received for event id {} by profile id {}", eventId, profileId);
 
         try {
             EventResponseDto event = eventService.getEventById(eventId);
@@ -160,6 +165,24 @@ public class EventController {
         } catch (IllegalArgumentException ex) {
             log.warn("Invalid event id {}", eventId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
+    }
+
+    @GetMapping
+    @Transactional(readOnly = true)
+    public ResponseEntity<Page<EventResponseDto>> getAllEvents(@PageableDefault(size = 20, sort = "startTime", direction = Sort.Direction.ASC) Pageable pageable,
+                                                               @RequestHeader(value = "X-Profile-Id") @Min(1) Integer profileId) {
+        log.info("Fetching events for profile id {}", profileId);
+
+        try {
+            Page<EventResponseDto> events = (Page<EventResponseDto>) eventService.getAllEvents(pageable)
+                    .stream().map(eventResponseConverter::toDto);
+
+            log.debug("Found {} events", events.getNumberOfElements());
+            return ResponseEntity.ok(events);
+        } catch (ResourceNotFoundException ex) {
+            log.error("Profile id {} not found", profileId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
         }
     }
 }
