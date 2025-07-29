@@ -123,8 +123,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventResponseDto changeEventStatus(Integer eventId, boolean isActive) {
-        log.info("Changing status of event ID; {} to {}", eventId, isActive ? "active" : "inactive");
+    public EventResponseDto changeEventStatus(Integer eventId, boolean newStatus) {
+        log.info("Changing status of event ID; {} to {}", eventId, newStatus ? "active" : "inactive");
 
         Event existingEvent = eventRepo.findById(eventId)
                 .orElseThrow(() -> {
@@ -132,7 +132,11 @@ public class EventServiceImpl implements EventService {
                     return new ResourceNotFoundException("Event", eventId);
                 });
 
-        existingEvent.setActive(isActive);
+        if (newStatus && existingEvent.getStartTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Cannot activate past events");
+        }
+
+        existingEvent.setActive(newStatus);
 
         Event updatedEvent = eventRepo.save(existingEvent);
         log.info("Successfully updated status for event ID: {}", updatedEvent.getId());
