@@ -10,6 +10,7 @@ import com.atns.atns.dto.event.EventUpdateRequestDto;
 import com.atns.atns.entity.Event;
 import com.atns.atns.entity.Profile;
 import com.atns.atns.exception.ResourceNotFoundException;
+import com.atns.atns.exception.UnauthorizedOperationException;
 import com.atns.atns.repo.EventRepo;
 import com.atns.atns.repo.ProfileRepo;
 import com.atns.atns.service.EventService;
@@ -141,7 +142,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public void deleteEvent(Integer eventId) {
+    public void deleteEvent(Integer eventId, Integer organizerId) {
         log.info("Attempting to delete event with ID: {}", eventId);
 
         // Verify Existence
@@ -150,6 +151,11 @@ public class EventServiceImpl implements EventService {
                     eventNotFoundLog(eventId);
                     return new ResourceNotFoundException("Event", eventId);
                 });
+
+        // Verify the organizer id
+        if (!event.getOrganizer().getId().equals(organizerId)) {
+            throw new UnauthorizedOperationException("Not authorized to delete this event");
+        }
 
         // Verify is the event has already started or not
         if (event.getStartTime().isBefore(LocalDateTime.now())) {
