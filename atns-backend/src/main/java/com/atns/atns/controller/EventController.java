@@ -128,7 +128,7 @@ public class EventController {
                 throw UnauthorizedOperationException.forResource("event");
             }
 
-            Boolean newStatus = !existingEvent.isActive();
+            boolean newStatus = !existingEvent.isActive();
             EventResponseDto updatedEvent = eventService.changeEventStatus(eventId, newStatus);
 
             log.info("Event {} status changed to {} by organizer {}", eventId, newStatus ? "ACTIVE" : "INACTIVE", organizerId);
@@ -142,6 +142,24 @@ public class EventController {
         } catch (UnauthorizedOperationException ex) {
             log.warn("Unauthorized change attempt by organizer {}: {}", organizerId, ex.getMessage());
             throw new ResponseStatusException(ex.getStatus(), ex.getMessage());
+        }
+    }
+
+    @GetMapping("/{eventId}")
+    @Transactional(readOnly = true)
+    public ResponseEntity<EventResponseDto> getById(@PathVariable @Min(1) Integer eventId) {
+        log.info("Request received for event by id {}", eventId);
+
+        try {
+            EventResponseDto event = eventService.getEventById(eventId);
+
+            return ResponseEntity.ok(event);
+        } catch (ResourceNotFoundException ex) {
+            log.error("Event {} not found for", eventId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            log.warn("Invalid event id {}", eventId);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
     }
 }
