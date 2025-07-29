@@ -35,5 +35,5 @@ public interface EventRepo extends JpaRepository<Event, Integer> {
                 LOWER(e.eventDescription) LIKE LOWER(:term) OR 
                 LOWER(e.category) LIKE LOWER(:term)
                 """)
-    List<Event> findBySearchTerm(@Param("term") String term);
+    Page<Event> findBySearchTerm(@Param("term") String term, Pageable pageable);
 }
