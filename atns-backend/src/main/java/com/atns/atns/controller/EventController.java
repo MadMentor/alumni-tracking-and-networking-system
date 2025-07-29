@@ -185,4 +185,22 @@ public class EventController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
         }
     }
+
+    @GetMapping("/organizers/{organizerId}")
+    @Transactional(readOnly = true)
+    public ResponseEntity<Page<EventResponseDto>> getEventsByOrganizer(@PageableDefault(size = 20, sort = "startTime", direction = Sort.Direction.ASC) Pageable pageable,
+                                                                       @PathVariable @Min(1) Integer organizerId,
+                                                                       @RequestHeader(value = "X-Profile-Id") @Min(1) Integer profileId) {
+        log.info("Profile {} requesting events for organizer {}", profileId, organizerId);
+
+        try {
+            return ResponseEntity.ok(eventService.getEventsByOrganizer(organizerId, pageable));
+        } catch (ResourceNotFoundException ex) {
+            log.error("Organizer not found for organizer Id {}", organizerId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            log.warn("Invalid organizer id {}", organizerId);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
+    }
 }
