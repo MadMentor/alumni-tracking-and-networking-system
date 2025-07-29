@@ -87,4 +87,27 @@ public class EventController {
        }
     }
 
+    @DeleteMapping("/{eventId}")
+    @Transactional
+    @AuditLog(action = "DELETE_EVENT")
+    public ResponseEntity<Void> deleteEvent(@PathVariable @Min(1) Integer eventId,
+                                            @RequestHeader("X-Organizer-Id") @Min(1) Integer organizerId) {
+        log.info("Organizer {} requesting deletion of event {}", organizerId, eventId);
+
+        try {
+            eventService.deleteEvent(eventId, organizerId);
+            log.info("Event {} deleted by organizer {}", eventId, organizerId);
+
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException ex) {
+            log.error("Event/Organizer {} not found for event {}", organizerId, eventId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            log.warn("Invalid delete request for organizer {}: {}", organizerId, ex.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        } catch (UnauthorizedOperationException ex) {
+            log.warn("Unauthorized delete attempt by organizer {}: {}", organizerId, ex.getMessage());
+            throw new ResponseStatusException(ex.getStatus(), ex.getMessage());
+        }
+    }
 }
