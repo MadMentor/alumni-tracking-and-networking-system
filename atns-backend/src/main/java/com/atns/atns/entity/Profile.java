@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -81,4 +82,10 @@ public class Profile {
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> events = new ArrayList<>();
+
+    @OneToMany(mappedBy = "follower")
+    private Set<Follow> following = new HashSet<>();
+
+    @OneToMany(mappedBy = "followed")
+    private Set<Follow> followers = new HashSet<>();
 }
