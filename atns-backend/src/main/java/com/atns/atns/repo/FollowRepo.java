@@ -6,6 +6,8 @@ import com.atns.atns.entity.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -14,5 +16,7 @@ public interface FollowRepo extends JpaRepository<Follow, Integer> {
     void deleteByFollowerAndFollowed(Profile follower, Profile followed);
     long countByFollowed(Profile profile);
     long countByFollower(Profile profile);
-    Page<ProfileDto> findByFollowed(Profile profile, Pageable pageable);
+
+    @Query("SELECT f.follower FROM Follow f WHERE f.followed = :profile")
+    Page<Profile> findByFollowed(@Param("profile") Profile profile, Pageable pageable);
 }
