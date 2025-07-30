@@ -7,4 +7,6 @@ import org.springframework.data.domain.Pageable;
 public interface FollowService {
     void followProfile(Integer followerId, Integer followeeId);
     Page<ProfileDto> getFollowers(Integer profileId, Pageable pageable);
+    Page<ProfileDto> getFollowing(Integer profileId, Pageable pageable);
+    void unfollowProfile(Integer followerId, Integer followeeId);
 }
