@@ -36,6 +36,10 @@ public class FollowServiceImpl implements FollowService {
             throw new IllegalStateException("Already following this profile");
         }
 
+        if (follower.equals(followed)) {
+            throw new IllegalArgumentException("Cannot follow yourself");
+        }
+
         Follow follow = Follow.builder()
                 .follower(follower)
                 .followed(followed)
