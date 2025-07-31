@@ -2,8 +2,6 @@ package com.atns.atns.controller;
 
 import com.atns.atns.annotation.AuditLog;
 import com.atns.atns.dto.ProfileDto;
-import com.atns.atns.exception.ResourceNotFoundException;
-import com.atns.atns.exception.UnauthorizedOperationException;
 import com.atns.atns.service.FollowService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @Slf4j
