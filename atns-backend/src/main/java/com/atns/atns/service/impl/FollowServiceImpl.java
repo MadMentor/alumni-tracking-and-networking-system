@@ -53,6 +53,10 @@ public class FollowServiceImpl implements FollowService {
         Profile followed = profileRepo.findById(followedId)
                 .orElseThrow(() -> new ResourceNotFoundException("Profile", followedId));
 
+        if (!followRepo.existsByFollowerAndFollowed(follower, followed)) {
+            throw new IllegalStateException("Not following this profile");
+        }
+
         followRepo.deleteByFollowerAndFollowed(follower, followed);
     }
 
