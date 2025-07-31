@@ -1,12 +1,17 @@
 package com.atns.atns.controller;
 
 import com.atns.atns.annotation.AuditLog;
+import com.atns.atns.dto.ProfileDto;
 import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.exception.UnauthorizedOperationException;
 import com.atns.atns.service.FollowService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,21 +32,10 @@ public class FollowController {
                                               @PathVariable @Min(1) Integer targetId) {
         log.info("Profile {} attempting to follow profile {}", profileId, targetId);
 
-        try {
-            followService.followProfile(profileId, targetId);
-            log.info("Successfully followed target id: {}", targetId);
+        followService.followProfile(profileId, targetId);
+        log.info("Successfully followed target id: {}", targetId);
 
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException ex) {
-            log.error("Follow failed - profile not found: {}", ex.getMessage());
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-        } catch (IllegalStateException ex) {
-            log.warn("Follow validation failed: {}", ex.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
-        } catch (UnauthorizedOperationException ex) {
-            log.error("Follow failed - unauthorized operation: {}", ex.getMessage());
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ex.getMessage());
-        }
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{targetId}")
@@ -51,20 +45,25 @@ public class FollowController {
                                                 @PathVariable @Min(1) Integer targetId) {
         log.info("Profile {} attempting to unfollow profile {}", profileId, targetId);
 
-        try {
-            followService.unfollowProfile(profileId, targetId);
-            log.info("Successfully unfollowed target id: {}", targetId);
+        followService.unfollowProfile(profileId, targetId);
+        log.info("Successfully unfollowed target id: {}", targetId);
 
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException ex) {
-            log.error("Unfollow failed - profile not found: {}", ex.getMessage());
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-        } catch (IllegalStateException ex) {
-            log.warn("Unfollow validation failed: {}", ex.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
-        } catch (UnauthorizedOperationException ex) {
-            log.warn("Unauthorized {} attempt: {}", action, ex.getMessage());
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage());
-        }
+        return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/followers")
+    @Transactional(readOnly = true)
+    @AuditLog(action = "FETCH_FOLLOWERS")
+    public ResponseEntity<Page<ProfileDto>> getFollowers(@PathVariable @Min(1) Integer profileId,
+                                                         @PageableDefault(size = 10, sort = "createdAt", direction =
+                                                                 Sort.Direction.ASC) Pageable pageable) {
+        log.info("Retrieve request of followers by profile Id {}", profileId);
+
+        Page<ProfileDto> followers = followService.getFollowers(profileId, pageable);
+        log.info("Successfully retrieved {} followers", followers.getNumberOfElements());
+
+        return ResponseEntity.ok(followers);
+    }
+
+
 }
