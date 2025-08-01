@@ -9,4 +9,6 @@ public interface FollowService {
     Page<ProfileDto> getFollowers(Integer profileId, Pageable pageable);
     Page<ProfileDto> getFollowing(Integer profileId, Pageable pageable);
     void unfollowProfile(Integer followerId, Integer followeeId);
+    Integer getFollowersCount(Integer profileId);
+    Integer getFollowingCount(Integer profileId);
 }
