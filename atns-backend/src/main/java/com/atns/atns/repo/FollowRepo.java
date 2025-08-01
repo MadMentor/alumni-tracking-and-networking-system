@@ -1,6 +1,5 @@
 package com.atns.atns.repo;
 
-import com.atns.atns.dto.ProfileDto;
 import com.atns.atns.entity.Follow;
 import com.atns.atns.entity.Profile;
 import org.springframework.data.domain.Page;
