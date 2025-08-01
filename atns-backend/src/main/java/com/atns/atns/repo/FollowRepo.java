@@ -22,4 +22,13 @@ public interface FollowRepo extends JpaRepository<Follow, Integer> {
 
     @Query("SELECT f.followed FROM Follow f WHERE f.follower =: profile")
     Page<Profile> findByFollower(@Param("profile") Profile profile, Pageable pageable);
+
+    @Query("""
+            SELECT f.followed FROM Follow f
+            WHERE f.follower = :profileId
+            AND EXISTS (
+                SELECT 1 FROM Follow f2
+                WHERE f2.follower = f.followed AND f2.followed = :profileId)
+            """)
+    Page<Profile> getMutualConnection(Integer profileId, Pageable pageable);
 }
