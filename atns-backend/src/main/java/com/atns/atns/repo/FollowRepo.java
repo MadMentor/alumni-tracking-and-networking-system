@@ -14,8 +14,8 @@ import org.springframework.stereotype.Repository;
 public interface FollowRepo extends JpaRepository<Follow, Integer> {
     boolean existsByFollowerAndFollowed(Profile follower, Profile followed);
     void deleteByFollowerAndFollowed(Profile follower, Profile followed);
-    int countByFollowed(Profile profile);
-    int countByFollower(Profile profile);
+    long countByFollowed(Profile profile);
+    long countByFollower(Profile profile);
 
     @Query("SELECT f.follower FROM Follow f WHERE f.followed = :profile")
     Page<Profile> findByFollowed(@Param("profile") Profile profile, Pageable pageable);

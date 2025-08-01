@@ -78,7 +78,7 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional(readOnly = true)
-    public Integer getFollowersCount(Integer profileId) {
+    public Long getFollowersCount(Integer profileId) {
         Profile profile = validateProfileExists(profileId);
 
         return followRepo.countByFollowed(profile);
@@ -86,7 +86,7 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional(readOnly = true)
-    public Integer getFollowingCount(Integer profileId) {
+    public Long getFollowingCount(Integer profileId) {
         Profile profile = validateProfileExists(profileId);
 
         return followRepo.countByFollowed(profile);
