@@ -51,7 +51,7 @@ public class FollowController {
     @Transactional(readOnly = true)
     @AuditLog(action = "FETCH_FOLLOWERS")
     public ResponseEntity<Page<ProfileDto>> getFollowers(@PathVariable @Min(1) Integer profileId,
-                                                         @PageableDefault(size = 10, sort = "createdAt", direction =
+                                                         @PageableDefault(sort = "createdAt", direction =
                                                                  Sort.Direction.ASC) Pageable pageable) {
         log.info("Retrieve request of followers by profile Id {}", profileId);
 
@@ -67,7 +67,7 @@ public class FollowController {
     @Transactional(readOnly = true)
     @AuditLog(action = "FETCH_FOLLOWING")
     public ResponseEntity<Page<ProfileDto>> getFollowing(@PathVariable @Min(1) Integer profileId,
-                                                         @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
+                                                         @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
         log.debug("Fetching following list for profile ID: {}", profileId);
 
         Page<ProfileDto> following = followService.getFollowing(profileId, pageable);
@@ -76,5 +76,14 @@ public class FollowController {
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(following.getTotalElements()))
                 .body(following);
+    }
+
+    @GetMapping("/followers/count")
+    @Transactional(readOnly = true)
+    @AuditLog(action = "COUNT_FOLLOWERS")
+    public ResponseEntity<Long> getFollowerCount(@PathVariable @Min(1) Integer profileId) {
+        log.debug("Fetching follower count for profile ID: {}", profileId);
+
+        return ResponseEntity.ok(followService.getFollowersCount(profileId));
     }
 }
