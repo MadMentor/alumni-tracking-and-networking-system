@@ -58,8 +58,23 @@ public class FollowController {
         Page<ProfileDto> followers = followService.getFollowers(profileId, pageable);
         log.info("Successfully retrieved {} followers", followers.getNumberOfElements());
 
-        return ResponseEntity.ok(followers);
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(followers.getTotalElements()))
+                .body(followers);
     }
 
+    @GetMapping("/following")
+    @Transactional(readOnly = true)
+    @AuditLog(action = "FETCH_FOLLOWING")
+    public ResponseEntity<Page<ProfileDto>> getFollowing(@PathVariable @Min(1) Integer profileId,
+                                                         @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
+        log.debug("Fetching following list for profile ID: {}", profileId);
 
+        Page<ProfileDto> following = followService.getFollowing(profileId, pageable);
+        log.info("Successfully retrieved {} following", following.getNumberOfElements());
+
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(following.getTotalElements()))
+                .body(following);
+    }
 }
