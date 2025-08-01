@@ -83,7 +83,22 @@ public class FollowController {
     @AuditLog(action = "COUNT_FOLLOWERS")
     public ResponseEntity<Long> getFollowerCount(@PathVariable @Min(1) Integer profileId) {
         log.debug("Fetching follower count for profile ID: {}", profileId);
+        final long count = followService.getFollowersCount(profileId);
 
-        return ResponseEntity.ok(followService.getFollowersCount(profileId));
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(count))
+                .body(count);
+    }
+
+    @GetMapping("/following/count")
+    @Transactional(readOnly = true)
+    @AuditLog(action = "COUNT_FOLLOWING")
+    public ResponseEntity<Long> getFollowingCount(@PathVariable @Min(1) Integer profileId) {
+        log.debug("Fetching following count for profile ID: {}", profileId);
+        final long count = followService.getFollowingCount(profileId);
+
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(count))
+                .body(count);
     }
 }
