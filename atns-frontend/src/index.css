@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -66,3 +71,91 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+
+
+/* Container styling for both forms */
+form.login-form,
+form.register-form {
+  width: 320px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Form field wrapper */
+form.login-form div,
+form.register-form div {
+  margin-bottom: 1.25rem;
+}
+
+/* Labels */
+form.login-form label,
+form.register-form label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Input fields */
+form.login-form input,
+form.register-form input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+/* Input focus */
+form.login-form input:focus,
+form.register-form input:focus {
+  outline: none;
+  border-color: #4f46e5; /* Indigo */
+  box-shadow: 0 0 5px rgba(79, 70, 229, 0.5);
+}
+
+/* Error messages */
+form.login-form .error,
+form.register-form .error {
+  color: #dc2626; /* Red-600 */
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+/* Submit button */
+form.login-form button,
+form.register-form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4f46e5; /* Indigo */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Button hover */
+form.login-form button:hover,
+form.register-form button:hover {
+  background-color: #4338ca; /* Darker Indigo */
+}
+
+/* Responsive tweak (optional) */
+@media (max-width: 400px) {
+  form.login-form,
+  form.register-form {
+    width: 90%;
+    padding: 1.5rem;
+  }
+}
+

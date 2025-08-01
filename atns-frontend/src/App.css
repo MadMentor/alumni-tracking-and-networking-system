@@ -40,3 +40,64 @@
 .read-the-docs {
   color: #888;
 }
+
+
+
+/* Navbar container */
+nav {
+  background-color: #2563eb; /* Tailwind blue-600 */
+  color: white;
+  padding: 1rem 1.5rem; /* py-4 px-6 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Inner max width container with flex */
+nav > div {
+  max-width: 1120px; /* approx max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Brand link */
+nav a:first-child {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 700; /* font-bold */
+  text-decoration: none;
+  color: white;
+}
+
+/* Links container */
+nav div > div {
+  display: flex;
+  gap: 1rem; /* space-x-4 */
+}
+
+/* Nav links style */
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: text-decoration 0.2s ease;
+}
+
+/* Hover underline effect */
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive: stack links vertically on small screens (optional) */
+@media (max-width: 600px) {
+  nav > div {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  nav div > div {
+    margin-top: 0.75rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
