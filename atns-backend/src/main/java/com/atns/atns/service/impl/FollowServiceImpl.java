@@ -26,11 +26,8 @@ public class FollowServiceImpl implements FollowService {
     @Override
     @Transactional
     public void followProfile(Integer followerId, Integer followedId) {
-        Profile follower = profileRepo.findById(followerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile", followerId));
-
-        Profile followed = profileRepo.findById(followedId)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile", followedId));
+        Profile follower = validateProfileExists(followerId);
+        Profile followed = validateProfileExists(followedId);
 
         if (followRepo.existsByFollowerAndFollowed(follower, followed)) {
             throw new IllegalStateException("Already following this profile");
@@ -51,11 +48,8 @@ public class FollowServiceImpl implements FollowService {
     @Override
     @Transactional
     public void unfollowProfile(Integer followerId, Integer followedId) {
-        Profile follower = profileRepo.findById(followerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile", followerId));
-
-        Profile followed = profileRepo.findById(followedId)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile", followedId));
+        Profile follower = validateProfileExists(followedId);
+        Profile followed = validateProfileExists(followerId);
 
         if (!followRepo.existsByFollowerAndFollowed(follower, followed)) {
             throw new IllegalStateException("Not following this profile");
@@ -67,8 +61,7 @@ public class FollowServiceImpl implements FollowService {
     @Override
     @Transactional(readOnly = true)
     public Page<ProfileDto> getFollowers(Integer profileId, Pageable pageable) {
-        Profile profile = profileRepo.findById(profileId)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile", profileId));
+        Profile profile = validateProfileExists(profileId);
 
         return followRepo.findByFollowed(profile,pageable)
                 .map(profileConverter::toDto);
@@ -77,10 +70,30 @@ public class FollowServiceImpl implements FollowService {
     @Override
     @Transactional(readOnly = true)
     public Page<ProfileDto> getFollowing(Integer profileId, Pageable pageable) {
-        Profile profile = profileRepo.findById(profileId)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile", profileId));
+        Profile profile = validateProfileExists(profileId);
 
         return followRepo.findByFollower(profile, pageable)
                 .map(profileConverter::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getFollowersCount(Integer profileId) {
+        Profile profile = validateProfileExists(profileId);
+
+        return followRepo.countByFollowed(profile);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getFollowingCount(Integer profileId) {
+        Profile profile = validateProfileExists(profileId);
+
+        return followRepo.countByFollowed(profile);
+    }
+
+    private Profile validateProfileExists(Integer profileId) {
+        return profileRepo.findById(profileId)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile", profileId));
     }
 }
