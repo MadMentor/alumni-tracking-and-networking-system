@@ -89,7 +89,7 @@ public class FollowServiceImpl implements FollowService {
     public Long getFollowingCount(Integer profileId) {
         Profile profile = validateProfileExists(profileId);
 
-        return followRepo.countByFollowed(profile);
+        return followRepo.countByFollower(profile);
     }
 
     private Profile validateProfileExists(Integer profileId) {
