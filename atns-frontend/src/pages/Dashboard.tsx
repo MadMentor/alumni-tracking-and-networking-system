@@ -35,11 +35,11 @@ export default function Dashboard() {
     }, []);
 
     if (!profile) {
-        return <div className="p-4">Loading...</div>;
+        return <div className="p-6">Loading...</div>;
     }
 
     return (
-        <main className="p-4 space-y-6 bg-gray-50 min-h-screen">
+        <main className="p-6 space-y-6 bg-gray-50 min-h-screen">
             <WelcomeCard
                 // @ts-ignore
                 fullName={profile.fullName}

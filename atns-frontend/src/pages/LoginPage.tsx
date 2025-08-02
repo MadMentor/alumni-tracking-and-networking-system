@@ -22,29 +22,8 @@ const LoginPage: React.FC = () => {
     }, [alertMessage]);
 
     const getErrorMessage = (error: any): string => {
-        const status = error.response?.status;
         const message = error.response?.data?.message || error.message;
-
-        switch (status) {
-            case 401:
-                return "Invalid username or password. Please check your credentials.";
-            case 404:
-                return "Account not found. Please check your username or register a new account.";
-            case 400:
-                if (message.includes("username")) {
-                    return "Username is required. Please enter your username.";
-                }
-                if (message.includes("password")) {
-                    return "Password is required. Please enter your password.";
-                }
-                return "Invalid login data. Please check your input.";
-            case 422:
-                return "Validation failed. Please check your input and try again.";
-            case 500:
-                return "Server error. Please try again later.";
-            default:
-                return message || "Login failed. Please check your credentials and try again.";
-        }
+        return message || "Login failed. Please try again.";
     };
 
     const handleLogin = async (username: string, password: string) => {
