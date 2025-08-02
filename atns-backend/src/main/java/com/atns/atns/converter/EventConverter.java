@@ -1,14 +1,11 @@
 package com.atns.atns.converter;
 
 import com.atns.atns.dto.event.EventRequestDto;
-import com.atns.atns.dto.event.EventResponseDto;
 import com.atns.atns.entity.Event;
 import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.repo.ProfileRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import javax.swing.text.html.parser.Entity;
 
 @Component
 @RequiredArgsConstructor
@@ -24,7 +21,7 @@ public class EventConverter extends AbstractConverter<EventRequestDto, Event> {
                 .eventName(event.getEventName())
                 .eventDescription(event.getEventDescription())
                 .category(event.getCategory())
-                .eventLocation(eventLocationConverter.toDto(event.getLocation()))
+                .location(eventLocationConverter.toDto(event.getLocation()))
                 .startTime(event.getStartTime())
                 .endTime(event.getEndTime())
                 .organizerProfileId(event.getOrganizer().getId())
@@ -40,11 +37,11 @@ public class EventConverter extends AbstractConverter<EventRequestDto, Event> {
                 .eventName(eventRequestDto.getEventName())
                 .eventDescription(eventRequestDto.getEventDescription())
                 .category(eventRequestDto.getCategory())
-                .location(eventLocationConverter.toEntity(eventRequestDto.getEventLocation()))
+                .location(eventLocationConverter.toEntity(eventRequestDto.getLocation()))
                 .startTime(eventRequestDto.getStartTime())
                 .endTime(eventRequestDto.getEndTime())
                 .organizer(profileRepo.findById(eventRequestDto.getOrganizerProfileId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Organizer profile not found" + eventRequestDto.getOrganizerProfileId())))
+                        .orElseThrow(() -> new ResourceNotFoundException("Organizer profile", eventRequestDto.getOrganizerProfileId())))
                 .active(eventRequestDto.getActive())
                 .build();
 
