@@ -13,26 +13,74 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onRegister}) => {
     const [selectedRoles, setSelectedRoles] = useState<UserRole[]>([UserRole.STUDENT]);
     const [error, setError] = useState("");
 
-    // const handleRoleChange = (role: UserRole, isChecked: boolean) => {
-    //     setSelectedRoles(prev =>
-    //         isChecked
-    //             ? [...prev, role]
-    //             : prev.filter(r => r !== role)
-    //     );
-    // };
+    const validatePassword = (password: string): string | null => {
+        if (password.length < 8) {
+            return "Password must be at least 8 characters long.";
+        }
+        if (!/[A-Z]/.test(password)) {
+            return "Password must contain at least one uppercase letter.";
+        }
+        if (!/[a-z]/.test(password)) {
+            return "Password must contain at least one lowercase letter.";
+        }
+        if (!/\d/.test(password)) {
+            return "Password must contain at least one number.";
+        }
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+            return "Password must contain at least one special character (!@#$%^&*).";
+        }
+        return null;
+    };
+
+    const validateUsername = (username: string): string | null => {
+        if (username.length < 3) {
+            return "Username must be at least 3 characters long.";
+        }
+        if (username.length > 20) {
+            return "Username must be less than 20 characters.";
+        }
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            return "Username can only contain letters, numbers, and underscores.";
+        }
+        return null;
+    };
+
+    const validateEmail = (email: string): string | null => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return "Please enter a valid email address.";
+        }
+        return null;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
 
+        // Check for empty fields
         if (!username.trim() || !email.trim() || !password.trim()) {
             setError("All fields are required.");
             return;
         }
 
-        // Basic email validation
-        if (!/\S+@\S+\.\S+/.test(email)) {
-            setError("Please enter a valid email address.");
+        // Validate username
+        const usernameError = validateUsername(username.trim());
+        if (usernameError) {
+            setError(usernameError);
+            return;
+        }
+
+        // Validate email
+        const emailError = validateEmail(email.trim());
+        if (emailError) {
+            setError(emailError);
+            return;
+        }
+
+        // Validate password
+        const passwordError = validatePassword(password);
+        if (passwordError) {
+            setError(passwordError);
             return;
         }
 
@@ -42,9 +90,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onRegister}) => {
         }
 
         try {
-            await onRegister(username, email, password, selectedRoles);
+            await onRegister(username.trim(), email.trim(), password, selectedRoles);
             // Clear form on success
-
+            setUsername("");
             setEmail("");
             setPassword("");
         } catch (error: any) {
@@ -64,24 +112,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onRegister}) => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
+                    placeholder="Enter username (3-20 characters)"
                 />
             </div>
-
-            {/*<div>*/}
-            {/*    <span>Roles:</span>*/}
-            {/*    <div className="role-options">*/}
-            {/*        {Object.values(UserRole).map(role => (*/}
-            {/*            <label key={role}>*/}
-            {/*                <input*/}
-            {/*                    type="checkbox"*/}
-            {/*                    checked={selectedRoles.includes(role)}*/}
-            {/*                    onChange={(e) => handleRoleChange(role, e.target.checked)}*/}
-            {/*                />*/}
-            {/*                {role}*/}
-            {/*            </label>*/}
-            {/*        ))}*/}
-            {/*    </div>*/}
-            {/*</div>*/}
 
             <div>
                 <label htmlFor="roles">Roles:</label>
@@ -102,7 +135,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onRegister}) => {
                 </select>
             </div>
 
-
             <div>
                 <label htmlFor="email">Email:</label>
                 <input
@@ -111,6 +143,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onRegister}) => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    placeholder="Enter your email address"
                 />
             </div>
 
@@ -122,9 +155,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onRegister}) => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    placeholder="Enter password (min 8 characters)"
                 />
+                <small style={{ color: '#666', fontSize: '0.8rem', display: 'block', marginTop: '4px' }}>
+                    Password must contain: 8+ characters, uppercase, lowercase, number, and special character
+                </small>
             </div>
-
 
             <button type="submit">Register</button>
         </form>
