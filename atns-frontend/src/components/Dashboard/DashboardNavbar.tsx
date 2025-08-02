@@ -10,13 +10,13 @@ export default function DashboardNavbar() {
     };
 
     return (
-        <nav className="bg-blue-600 text-white px-6 py-3 shadow-md sticky top-0 z-50 w-full">
-            <div className="max-w-7xl mx-auto flex justify-between items-center h-12">
+        <nav className="bg-blue-600 text-white px-6 py-4 shadow-md sticky top-0 z-50 w-full">
+            <div className="max-w-7xl mx-auto flex justify-between items-center">
                 <Link to="/dashboard" className="text-2xl font-extrabold tracking-wide text-white hover:text-white">
                     ATNS
                 </Link>
                 
-                <div className="flex space-x-6 text-base items-center">
+                <div className="flex space-x-6 text-lg">
                     <Link 
                         to="/dashboard" 
                         className="text-white hover:text-indigo-200 transition-colors duration-200"
@@ -51,4 +51,4 @@ export default function DashboardNavbar() {
             </div>
         </nav>
     );
-}
+} 

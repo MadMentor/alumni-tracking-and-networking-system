@@ -13,6 +13,8 @@ export default function AppRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<Dashboard />} />
+            <Route path="/events" element={<Dashboard />} />
             <Route path="/skills" element={<SkillList />} />
             <Route path="/skills/new" element={<SkillForm />} />
             <Route path="/skills/edit/:id" element={<SkillForm />} />
