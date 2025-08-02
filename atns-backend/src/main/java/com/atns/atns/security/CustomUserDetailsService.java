@@ -1,6 +1,7 @@
 package com.atns.atns.security;
 
 import com.atns.atns.entity.User;
+import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,13 +18,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepo userRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
-        if (user == null) {
-            log.error("User not found: {}", username);
-            throw new UsernameNotFoundException("User not found: {}" + username);
-        }
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
         return new CustomUserDetails(user);
     }
 }

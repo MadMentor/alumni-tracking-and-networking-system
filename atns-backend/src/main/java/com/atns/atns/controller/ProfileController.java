@@ -1,6 +1,9 @@
 package com.atns.atns.controller;
 
 import com.atns.atns.dto.ProfileDto;
+import com.atns.atns.entity.User;
+import com.atns.atns.exception.ResourceNotFoundException;
+import com.atns.atns.repo.UserRepo;
 import com.atns.atns.service.ProfileService;
 import com.atns.atns.service.impl.ProfileServiceImpl;
 import jakarta.validation.Valid;
@@ -9,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,11 +26,15 @@ public class ProfileController {
 
     private final ProfileService profileService;
     private final ProfileServiceImpl profileServiceImpl;
+    private final UserRepo userRepo;
 
     @PostMapping
-    public ResponseEntity<ProfileDto> create(@RequestBody @Valid ProfileDto profileDto) {
+    public ResponseEntity<ProfileDto> create(@RequestBody @Valid ProfileDto profileDto, Authentication authentication) {
+        String email = authentication.getName();
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
         log.info("Creating profile: {}", profileDto);
-        ProfileDto savedProfile = profileService.save(profileDto);
+        ProfileDto savedProfile = profileService.save(profileDto, user);
         log.info("Saved profile: {}", savedProfile);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProfile);
     }

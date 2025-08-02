@@ -1,8 +1,8 @@
 // src/pages/RegisterPage.tsx
-import React, { useState } from "react";
+import React, {useState} from "react";
 import axios from "axios";
 import RegisterForm from "../components/RegisterForm";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import type {UserRole} from "../types/user.ts";
 
 const RegisterPage: React.FC = () => {
@@ -25,15 +25,21 @@ const RegisterPage: React.FC = () => {
                 localStorage.setItem("token", token);
                 setAlertType("success");
                 setAlertMessage("Registration successful! Logging you in...");
+
                 setTimeout(() => {
                     setAlertMessage(null);
-                    navigate("/");
-                }, 2000);            }
+                    navigate("/profile");
+                }, 2000);
+            }
 
         } catch (error: any) {
             console.error("Registration failed:", error.response?.data || error.message);
             setAlertType("error")
             setAlertMessage("Registration failed: " + (error.response?.data?.message || "Please try again."));
+
+            setTimeout(() => {
+                setAlertMessage(null);
+            }, 3000);
         }
     };
 
@@ -59,7 +65,7 @@ const RegisterPage: React.FC = () => {
             )}
             <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
-                <RegisterForm onRegister={handleRegister} />
+                <RegisterForm onRegister={handleRegister}/>
             </div>
         </div>
     );

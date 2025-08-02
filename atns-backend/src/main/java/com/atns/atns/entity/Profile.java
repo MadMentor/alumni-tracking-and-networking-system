@@ -9,10 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Builder
@@ -61,6 +58,18 @@ public class Profile {
     private LocalDate dateOfBirth;
 
     private String profileImageUrl;
+
+    @NotNull(message = "Batch year is required")
+    @Column(nullable = false)
+    private Integer batchYear;
+
+    @NotBlank(message = "Faculty is required")
+    @Column(nullable = false, length = 100)
+    private String faculty;
+
+    @NotBlank(message = "Current position is required")
+    @Column(nullable = false, length = 150)
+    private String currentPosition;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)

@@ -6,31 +6,31 @@ interface LoginFormProps {
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!username.trim() || !password.trim()) {
+        if (!email.trim() || !password.trim()) {
             setError("Username and password are required.");
             return;
         }
 
         setError("");
-        onLogin(username, password);
+        onLogin(email, password);
     };
 
     return (
         <form onSubmit={handleSubmit} className="login-form">
             {error && <p className="error">{error}</p>}
             <div>
-                <label>Username:</label>
+                <label>Email:</label>
                 <input
                     type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                 />
             </div>

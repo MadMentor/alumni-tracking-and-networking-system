@@ -18,6 +18,9 @@ public class ProfileDto {
     private String middleName;
     private String lastName;
     private String bio;
+    private Integer batchYear;
+    private String faculty;
+    private String currentPosition;
     private String phoneNumber;
     private String address;
     private LocalDate dateOfBirth;

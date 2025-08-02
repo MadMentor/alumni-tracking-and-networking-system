@@ -39,11 +39,10 @@ public class AuthServiceImpl implements AuthService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-    @Transactional(readOnly = true)
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         try {
             Authentication authentication =
-                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword()));
+                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -52,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
             Set<String> roles =
                     authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
 
-            return LoginResponseDto.builder().username(loginRequestDto.getUsername()).token(token).roles(roles).build();
+            return LoginResponseDto.builder().username(loginRequestDto.getEmail()).token(token).roles(roles).build();
         } catch (BadCredentialsException e) {
             throw new InvalidCredentialsException();
         }

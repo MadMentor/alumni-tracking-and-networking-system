@@ -27,15 +27,14 @@ public class ProfileServiceImpl implements ProfileService {
     private final SkillConverter skillConverter;
     private final UserRepo userRepo;
 
-    @Override
-    public ProfileDto save(ProfileDto profileDto) {
+    public ProfileDto save(ProfileDto profileDto, User user) {
         Profile profile = profileConverter.toEntity(profileDto);
+        profile.setUser(user);
         Profile saved = profileRepo.save(profile);
-        log.info("Saved profile: {}", saved);
+        log.info("Saved profile: {}", saved.getId());
         return profileConverter.toDto(saved);
     }
 
-    @Override
     public ProfileDto update(ProfileDto profileDto) {
         if (profileDto.getId() == null) {
             log.error("Profile id is required for update!");
@@ -66,7 +65,6 @@ public class ProfileServiceImpl implements ProfileService {
         return profileConverter.toDto(updated);
     }
 
-    @Override
     public ProfileDto findById(Integer id) {
         return profileRepo.findById(id)
                 .map(profileConverter::toDto)
@@ -76,14 +74,13 @@ public class ProfileServiceImpl implements ProfileService {
                 });
     }
 
-    @Override
+
     public List<ProfileDto> findAll() {
         return profileRepo.findAll().stream()
                 .map(profileConverter::toDto)
                 .toList();
     }
 
-    @Override
     public void delete(Integer id) {
         if (!profileRepo.existsById(id)) {
             log.error("Attempted to delete non-existing profile with id {}", id);

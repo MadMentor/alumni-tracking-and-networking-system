@@ -9,11 +9,11 @@ const LoginPage: React.FC = () => {
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
 
-    const handleLogin = async (username: string, password: string) => {
+    const handleLogin = async (email: string, password: string) => {
         try {
 
             const response = await axios.post("http://localhost:8080/api/v1/auth/login", {
-                username,
+                email,
                 password,
             });
 
@@ -36,6 +36,10 @@ const LoginPage: React.FC = () => {
             console.error("Login failed:", error.response?.data || error.message);
             setAlertType("error");
             setAlertMessage("Login failed: " + (error.response?.data?.message || "Invalid credentials"));
+
+            setTimeout(() => {
+                setAlertMessage(null);
+            }, 3000);
         }
     };
 

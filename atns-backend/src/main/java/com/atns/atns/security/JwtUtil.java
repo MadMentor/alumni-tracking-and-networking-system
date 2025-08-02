@@ -50,11 +50,11 @@ public class JwtUtil {
     public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
                 .claims(extraClaims)
-                .subject(userDetails.getUsername())
+                .subject(((CustomUserDetails)userDetails).getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(
                         System.currentTimeMillis() + expirationTime))
-                .signWith(secretKey, Jwts.SIG.HS512)
+                .signWith(secretKey)
                 .compact();
     }
 

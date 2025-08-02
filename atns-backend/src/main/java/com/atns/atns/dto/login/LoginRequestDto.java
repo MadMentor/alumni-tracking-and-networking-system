@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequestDto {
-    @NotBlank(message = "Username is mandatory!")
-    private String username;
+    @NotBlank(message = "Email is mandatory!")
+    private String email;
 
     @NotBlank(message = "Password is mandatory!")
     private String password;
