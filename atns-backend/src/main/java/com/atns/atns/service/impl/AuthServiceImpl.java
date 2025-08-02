@@ -61,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
         validateRegistrationInput(registerRequestDto);
 
         if (userRepo.findByUsername(registerRequestDto.getUsername()) != null) {
-            throw new UsernameAlreadyExistsException("Username is already in use");
+            throw new UsernameAlreadyExistsException(registerRequestDto.getUsername());
         }
 
         if (userRepo.findByEmail(registerRequestDto.getEmail()) != null) {
@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
 
         String token = jwtUtil.generateToken(new CustomUserDetails(savedUser));
 
-        log.info("Successfully registered user {}", savedUser);
+        log.info("Successfully registered user {}", savedUser.getId());
 
         return LoginResponseDto.builder().username(user.getUsername()).token(token).build();
     }
