@@ -1,12 +1,12 @@
 // @ts-ignore
 import React from 'react';
 import AppRoutes from './routes/AppRoutes';
-import Navbar from "./components/Navbar/PublicNavbar.tsx";
+import PublicNavbar from "./components/Navbar/PublicNavbar.tsx";
 
 function App() {
     return (
         <div className="App">
-            <Navbar />
+            <PublicNavbar />
             <AppRoutes />
         </div>
     );
