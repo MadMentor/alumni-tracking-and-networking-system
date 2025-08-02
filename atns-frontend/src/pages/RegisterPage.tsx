@@ -6,7 +6,7 @@ import RegisterForm from "../components/RegisterForm";
 const RegisterPage: React.FC = () => {
     const handleRegister = async (username: string, email: string, password: string) => {
         try {
-            const response = await axios.post("http://localhost:8080/api/auth/register", {
+            const response = await axios.post("http://localhost:8080/api/v1/auth/register", {
                 username,
                 email,
                 password,
