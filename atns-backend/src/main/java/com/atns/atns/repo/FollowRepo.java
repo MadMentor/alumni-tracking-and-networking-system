@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface FollowRepo extends JpaRepository<Follow, Integer> {
     boolean existsByFollowerAndFollowed(Profile follower, Profile followed);
@@ -30,4 +32,7 @@ public interface FollowRepo extends JpaRepository<Follow, Integer> {
                 WHERE f2.follower = f.followed AND f2.followed = :profileId)
             """)
     Page<Profile> getMutualConnection(Integer profileId, Pageable pageable);
+
+    @Query("SELECT f.followed.id FROM Follow f WHERE f.follower.id = :followerId")
+    List<Integer> findFollowedIdsByFollowerId(@Param("followerId") Integer followerId, Pageable pageable);
 }
