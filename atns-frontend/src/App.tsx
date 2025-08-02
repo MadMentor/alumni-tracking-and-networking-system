@@ -1,7 +1,7 @@
 // @ts-ignore
 import React from 'react';
 import AppRoutes from './routes/AppRoutes';
-import Navbar from "./components/Navbar.tsx";
+import Navbar from "./components/Navbar/PublicNavbar.tsx";
 
 function App() {
     return (
