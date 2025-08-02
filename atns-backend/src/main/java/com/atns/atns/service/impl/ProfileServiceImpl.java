@@ -4,9 +4,12 @@ import com.atns.atns.converter.ProfileConverter;
 import com.atns.atns.converter.SkillConverter;
 import com.atns.atns.dto.ProfileDto;
 import com.atns.atns.entity.Profile;
+import com.atns.atns.entity.User;
+import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.repo.ProfileRepo;
 import com.atns.atns.repo.UserRepo;
 import com.atns.atns.service.ProfileService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -88,5 +91,15 @@ public class ProfileServiceImpl implements ProfileService {
         }
         profileRepo.deleteById(id);
         log.info("Deleted profile with Id: {}", id);
+    }
+
+    public ProfileDto findByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
+        Profile profile = user.getProfile();
+        if (profile == null) {
+            throw new EntityNotFoundException("Profile not found for user: " + email);
+        }
+        return profileConverter.toDto(profile);
     }
 }

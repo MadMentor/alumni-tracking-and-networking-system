@@ -2,11 +2,13 @@ package com.atns.atns.controller;
 
 import com.atns.atns.dto.ProfileDto;
 import com.atns.atns.service.ProfileService;
+import com.atns.atns.service.impl.ProfileServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.Objects;
 public class ProfileController {
 
     private final ProfileService profileService;
+    private final ProfileServiceImpl profileServiceImpl;
 
     @PostMapping
     public ResponseEntity<ProfileDto> create(@RequestBody @Valid ProfileDto profileDto) {
@@ -26,6 +29,13 @@ public class ProfileController {
         ProfileDto savedProfile = profileService.save(profileDto);
         log.info("Saved profile: {}", savedProfile);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProfile);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ProfileDto> getMyProfile(Authentication authentication) {
+        String email = authentication.getName(); // or get username/id from auth token
+        ProfileDto profileDto = profileServiceImpl.findByEmail(email);
+        return ResponseEntity.ok(profileDto);
     }
 
     @GetMapping("/{id}")

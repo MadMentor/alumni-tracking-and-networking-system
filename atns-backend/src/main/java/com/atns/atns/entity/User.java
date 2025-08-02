@@ -26,7 +26,7 @@ public class User {
     private Integer id;
 
     @NotBlank(message = "Username is mandatory!")
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, length = 50)
     private String username;
 
     @Email(message = "Email should be valid!")

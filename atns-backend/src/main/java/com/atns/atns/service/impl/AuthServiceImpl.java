@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
+    @Transactional(readOnly = true)
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         try {
             Authentication authentication =
@@ -60,15 +62,9 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponseDto register(RegisterRequestDto registerRequestDto) {
         validateRegistrationInput(registerRequestDto);
 
-        if (userRepo.findByUsername(registerRequestDto.getUsername()) != null) {
-            throw new UsernameAlreadyExistsException(registerRequestDto.getUsername());
-        }
 
-        if (userRepo.findByEmail(registerRequestDto.getEmail()) != null) {
-            throw new EmailAlreadyExistsException("Email is already in use");
-        }
 
-        Set<Role> role =  processRoles(registerRequestDto.getRole());
+        Set<Role> role = processRoles(registerRequestDto.getRole());
 
         User user = new User();
         user.setUsername(registerRequestDto.getUsername());
@@ -87,27 +83,30 @@ public class AuthServiceImpl implements AuthService {
 
     private void validateRegistrationInput(RegisterRequestDto dto) {
         if (dto.getUsername() == null || dto.getUsername().trim().isEmpty()) {
-            throw  new IllegalArgumentException("Username cannot be empty");
+            throw new IllegalArgumentException("Username cannot be empty");
         }
         if (dto.getPassword() == null || dto.getPassword().trim().isEmpty() || dto.getPassword().length() < 8) {
-            throw  new IllegalArgumentException("Password must be at least 8 characters");
+            throw new IllegalArgumentException("Password must be at least 8 characters");
         }
         if (dto.getEmail() == null) {
 //                || dto.getEmail().matches(".+@.+\\..+")) {
-            throw  new IllegalArgumentException("Invalid email format");
+            throw new IllegalArgumentException("Invalid email format");
+        }
+
+        if (userRepo.findByEmail(dto.getEmail()).isPresent()) {
+            throw new EmailAlreadyExistsException(dto.getEmail());
         }
     }
 
     private Set<Role> processRoles(Set<Role> requestedRoles) {
-        if(requestedRoles == null || requestedRoles.isEmpty()) {
+        if (requestedRoles == null || requestedRoles.isEmpty()) {
             return Set.of(Role.STUDENT);
         }
 
-        Set<Role> filteredRoles = requestedRoles.stream()
-                .filter(role -> !isPrivilegedRole(role))
-                .collect(Collectors.toSet());
+        Set<Role> filteredRoles =
+                requestedRoles.stream().filter(role -> !isPrivilegedRole(role)).collect(Collectors.toSet());
 
-        if(filteredRoles.isEmpty()) {
+        if (filteredRoles.isEmpty()) {
             return Set.of(Role.STUDENT);
         }
 

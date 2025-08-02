@@ -3,18 +3,20 @@ import React, { useState } from "react";
 import axios from "axios";
 import RegisterForm from "../components/RegisterForm";
 import { useNavigate } from "react-router-dom";
+import type {UserRole} from "../types/user.ts";
 
 const RegisterPage: React.FC = () => {
     const navigate = useNavigate();
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
 
-    const handleRegister = async (username: string, email: string, password: string) => {
+    const handleRegister = async (username: string, email: string, password: string, role: UserRole[]) => {
         try {
             const response = await axios.post("http://localhost:8080/api/v1/auth/register", {
                 username,
                 email,
                 password,
+                role
             });
 
             const token = response.data.token;
