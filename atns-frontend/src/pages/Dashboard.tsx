@@ -1,3 +1,4 @@
+// @ts-ignore
 import React, { useEffect, useState } from "react";
 import WelcomeCard from "../components/Dashboard/WelcomeCard";
 import ConnectionsCard from "../components/Dashboard/ConnectionsCard";
