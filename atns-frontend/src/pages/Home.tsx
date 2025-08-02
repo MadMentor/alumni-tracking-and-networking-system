@@ -1,5 +1,3 @@
-// src/pages/Home.tsx
-//import React from 'react';
 import { Link } from 'react-router-dom';
 
 export default function Home() {
@@ -13,13 +11,14 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link
                         to="/login"
-                        className="bg-indigo-600 text-white px-6 py-2 rounded-xl hover:bg-indigo-700 transition"
+                        className="w-fit mx-auto sm:mx-0 border border-indigo-600 text-indigo-700 font-medium px-6 py-2 rounded-xl hover:bg-indigo-50 transition duration-200"
                     >
                         Login
                     </Link>
+                    <br></br>
                     <Link
                         to="/register"
-                        className="bg-white border border-indigo-600 text-indigo-700 px-6 py-2 rounded-xl hover:bg-indigo-50 transition"
+                        className="w-fit mx-auto sm:mx-0 border border-indigo-600 text-indigo-700 font-medium px-6 py-2 rounded-xl hover:bg-indigo-50 transition duration-200"
                     >
                         Register
                     </Link>
