@@ -2,11 +2,9 @@ package com.atns.atns.utils;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-@Component
 public class ValidationUtils {
 
     //  System wide absolute limits
