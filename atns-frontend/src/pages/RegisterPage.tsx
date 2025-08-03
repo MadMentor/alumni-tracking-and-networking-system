@@ -63,11 +63,11 @@ const RegisterPage: React.FC = () => {
             if (token) {
                 localStorage.setItem("token", token);
                 setAlertType("success");
-                setAlertMessage("Registration successful! Redirecting to dashboard...");
+                setAlertMessage("Registration successful! Redirecting to login...");
                 setTimeout(() => {
                     setAlertMessage(null);
                     setAlertType(null);
-                    navigate("/dashboard");
+                    navigate("/login");
                 }, 2000);            }
 
         } catch (error: any) {
