@@ -1,5 +1,6 @@
 // @ts-ignore
 import React from "react";
+import { useNavigate } from "react-router-dom"; // 1️⃣ Import navigate
 
 interface Event {
     id: number;
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export default function EventsCard({ events }: Props) {
+    const navigate = useNavigate(); // 2️⃣ Initialize navigate
+
     return (
         <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold mb-2">Upcoming Events</h3>
@@ -28,7 +31,10 @@ export default function EventsCard({ events }: Props) {
                     </li>
                 ))}
             </ul>
-            <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            <button
+                onClick={() => navigate("/events")} // 3️⃣ Add click handler
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
                 See All Events
             </button>
         </div>
