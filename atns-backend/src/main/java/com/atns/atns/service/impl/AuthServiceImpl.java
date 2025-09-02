@@ -21,6 +21,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -34,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final UserRepo userRepo;
-    private  BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
@@ -65,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
 
         User user = new User();
         user.setUsername(registerRequestDto.getUsername());
-        user.setPassword(bCryptPasswordEncoder.encode(registerRequestDto.getPassword()));
+        user.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
         user.setEmail(registerRequestDto.getEmail());
         user.setRoles(role);
 
@@ -85,8 +86,7 @@ public class AuthServiceImpl implements AuthService {
         if (dto.getPassword() == null || dto.getPassword().trim().isEmpty() || dto.getPassword().length() < 8) {
             throw new IllegalArgumentException("Password must be at least 8 characters");
         }
-        if (dto.getEmail() == null) {
-//                 || dto.getEmail().matches(".+@.+\\..+")) {
+        if ((dto.getEmail() == null) || !dto.getEmail().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
             throw new IllegalArgumentException("Invalid email format");
         }
 
