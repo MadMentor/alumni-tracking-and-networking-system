@@ -23,11 +23,17 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     public SkillDto save(SkillDto skillDto) {
-        Skill skill = skillConverter.toEntity(skillDto);
-        skill.setCreatedAt(LocalDateTime.now());
-        Skill saved = skillRepo.save(skill);
-        log.info("Saved Skill: {}", saved);
-        return skillConverter.toDto(saved);
+        String skillName = skillDto.getName().trim().toLowerCase(); // normalize
+        // Check if skill already exists
+        Skill skill = skillRepo.findByName(skillName)
+                .orElseGet(() -> {
+                    Skill newSkill = skillConverter.toEntity(skillDto);
+                    newSkill.setName(skillName);
+                    newSkill.setCreatedAt(LocalDateTime.now());
+                    return skillRepo.save(newSkill);
+                });
+        log.info("Saved or found Skill: {}", skill);
+        return skillConverter.toDto(skill);
     }
 
     @Override
@@ -70,4 +76,5 @@ public class SkillServiceImpl implements SkillService {
         skillRepo.deleteById(id);
         log.info("Deleted Skill with Id: {}", id);
     }
+
 }

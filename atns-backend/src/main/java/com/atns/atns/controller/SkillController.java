@@ -1,12 +1,19 @@
 package com.atns.atns.controller;
 
+import com.atns.atns.dto.ProfileDto;
 import com.atns.atns.dto.SkillDto;
+import com.atns.atns.entity.Profile;
+import com.atns.atns.repo.UserRepo;
+import com.atns.atns.service.ProfileService;
 import com.atns.atns.service.SkillService;
+import com.atns.atns.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,13 +26,15 @@ import java.util.Objects;
 public class SkillController {
 
     private final SkillService skillService;
+    private final ProfileService profileService;
 
+    @Transactional
     @PostMapping
-    public ResponseEntity<SkillDto> create(@RequestBody @Valid SkillDto skillDto) {
+    public ResponseEntity<ProfileDto> create(@RequestBody @Valid SkillDto skillDto, Authentication authentication) {
         log.info("Creating skill: {}", skillDto.getName());
-        SkillDto saved = skillService.save(skillDto);
-        log.info("Created skill: {}", saved.getName());
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        ProfileDto updatedProfileDto = profileService.addSkillToProfile(authentication.getName(), skillDto);
+        log.info("Skill added to profile: {}", updatedProfileDto.getFirstName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(updatedProfileDto);
     }
     
     @GetMapping("/{id}")

@@ -1,6 +1,7 @@
 package com.atns.atns.controller;
 
 import com.atns.atns.dto.ProfileDto;
+import com.atns.atns.dto.SkillDto;
 import com.atns.atns.entity.User;
 import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.repo.UserRepo;
@@ -12,12 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/profiles")
@@ -47,6 +46,7 @@ public class ProfileController {
     @Transactional(readOnly = true)
     @GetMapping("/me")
     public ResponseEntity<ProfileDto> getMyProfile(Authentication authentication) {
+        log.info("Getting profile for user: {}", authentication.getName());
         String email = authentication.getName(); // or get username/id from auth token
         ProfileDto profileDto = profileServiceImpl.findByEmail(email);
         return ResponseEntity.ok(profileDto);
@@ -64,10 +64,18 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.findAll());
     }
 
+    @GetMapping("/me/skills")
+    public ResponseEntity<List<SkillDto>> getMySkills(Authentication authentication) {
+        log.info("Getting skills for user: {}", authentication.getName());
+        String email = authentication.getName();
+        List<SkillDto> skills = profileService.findSkillsByProfileId(profileServiceImpl.findByEmail(email).getId());
+        return ResponseEntity.ok(skills);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ProfileDto> update(@PathVariable int id, @RequestBody @Valid ProfileDto profileDto) {
 //        if (!Objects.equals(id, profileDto.getId())) {
-//            throw new IllegalArgumentException("Id in URl and body must match!");
+//            throw new IllegalArgumentException("ID in URl and body must match!");
 //        }
         log.info("Updating profile with id: {}", id);
         profileDto.setId(id);

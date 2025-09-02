@@ -6,12 +6,16 @@ import { Link } from "react-router-dom";
 const SkillList: React.FC = () => {
     const [skills, setSkills] = useState<Skill[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         fetchSkills()
             .then(setSkills)
-            .catch(() => setError("Failed to load skills."));
+            .catch(() => setError("Failed to load skills."))
+            .finally(() => setLoading(false));
     }, []);
+
+    if (loading) return <p className="text-center mt-6">Loading...</p>;
 
     return (
         <div className="p-4 bg-white rounded-xl shadow-md max-w-3xl mx-auto mt-6">

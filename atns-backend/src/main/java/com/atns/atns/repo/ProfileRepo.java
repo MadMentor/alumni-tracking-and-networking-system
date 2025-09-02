@@ -14,6 +14,8 @@ import java.util.Optional;
 public interface ProfileRepo extends JpaRepository<Profile, Integer> {
     Optional<Profile> findByUser(User user);
 
+    Optional<Profile> findByUserEmail(String email);
+
     @Query("SELECT p from Profile p JOIN p.skills s WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :skill, '%'))")
     Page<Profile> findBySkill(@Param("skill") String skill, Pageable pageable);
 }
