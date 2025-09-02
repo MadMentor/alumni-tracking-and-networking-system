@@ -40,14 +40,39 @@ public class RecommendationServiceImpl implements RecommendationService {
         List<Event> events = eventRepo.findAllActive(); // you can filter by future events
 
         return events.stream().map(event -> {
-                    Set<String> eventSkillNames = event.getOrganizer().getSkills().stream()
+                    Set<String> organizerSkills = event.getOrganizer().getSkills().stream()
                             .map(Skill::getName)
                             .collect(Collectors.toSet());
 
-                    double score = SimilarityCalculator.jaccardSimilarity(userSkillNames, eventSkillNames);
+                    // Skill similarity (weight: 0.5)
+                    double skillScore = SimilarityCalculator.jaccardSimilarity(userSkillNames, organizerSkills);
 
-                    String location = event.getLocation() != null ?
-                            (event.getLocation().getAddress() != null ? event.getLocation().getAddress() : event.getLocation().getOnlineLink()) : "";
+                    // Category match (weight: 0.2)
+                    double categoryScore = 0.0;
+                    if (event.getCategory() != null) {
+                        for (String skill : userSkillNames) {
+                            if (skill.equalsIgnoreCase(event.getCategory())) {
+                                categoryScore = 1.0;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Organizer connection (weight: 0.2)
+                    boolean isConnected = profile.getFollowing().stream()
+                            .anyMatch(f -> f.getFollowed().getId().equals(event.getOrganizer().getId()));
+                    double connectionScore = isConnected ? 1.0 : 0.0;
+
+                    // Upcoming event priority (weight: 0.1)
+                    long hoursUntilStart = java.time.Duration.between(java.time.LocalDateTime.now(), event.getStartTime()).toHours();
+                    double timeScore = hoursUntilStart <= 0 ? 0 : 1.0 / (1 + hoursUntilStart);
+
+                    // Weighted sum
+                    double totalScore = skillScore * 0.5 + categoryScore * 0.2 + connectionScore * 0.2 + timeScore * 0.1;
+
+                    String location = event.getLocation() != null
+                            ? (event.getLocation().getAddress() != null ? event.getLocation().getAddress() : event.getLocation().getOnlineLink())
+                            : "";
 
                     return RecommendedEventDto.builder()
                             .eventId(event.getId())
@@ -55,7 +80,7 @@ public class RecommendationServiceImpl implements RecommendationService {
                             .category(event.getCategory())
                             .startTime(event.getStartTime())
                             .location(location)
-                            .score(score)
+                            .score(totalScore)
                             .build();
                 })
                 .sorted(Comparator.comparingDouble(RecommendedEventDto::getScore).reversed())
