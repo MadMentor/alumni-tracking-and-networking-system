@@ -14,6 +14,9 @@ import java.util.List;
 @Repository
 public interface EventRepo extends JpaRepository<Event, Integer> {
     @Query("SELECT e FROM Event e WHERE e.active = true")
+    List<Event> findAllActive();
+
+    @Query("SELECT e FROM Event e WHERE e.active = true")
     Page<Event> findAllActive(Pageable pageable);
 
     @Query("SELECT e FROM Event e WHERE e.active = true AND e.startTime > :now ORDER BY e.startTime ASC")
