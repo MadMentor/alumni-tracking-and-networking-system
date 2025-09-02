@@ -46,7 +46,7 @@ public class ValidationUtils {
             );
         }
 
-        if (maxPageSize < ABSOLUTE_MAX_PAGE_SIZE) {
+        if (requestedPageSize > maxPageSize) {
             throw new IllegalArgumentException(
                     String.format("Page size exceeds maximum %d. Requested: %d", ABSOLUTE_MAX_PAGE_SIZE, requestedPageSize)
             );

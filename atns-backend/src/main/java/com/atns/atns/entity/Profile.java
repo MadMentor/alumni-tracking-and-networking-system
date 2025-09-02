@@ -1,5 +1,6 @@
 package com.atns.atns.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -51,6 +52,7 @@ public class Profile {
     private String address;
 
     @Lob
+    @Basic(fetch = FetchType.EAGER)
     private String bio;
 
     @PastOrPresent(message = "Date of birth must be in past!")
@@ -73,9 +75,13 @@ public class Profile {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @ToString.Exclude
     private User user;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonIgnore
     @JoinTable(
             name = "profile_skills",
             joinColumns = @JoinColumn(name = "profile_id"),

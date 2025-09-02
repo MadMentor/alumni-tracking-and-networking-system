@@ -25,7 +25,7 @@
 //                Skill sql = Skill.builder().name("SQL").build();
 //
 //                skillRepo.saveAll(Set.of(java, spring, sql));
-//                System.out.println("Dummy skill inserted!!!");
+
 //            }
 //
 //            Optional<Profile> optionalProfile = profileRepo.findById(1);
@@ -41,9 +41,7 @@
 //
 //                profileRepo.save(profile);
 //
-//                System.out.println("Skills linked to profile: " + profile.getFirstName());
-//            } else {
-//                System.out.println("No profile found");
+
 //            }
 //        };
 //    }

@@ -36,6 +36,11 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
+    public String getUsername() {
+        return this.email; // return email since JWT stores email as subject
+    }
+
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.authorities;
     }

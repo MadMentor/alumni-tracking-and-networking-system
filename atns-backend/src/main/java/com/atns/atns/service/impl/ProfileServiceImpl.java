@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,10 +42,11 @@ public class ProfileServiceImpl implements ProfileService {
             log.error("Profile id is required for update!");
             throw new IllegalArgumentException("Profile id is required for update!");
         }
+        log.info("Updating profile with id: {}", profileDto.getId());
         Profile existingProfile = profileRepo.findById(profileDto.getId())
                 .orElseThrow(() -> {
                     log.error("Profile not found!");
-                    return new RuntimeException("Profile not found!");
+                    return new ResourceNotFoundException("Profile", profileDto.getId());
                 });
 
         existingProfile.setFirstName(profileDto.getFirstName());
@@ -54,11 +57,13 @@ public class ProfileServiceImpl implements ProfileService {
         existingProfile.setAddress(profileDto.getAddress());
         existingProfile.setDateOfBirth(profileDto.getDateOfBirth());
         existingProfile.setProfileImageUrl(profileDto.getProfileImageUrl());
-        existingProfile.setSkills(profileDto.getSkills().stream()
+        existingProfile.setSkills(Optional.ofNullable(profileDto.getSkills())
+                .orElse(Collections.emptySet())
+                .stream()
                 .map(skillConverter::toEntity)
                 .collect(Collectors.toSet()));
-        existingProfile.setUser(userRepo.findById(profileDto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found!")));
+        log.info("Updating profile, findById id = {}", profileDto.getId());
+        existingProfile.setUser(existingProfile.getUser());
 
         Profile updated = profileRepo.save(existingProfile);
         log.info("Updated profile: {}", updated);

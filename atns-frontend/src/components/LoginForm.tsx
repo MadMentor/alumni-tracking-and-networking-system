@@ -6,19 +6,19 @@ interface LoginFormProps {
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    const validateInputs = (username: string, password: string): string | null => {
-        if (!username.trim()) {
-            return "Username is required.";
+    const validateInputs = (email: string, password: string): string | null => {
+        if (!email.trim()) {
+            return "Email is required.";
         }
         if (!password.trim()) {
             return "Password is required.";
         }
-        if (username.trim().length < 3) {
-            return "Username must be at least 3 characters long.";
+        if (email.trim().length < 3) {
+            return "Email must be at least 3 characters long.";
         }
         if (password.length < 1) {
             return "Password is required.";
@@ -30,25 +30,25 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
         e.preventDefault();
         setError("");
 
-        const validationError = validateInputs(username, password);
+        const validationError = validateInputs(email, password);
         if (validationError) {
             setError(validationError);
             return;
         }
 
-        onLogin(username.trim(), password);
+        onLogin(email.trim(), password);
     };
 
     return (
         <form onSubmit={handleSubmit} className="login-form">
             {error && <p className="error">{error}</p>}
             <div>
-                <label htmlFor="username">Username:</label>
+                <label htmlFor="email">Email:</label>
                 <input
-                    id="username"
+                    id="email"
                     type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="Enter your username"
                 />

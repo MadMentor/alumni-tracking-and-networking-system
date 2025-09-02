@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ public class SkillServiceImpl implements SkillService {
     @Override
     public SkillDto save(SkillDto skillDto) {
         Skill skill = skillConverter.toEntity(skillDto);
+        skill.setCreatedAt(LocalDateTime.now());
         Skill saved = skillRepo.save(skill);
         log.info("Saved Skill: {}", saved);
         return skillConverter.toDto(saved);

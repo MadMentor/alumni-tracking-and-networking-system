@@ -32,7 +32,7 @@ const RegisterPage: React.FC = () => {
                 }, 2000);
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Registration failed:", error.response?.data || error.message);
             setAlertType("error")
             setAlertMessage("Registration failed: " + (error.response?.data?.message || "Please try again."));

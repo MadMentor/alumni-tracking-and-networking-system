@@ -1,62 +1,52 @@
-// src/pages/SkillList.tsx
 import React, { useEffect, useState } from "react";
-import { type SkillDto, getAllSkills, deleteSkill } from "../services/skillService";
+import { fetchSkills } from "../api/skillApi";
+import type { Skill } from "../types/skill";
 import { Link } from "react-router-dom";
 
 const SkillList: React.FC = () => {
-    const [skills, setSkills] = useState<SkillDto[]>([]);
-
-    const fetchSkills = async () => {
-        const response = await getAllSkills();
-        setSkills(response.data);
-    };
-
-    const handleDelete = async (id?: number) => {
-        if (!id) return;
-        await deleteSkill(id);
-        fetchSkills(); // Refresh list
-    };
+    const [skills, setSkills] = useState<Skill[]>([]);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        fetchSkills();
+        fetchSkills()
+            .then(setSkills)
+            .catch(() => setError("Failed to load skills."));
     }, []);
 
     return (
-        <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md mt-8 font-sans">
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">Skills</h2>
-            <Link
-                to="/skills/new"
-                className="inline-block bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition mb-6"
-            >
-                Add New
-            </Link>
-            <ul className="space-y-4">
-                {skills.map((skill) => (
-                    <li
-                        key={skill.id}
-                        className="flex justify-between items-center bg-gray-100 p-4 rounded-md shadow-sm"
-                    >
-                        <div>
-                            <strong className="text-lg text-gray-900">{skill.name}</strong>:{" "}
-                            <span className="text-gray-700">{skill.description}</span>
-                        </div>
-                        <div className="space-x-4">
+        <div className="p-4 bg-white rounded-xl shadow-md max-w-3xl mx-auto mt-6">
+            <h1 className="text-2xl font-bold mb-4">Skills</h1>
+            {error && <p className="text-red-500">{error}</p>}
+            <div className="mb-4 text-right">
+                <Link
+                    to="/skills/new"
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                >
+                    Add Skill
+                </Link>
+            </div>
+            {skills.length === 0 ? (
+                <p>No skills found.</p>
+            ) : (
+                <ul className="divide-y">
+                    {skills.map((skill) => (
+                        <li key={skill.id} className="py-3 flex justify-between items-center">
+                            <div>
+                                <div className="text-lg font-medium">{skill.name}</div>
+                                {/*<div className="text-sm text-gray-500">*/}
+                                {/*    /!*Created: {new Date(skill.createdAt).toLocaleDateString()}*!/*/}
+                                {/*</div>*/}
+                            </div>
                             <Link
-                                to={`/skills/edit/${skill.id}`}
-                                className="text-blue-600 hover:underline font-semibold"
+                                to={`/skills/${skill.id}/edit`}
+                                className="text-blue-600 hover:underline"
                             >
                                 Edit
                             </Link>
-                            <button
-                                onClick={() => handleDelete(skill.id)}
-                                className="text-red-600 hover:underline font-semibold"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </li>
-                ))}
-            </ul>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 };

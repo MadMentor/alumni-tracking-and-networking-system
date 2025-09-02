@@ -10,4 +10,5 @@ export interface Profile {
     batchYear: number;
     faculty: string;
     currentPosition: string;
+    profileImageUrl?: string;
 }

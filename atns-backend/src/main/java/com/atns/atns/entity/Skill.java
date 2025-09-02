@@ -1,11 +1,9 @@
 package com.atns.atns.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -29,7 +27,10 @@ public class Skill {
     @Column(length =50, unique = true, columnDefinition = "citext")
     private String name;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "skills")
+    @JsonIgnore
     private Set<Profile> profiles = new HashSet<>();
 
     public void setName(String name) {

@@ -40,7 +40,7 @@
 //                userRepo.save(user2);
 //                userRepo.save(user3);
 //
-//                System.out.println("Dummy users inserted.");
+
 //            }
 //        };
 //    }

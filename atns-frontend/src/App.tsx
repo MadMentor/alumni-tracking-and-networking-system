@@ -1,8 +1,8 @@
-// @ts-ignore
 import React from 'react';
 import AppRoutes from './routes/AppRoutes';
 import PublicNavbar from "./components/Navbar/PublicNavbar.tsx";
 import DashboardNavbar from "./components/Navbar/DashboardNavbar.tsx";
+import ErrorBoundary from './components/ErrorBoundary';
 import { useLocation } from 'react-router-dom';
 
 function App() {
@@ -19,10 +19,12 @@ function App() {
     const shouldShowDashboardNavbar = token && isAuthenticatedRoute;
     
     return (
-        <div className="App">
-            {shouldShowDashboardNavbar ? <DashboardNavbar /> : <PublicNavbar />}
-            <AppRoutes />
-        </div>
+        <ErrorBoundary>
+            <div className="App">
+                {shouldShowDashboardNavbar ? <DashboardNavbar /> : <PublicNavbar />}
+                <AppRoutes />
+            </div>
+        </ErrorBoundary>
     );
 }
 

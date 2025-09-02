@@ -38,7 +38,7 @@
 //                        .build();
 //
 //                profileRepo.save(profile);
-//                System.out.println("Dummy profile inserted for user: " + user.getUsername());
+
 //            }
 //        };
 //    }

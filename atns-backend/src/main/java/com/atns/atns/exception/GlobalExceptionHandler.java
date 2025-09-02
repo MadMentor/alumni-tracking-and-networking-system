@@ -57,13 +57,25 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public  ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, WebRequest request) {
         log.error("Unexpected error occurred: {}", ex.getMessage(), ex);
         return buildErrorResponse(
                 new RuntimeException("An unexpected error occurred"),
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 request
         );
+    }
+    
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        log.warn("Invalid argument: {}", ex.getMessage());
+        return buildErrorResponse(ex, HttpStatus.BAD_REQUEST, request);
+    }
+    
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<ErrorResponse> handleSecurityException(SecurityException ex, WebRequest request) {
+        log.warn("Security violation: {}", ex.getMessage());
+        return buildErrorResponse(ex, HttpStatus.FORBIDDEN, request);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Exception ex,

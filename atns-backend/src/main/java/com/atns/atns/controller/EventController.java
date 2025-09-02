@@ -2,6 +2,7 @@ package com.atns.atns.controller;
 
 import com.atns.atns.annotation.AuditLog;
 import com.atns.atns.converter.EventResponseConverter;
+import com.atns.atns.dto.PageResponse;
 import com.atns.atns.dto.event.EventRequestDto;
 import com.atns.atns.dto.event.EventResponseDto;
 import com.atns.atns.dto.event.EventUpdateRequestDto;
@@ -170,16 +171,23 @@ public class EventController {
 
     @GetMapping
     @Transactional(readOnly = true)
-    public ResponseEntity<Page<EventResponseDto>> getAllEvents(@PageableDefault(size = 20, sort = "startTime", direction = Sort.Direction.ASC) Pageable pageable,
-                                                               @RequestHeader(value = "X-Profile-Id") @Min(1) Integer profileId) {
+    public ResponseEntity<PageResponse<EventResponseDto>> getAllEvents(@PageableDefault(size = 20, sort = "startTime", direction = Sort.Direction.ASC) Pageable pageable,
+                                                                       @RequestHeader(value = "X-Profile-Id") @Min(1) Integer profileId) {
         log.info("Fetching events for profile id {}", profileId);
 
         try {
             Page<EventResponseDto> events = eventService.getAllEvents(pageable)
                     .map(eventResponseConverter::toDto);
 
+            PageResponse<EventResponseDto> response = new PageResponse<>(
+                    events.getContent(),
+                    events.getNumber(),
+                    events.getSize(),
+                    events.getTotalElements(),
+                    events.getTotalPages(),
+                    events.isLast());
             log.debug("Found {} events", events.getNumberOfElements());
-            return ResponseEntity.ok(events);
+            return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException ex) {
             log.error("Profile id {} not found", profileId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());

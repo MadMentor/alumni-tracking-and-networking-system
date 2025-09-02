@@ -7,7 +7,6 @@ import com.atns.atns.entity.User;
 import com.atns.atns.enums.Role;
 import com.atns.atns.exception.EmailAlreadyExistsException;
 import com.atns.atns.exception.InvalidCredentialsException;
-import com.atns.atns.exception.UsernameAlreadyExistsException;
 import com.atns.atns.repo.UserRepo;
 import com.atns.atns.security.CustomUserDetails;
 import com.atns.atns.security.JwtUtil;
@@ -23,7 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final UserRepo userRepo;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private  BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
@@ -88,7 +86,7 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("Password must be at least 8 characters");
         }
         if (dto.getEmail() == null) {
-//                || dto.getEmail().matches(".+@.+\\..+")) {
+//                 || dto.getEmail().matches(".+@.+\\..+")) {
             throw new IllegalArgumentException("Invalid email format");
         }
 

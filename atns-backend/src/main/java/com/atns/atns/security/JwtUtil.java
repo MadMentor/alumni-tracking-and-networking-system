@@ -37,9 +37,8 @@ public class JwtUtil {
     private void validateSecretKey() {
         if (secret == null || secret.length() < 64) {
             throw new IllegalArgumentException(
-                    "JWT secret key must be at least 256 bits (32 characters) long. " +
-                            "Current length: " + (secret == null ? 0 : secret.length()) + " characters."
-            );
+                    "JWT secret key must be at least 256 bits (32 characters) long. " + "Current length: " +
+                            (secret == null ? 0 : secret.length()) + " characters.");
         }
     }
 
@@ -48,14 +47,8 @@ public class JwtUtil {
     }
 
     public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder()
-                .claims(extraClaims)
-                .subject(((CustomUserDetails)userDetails).getEmail())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(
-                        System.currentTimeMillis() + expirationTime))
-                .signWith(secretKey)
-                .compact();
+        return Jwts.builder().claims(extraClaims).subject(((CustomUserDetails) userDetails).getEmail()).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(
+                System.currentTimeMillis() + expirationTime)).signWith(secretKey).compact();
     }
 
     public String extractUsername(String token) {
@@ -63,9 +56,17 @@ public class JwtUtil {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-            final String username = extractUsername(token);
-            return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        final String username = extractUsername(token);
+        System.out.println("Extracted username from token: '" + username + "'");
+        System.out.println("Username from UserDetails: '" + userDetails.getUsername() + "'");
+//        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        boolean notExpired = !isTokenExpired(token);
+        System.out.println("Token expired? " + !notExpired);
+        boolean valid = username.equals(userDetails.getUsername()) && notExpired;
+        System.out.println("Token valid: " + valid);
+        return valid;
     }
+
 
     public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
@@ -82,11 +83,7 @@ public class JwtUtil {
 
     private Claims parseClaims(String token) {
         try {
-            return Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
         } catch (ExpiredJwtException ex) {
             log.warn("JWT token is expired: {}", ex.getMessage());
             throw JwtAuthenticationException.expiredToken();

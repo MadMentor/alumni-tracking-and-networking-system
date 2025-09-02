@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,14 +32,19 @@ public class ProfileController {
     @PostMapping
     public ResponseEntity<ProfileDto> create(@RequestBody @Valid ProfileDto profileDto, Authentication authentication) {
         String email = authentication.getName();
+        log.info("Creating profile for user: {}", email);
+        log.info("Profile data: {}", profileDto);
+        
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User", email));
-        log.info("Creating profile: {}", profileDto);
+        log.info("Found user: {}", user.getId());
+        
         ProfileDto savedProfile = profileService.save(profileDto, user);
         log.info("Saved profile: {}", savedProfile);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProfile);
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/me")
     public ResponseEntity<ProfileDto> getMyProfile(Authentication authentication) {
         String email = authentication.getName(); // or get username/id from auth token
@@ -60,10 +66,12 @@ public class ProfileController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProfileDto> update(@PathVariable int id, @RequestBody @Valid ProfileDto profileDto) {
-        if (!Objects.equals(id, profileDto.getId())) {
-            throw new IllegalArgumentException("Id in URl and body must match!");
-        }
+//        if (!Objects.equals(id, profileDto.getId())) {
+//            throw new IllegalArgumentException("Id in URl and body must match!");
+//        }
         log.info("Updating profile with id: {}", id);
+        profileDto.setId(id);
+        log.info("ProfileDto after setting ID: {}", profileDto);
         ProfileDto updated = profileService.update(profileDto);
         log.info("Updated profile: {}", updated);
         return ResponseEntity.ok(updated);

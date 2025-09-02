@@ -1,15 +1,16 @@
 // src/pages/LoginPage.tsx
 import React, {useState, useEffect} from "react";
-import axios from "axios";
 import LoginForm from "../components/LoginForm";
 import {useNavigate} from "react-router-dom";
+import axiosInstance from "../api/axiosInstance.ts";
+import {fetchProfile} from "../api/profileApi.ts";
 
 const LoginPage: React.FC = () => {
     const navigate = useNavigate();
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
+    const [checkingAuth, setCheckingAuth] = useState(true);
 
-    // Auto-clear alert after 5 seconds
     useEffect(() => {
         if (alertMessage) {
             const timer = setTimeout(() => {
@@ -21,47 +22,77 @@ const LoginPage: React.FC = () => {
         }
     }, [alertMessage]);
 
-    const getErrorMessage = (error: any): string => {
-        const status = error.response?.status;
-        const message = error.response?.data?.message || error.message;
-
-        switch (status) {
-            case 401:
-                return "Invalid username or password. Please check your credentials.";
-            case 404:
-                return "Account not found. Please check your username or register a new account.";
-            case 400:
-                if (message.includes("username")) {
-                    return "Username is required. Please enter your username.";
-                }
-                if (message.includes("password")) {
-                    return "Password is required. Please enter your password.";
-                }
-                return "Invalid login data. Please check your input.";
-            case 422:
-                return "Validation failed. Please check your input and try again.";
-            case 500:
-                return "Server error. Please try again later.";
-            default:
-                return message || "Login failed. Please check your credentials and try again.";
+    function isTokenExpired(token: string | null): boolean {
+        if (!token) return true;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const expiry = payload.exp * 1000;
+            return Date.now() > expiry;
+        } catch (e) {
+            return true; // invalid token format treated as expired
         }
+    }
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token || isTokenExpired(token)) {
+            localStorage.removeItem('token');
+            setCheckingAuth(false);
+        } else {
+            navigate("/dashboard");
+        }
+    }, []);
+
+    const getErrorMessage = (error: unknown): string => {
+        if (error && typeof error === 'object' && 'response' in error) {
+            const errorResponse = error as { response?: { status?: number; data?: { message?: string } } };
+            const status = errorResponse.response?.status;
+            const message = errorResponse.response?.data?.message;
+            
+            switch (status) {
+                case 401:
+                    return "Invalid username or password. Please check your credentials.";
+                case 404:
+                    return "Account not found. Please check your username or register a new account.";
+                case 400:
+                    if (message?.includes("username")) {
+                        return "Username is required. Please enter your username.";
+                    }
+                    if (message?.includes("password")) {
+                        return "Password is required. Please enter your password.";
+                    }
+                    return "Invalid login data. Please check your input.";
+                case 422:
+                    return "Validation failed. Please check your input and try again.";
+                case 500:
+                    return "Server error. Please try again later.";
+                default:
+                    return message || "Login failed. Please check your credentials and try again.";
+            }
+        }
+        
+        return "Login failed. Please check your credentials and try again.";
     };
 
-    const handleLogin = async (username: string, password: string) => {
+    const handleLogin = async (email: string, password: string) => {
         try {
 
-            const response = await axios.post("http://localhost:8080/api/v1/auth/login", {
-                username,
+            const response = await axiosInstance.post("/auth/login", {
+                email,
                 password,
             });
 
-            console.log("Login successful:", response.data);
+            // Login successful
 
             // Store token if received
             if (response.data.token) {
                 localStorage.setItem("token", response.data.token);
             }
 
+            const profile = await fetchProfile();
+            if (profile.id !== undefined && profile.id !== null) {
+                localStorage.setItem("profileId", profile.id.toString());
+            }
             // Redirect or show success
             setAlertType("success");
             setAlertMessage("Login success! Redirecting to dashboard...");
@@ -71,8 +102,7 @@ const LoginPage: React.FC = () => {
                 setAlertType(null);
                 navigate("/dashboard");
             }, 1000);
-        } catch (error: any) {
-            console.error("Login failed:", error.response?.data || error.message);
+        } catch (error: unknown) {
             setAlertType("error");
             setAlertMessage(getErrorMessage(error));
         }
@@ -82,6 +112,8 @@ const LoginPage: React.FC = () => {
         setAlertMessage(null);
         setAlertType(null);
     };
+
+    if (checkingAuth) return <div className="text-center mt-20">Checking authentication...</div>;
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
