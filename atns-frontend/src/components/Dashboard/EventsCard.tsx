@@ -1,3 +1,4 @@
+// @ts-ignore
 import React from "react";
 import Card from "../ui/Card";
 import { Calendar } from "lucide-react";

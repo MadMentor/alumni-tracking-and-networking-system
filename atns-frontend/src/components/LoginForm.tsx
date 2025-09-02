@@ -6,42 +6,63 @@ interface LoginFormProps {
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+    const validateInputs = (username: string, password: string): string | null => {
+        if (!username.trim()) {
+            return "Username is required.";
+        }
+        if (!password.trim()) {
+            return "Password is required.";
+        }
+        if (username.trim().length < 3) {
+            return "Username must be at least 3 characters long.";
+        }
+        if (password.length < 1) {
+            return "Password is required.";
+        }
+        return null;
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        setError("");
 
-        if (!email.trim() || !password.trim()) {
-            setError("Username and password are required.");
+        const validationError = validateInputs(username, password);
+        if (validationError) {
+            setError(validationError);
             return;
         }
 
-        setError("");
-        onLogin(email, password);
+        onLogin(username.trim(), password);
     };
 
     return (
         <form onSubmit={handleSubmit} className="login-form">
             {error && <p className="error">{error}</p>}
             <div>
-                <label>Email:</label>
+                <label htmlFor="username">Username:</label>
                 <input
+                    id="username"
                     type="text"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
+                    placeholder="Enter your username"
                 />
             </div>
 
             <div>
-                <label>Password:</label>
+                <label htmlFor="password">Password:</label>
                 <input
+                    id="password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    placeholder="Enter your password"
                 />
             </div>
 

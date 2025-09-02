@@ -1,7 +1,7 @@
 // src/pages/SkillForm.tsx
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { type SkillDto, getSkillById, createSkill, updateSkill } from "../services/skillService";
+import { type SkillDto, getSkillById, createSkill, updateSkill } from "../../services/skillService.ts";
 
 const SkillForm: React.FC = () => {
     const { id } = useParams();

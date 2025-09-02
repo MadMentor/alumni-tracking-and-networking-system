@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import WelcomeCard from "../components/Dashboard/WelcomeCard";
 import ConnectionsCard from "../components/Dashboard/ConnectionsCard";
 // import MessagesCard from "../components/Dashboard/MessagesCard";
@@ -17,20 +17,15 @@ import {
 } from "../api/dashboardApi";
 
 export default function Dashboard() {
-    const [profile, setProfile] = useState<any>(null);
-    const [connections, setConnections] = useState<any>(null);
+    const [profile, setProfile] = useState(null);
+    const [connections, setConnections] = useState(null);
     // const [messages, setMessages] = useState(null);
     const [events, setEvents] = useState([]);
     // const [opportunities, setOpportunities] = useState([]);
     const [activities, setActivities] = useState([]);
 
     useEffect(() => {
-            fetchProfile()
-                .then(setProfile)
-                .catch((err) => {
-                    console.error("Failed to fetch profile:", err);
-                    setProfile(null); // to prevent infinite loading
-                });
+        fetchProfile().then(setProfile).catch(console.error);
         fetchConnections().then(setConnections).catch(console.error);
         // fetchMessages().then(setMessages).catch(console.error);
         fetchEvents().then(setEvents).catch(console.error);
@@ -38,17 +33,16 @@ export default function Dashboard() {
         fetchRecentActivity().then(setActivities).catch(console.error);
     }, []);
 
-    // if (!profile || !connections || events.length === 0 || activities.length === 0) {
-    //     return <div className="p-6">Loading dashboard...</div>;
-    // }
-
+    if (!profile) {
+        return <div className="p-6">Loading...</div>;
+    }
 
     return (
         <main className="p-6 space-y-6 bg-gray-50 min-h-screen">
             <WelcomeCard
-                fullName={profile.firstName + " " + profile.lastName}
-                profileImageUrl={profile.profilePictureUrl}
-                address={profile.address}
+                fullName={profile.fullName}
+                profilePictureUrl={profile.profilePictureUrl}
+                currentPosition={profile.currentPosition}
                 batch={profile.batch}
             />
 

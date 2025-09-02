@@ -1,3 +1,4 @@
+// @ts-ignore
 import React from "react";
 import { Users } from "lucide-react";
 import Card from "../ui/Card.tsx";

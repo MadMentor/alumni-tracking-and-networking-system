@@ -1,3 +1,4 @@
+// @ts-ignore
 import React from "react";
 import Card from "../ui/Card";
 import { Activity as ActivityIcon } from "lucide-react";
