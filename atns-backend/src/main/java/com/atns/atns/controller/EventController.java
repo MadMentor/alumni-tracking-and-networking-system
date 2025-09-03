@@ -3,6 +3,7 @@ package com.atns.atns.controller;
 import com.atns.atns.annotation.AuditLog;
 import com.atns.atns.converter.EventResponseConverter;
 import com.atns.atns.dto.PageResponse;
+import com.atns.atns.dto.ProfileDto;
 import com.atns.atns.dto.event.EventRequestDto;
 import com.atns.atns.dto.event.EventResponseDto;
 import com.atns.atns.dto.event.EventUpdateRequestDto;
@@ -82,12 +83,9 @@ public class EventController {
 
        try {
            Set<Role> roles = profileService.getUserRole(organizerId);
-           if (!(roles.contains(Role.ADMIN) || roles.contains(Role.MODERATOR))) {
+           if (!(roles.contains(Role.ADMIN) || roles.contains(Role.MODERATOR) || eventUpdateRequestDto.getOrganizerProfileId() == organizerId)) {
                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only ADMIN or MODERATOR roles are allowed");
            }
-//           if (eventUpdateRequestDto.getEventId() != null && !eventUpdateRequestDto.getEventId().equals(eventId)) {
-//               throw new IllegalArgumentException("Path ID and body ID must match");
-//           }
 
            EventResponseDto updatedEvent = eventService.updateEvent(eventUpdateRequestDto, eventId);
 

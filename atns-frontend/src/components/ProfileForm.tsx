@@ -137,6 +137,19 @@ export default function ProfileForm({ formData, onChange, onSubmit }: ProfileFor
                             />
                         </div>
 
+                        <div>
+                            <label htmlFor="profileImageUrl" className="form-label">Profile Image URL</label>
+                            <input
+                                id="profileImageUrl"
+                                name="profileImageUrl"
+                                type="url"
+                                value={formData.profileImageUrl || ""}
+                                onChange={onChange}
+                                placeholder="https://example.com/your-photo.jpg"
+                                className="form-input"
+                            />
+                        </div>
+
                         <div className="card-footer">
                             <button type="submit" className="btn btn-primary w-full sm:w-auto">Save Profile</button>
                         </div>
