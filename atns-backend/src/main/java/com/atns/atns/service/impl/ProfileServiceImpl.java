@@ -7,6 +7,7 @@ import com.atns.atns.dto.SkillDto;
 import com.atns.atns.entity.Profile;
 import com.atns.atns.entity.Skill;
 import com.atns.atns.entity.User;
+import com.atns.atns.enums.Role;
 import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.repo.ProfileRepo;
 import com.atns.atns.repo.SkillRepo;
@@ -19,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -150,4 +148,14 @@ public class ProfileServiceImpl implements ProfileService {
 
         return profileConverter.toDto(savedProfile);
     }
+
+    @Override
+    public Set<Role> getUserRole(Integer organizerId) {
+        ProfileDto profileDto = findById(organizerId);
+        User user = userRepo.findById(profileDto.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", profileDto.getUserId()));
+        return user.getRoles();
+    }
+
+
 }

@@ -7,10 +7,12 @@ import com.atns.atns.dto.event.EventRequestDto;
 import com.atns.atns.dto.event.EventResponseDto;
 import com.atns.atns.dto.event.EventUpdateRequestDto;
 import com.atns.atns.entity.Event;
+import com.atns.atns.enums.Role;
 import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.exception.UnauthorizedOperationException;
 import com.atns.atns.repo.EventRepo;
 import com.atns.atns.service.EventService;
+import com.atns.atns.service.ProfileService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Set;
 
 @RestController
 @Slf4j
@@ -37,6 +40,7 @@ public class EventController {
     private final EventResponseConverter eventResponseConverter;
     private final EventService eventService;
     private final EventRepo eventRepo;
+    private final ProfileService profileService;
 
     @PostMapping
     @Transactional
@@ -46,6 +50,11 @@ public class EventController {
         log.info("Creating event: {} for organizer {}", eventRequestDto.getEventName(), eventRequestDto.getEventName());
 
         try {
+            Set<Role> roles = profileService.getUserRole(organizerId);
+            if (!roles.contains(Role.ADMIN)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only ADMIN roles are allowed");
+            }
+
             Event savedEvent = eventService.createEvent(eventRequestDto, organizerId);
 
             log.info("Created event with ID: {}", savedEvent.getId());
@@ -72,9 +81,13 @@ public class EventController {
         log.info("Updating event: {}", eventUpdateRequestDto.getEventName());
 
        try {
-           if (eventUpdateRequestDto.getEventId() != null && !eventUpdateRequestDto.getEventId().equals(eventId)) {
-               throw new IllegalArgumentException("Path ID and body ID must match");
+           Set<Role> roles = profileService.getUserRole(organizerId);
+           if (!(roles.contains(Role.ADMIN) || roles.contains(Role.MODERATOR))) {
+               throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only ADMIN or MODERATOR roles are allowed");
            }
+//           if (eventUpdateRequestDto.getEventId() != null && !eventUpdateRequestDto.getEventId().equals(eventId)) {
+//               throw new IllegalArgumentException("Path ID and body ID must match");
+//           }
 
            EventResponseDto updatedEvent = eventService.updateEvent(eventUpdateRequestDto, eventId);
 
@@ -102,6 +115,11 @@ public class EventController {
         log.info("Organizer {} requesting deletion of event {}", organizerId, eventId);
 
         try {
+            Set<Role> roles = profileService.getUserRole(organizerId);
+            if (!(roles.contains(Role.ADMIN) || roles.contains(Role.MODERATOR))) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only ADMIN or MODERATOR roles are allowed");
+            }
+
             eventService.deleteEvent(eventId, organizerId);
             log.info("Event {} deleted by organizer {}", eventId, organizerId);
 

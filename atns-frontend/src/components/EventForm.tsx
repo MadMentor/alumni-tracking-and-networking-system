@@ -34,7 +34,7 @@ const EventForm: React.FC = () => {
         if (isEdit && eventId != undefined) {// <-- parse here
             setFetching(true);
             setError(null);
-            fetchEventById(parseInt(id))
+            fetchEventById(eventId)
                 .then((data) => {
                     // Convert dates to input-friendly format
                     setFormData({

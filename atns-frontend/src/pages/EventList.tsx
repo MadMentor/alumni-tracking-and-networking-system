@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { fetchEvents, deleteEvent } from "../api/eventApi";
-import type { Event } from "../types/event";
-import { Calendar, MapPin, Clock, Plus, Edit, Trash2, ExternalLink } from "lucide-react";
+import {useEffect, useState} from "react";
+import {Link} from "react-router-dom";
+import {fetchEvents, deleteEvent} from "../api/eventApi";
+import type {Event} from "../types/event";
+import {Calendar, MapPin, Clock, Plus, Edit, Trash2, ExternalLink} from "lucide-react";
 
 const EventList: React.FC = () => {
     const [events, setEvents] = useState<Event[]>([]);
@@ -61,7 +61,7 @@ const EventList: React.FC = () => {
                 <div className="flex items-center justify-between">
                     <h2 className="text-3xl font-bold text-gray-900">Events</h2>
                     <Link to="/events/new" className="btn btn-primary">
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-4 h-4"/>
                         Add New Event
                     </Link>
                 </div>
@@ -78,15 +78,16 @@ const EventList: React.FC = () => {
                                             <h3 className="text-lg font-semibold text-gray-900 truncate">
                                                 {event.eventName}
                                             </h3>
-                                            <div className="mt-1 flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                                            <div
+                                                className="mt-1 flex flex-wrap items-center gap-4 text-sm text-gray-600">
                                                 <span className="inline-flex items-center gap-1">
-                                                    <Clock className="w-4 h-4" />
+                                                    <Clock className="w-4 h-4"/>
                                                     {new Date(event.startTime).toLocaleString()}
                                                     {event.endTime ? ` - ${new Date(event.endTime).toLocaleString()}` : ""}
                                                 </span>
                                                 {event.location?.address && (
                                                     <span className="inline-flex items-center gap-1">
-                                                        <MapPin className="w-4 h-4" />
+                                                        <MapPin className="w-4 h-4"/>
                                                         {event.location.address}
                                                     </span>
                                                 )}
@@ -97,7 +98,7 @@ const EventList: React.FC = () => {
                                                         rel="noopener noreferrer"
                                                         className="inline-flex items-center gap-1 text-blue-600 hover:underline"
                                                     >
-                                                        <ExternalLink className="w-4 h-4" />
+                                                        <ExternalLink className="w-4 h-4"/>
                                                         Online Link
                                                     </a>
                                                 )}
@@ -110,12 +111,14 @@ const EventList: React.FC = () => {
                                             )}
                                         </div>
                                         <div className="flex items-center gap-3 md:justify-end">
-                                            <Link to={`/events/edit/${event.eventId}`} className="btn btn-secondary btn-sm">
-                                                <Edit className="w-4 h-4" />
+                                            <Link to={`/events/edit/${event.eventId}`}
+                                                  className="btn btn-secondary btn-sm">
+                                                <Edit className="w-4 h-4"/>
                                                 Edit
                                             </Link>
-                                            <button onClick={() => handleDelete(event.eventId)} className="btn btn-ghost btn-sm text-red-600 hover:text-red-700 hover:bg-red-50">
-                                                <Trash2 className="w-4 h-4" />
+                                            <button onClick={() => handleDelete(event.eventId)}
+                                                    className="btn btn-ghost btn-sm text-red-600 hover:text-red-700 hover:bg-red-50">
+                                                <Trash2 className="w-4 h-4"/>
                                                 Delete
                                             </button>
                                         </div>

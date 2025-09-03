@@ -4,6 +4,7 @@ import com.atns.atns.constants.EventConstants;
 import com.atns.atns.converter.EventConverter;
 import com.atns.atns.converter.EventLocationConverter;
 import com.atns.atns.converter.EventResponseConverter;
+import com.atns.atns.dto.ProfileDto;
 import com.atns.atns.dto.event.EventRequestDto;
 import com.atns.atns.dto.event.EventResponseDto;
 import com.atns.atns.dto.event.EventUpdateRequestDto;
@@ -14,6 +15,8 @@ import com.atns.atns.exception.UnauthorizedOperationException;
 import com.atns.atns.repo.EventRepo;
 import com.atns.atns.repo.ProfileRepo;
 import com.atns.atns.service.EventService;
+import com.atns.atns.service.ProfileService;
+import com.atns.atns.service.UserService;
 import com.atns.atns.utils.ValidationUtils;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -257,7 +260,6 @@ public class EventServiceImpl implements EventService {
         // Convert to DTOs and return
         return events.map(eventResponseConverter::toDto);
     }
-
 
     /**
      * Validates event timing constraints
