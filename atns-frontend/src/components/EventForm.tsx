@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createEvent, updateEvent, fetchEventById } from "../api/eventApi";
 import type { Event, EventLocation } from "../types/event";
+import { CalendarPlus } from "lucide-react";
 
 const emptyLocation: EventLocation = {
     address: "",
@@ -102,152 +103,149 @@ const EventForm: React.FC = () => {
     if (fetching) return <div className="text-center p-4">Loading event...</div>;
 
     return (
-        <div className="max-w-lg mx-auto p-6 bg-white rounded-md shadow-md mt-8 font-sans">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">
-                {isEdit ? "Edit Event" : "Add Event"}
-            </h2>
-            {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label htmlFor="eventName" className="block mb-1 font-semibold text-gray-700">
-                        Event Name
-                    </label>
-                    <input
-                        id="eventName"
-                        name="eventName"
-                        type="text"
-                        value={formData.eventName}
-                        onChange={handleChange}
-                        maxLength={200}
-                        required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        disabled={loading}
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="eventDescription" className="block mb-1 font-semibold text-gray-700">
-                        Description
-                    </label>
-                    <textarea
-                        id="eventDescription"
-                        name="eventDescription"
-                        value={formData.eventDescription}
-                        onChange={handleChange}
-                        maxLength={2000}
-                        rows={4}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                        disabled={loading}
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="startTime" className="block mb-1 font-semibold text-gray-700">
-                        Start Time
-                    </label>
-                    <input
-                        id="startTime"
-                        name="startTime"
-                        type="datetime-local"
-                        value={formData.startTime}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        disabled={loading}
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="endTime" className="block mb-1 font-semibold text-gray-700">
-                        End Time
-                    </label>
-                    <input
-                        id="endTime"
-                        name="endTime"
-                        type="datetime-local"
-                        value={formData.endTime || ""}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        disabled={loading}
-                    />
-                </div>
-
-                <fieldset className="border p-4 rounded">
-                    <legend className="font-semibold mb-2">Location</legend>
-                    <div className="mb-2">
-                        <label htmlFor="address" className="block mb-1 font-semibold text-gray-700">
-                            Address
-                        </label>
-                        <input
-                            id="address"
-                            name="address"
-                            type="text"
-                            value={formData.location?.address || ""}
-                            onChange={handleLocationChange}
-                            maxLength={500}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            disabled={loading}
-                        />
+        <main className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-2xl mx-auto">
+                <div className="card">
+                    <div className="card-header">
+                        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            <CalendarPlus className="w-5 h-5 text-blue-600" />
+                            {isEdit ? "Edit Event" : "Add Event"}
+                        </h2>
                     </div>
-                    <div className="mb-2">
-                        <label htmlFor="onlineLink" className="block mb-1 font-semibold text-gray-700">
-                            Online Link
-                        </label>
-                        <input
-                            id="onlineLink"
-                            name="onlineLink"
-                            type="url"
-                            value={formData.location?.onlineLink || ""}
-                            onChange={handleLocationChange}
-                            maxLength={500}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            disabled={loading}
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="roomNumber" className="block mb-1 font-semibold text-gray-700">
-                            Room Number
-                        </label>
-                        <input
-                            id="roomNumber"
-                            name="roomNumber"
-                            type="text"
-                            value={formData.location?.roomNumber || ""}
-                            onChange={handleLocationChange}
-                            maxLength={30}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            disabled={loading}
-                        />
-                    </div>
-                </fieldset>
 
-                <div>
-                    <label htmlFor="category" className="block mb-1 font-semibold text-gray-700">
-                        Category
-                    </label>
-                    <input
-                        id="category"
-                        name="category"
-                        type="text"
-                        value={formData.category || ""}
-                        onChange={handleChange}
-                        maxLength={50}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        disabled={loading}
-                    />
+                    {error && <div className="px-6 pt-4"><div className="p-3 bg-red-50 text-red-700 rounded border border-red-200">{error}</div></div>}
+
+                    <div className="card-body">
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label htmlFor="eventName" className="form-label">Event Name</label>
+                                <input
+                                    id="eventName"
+                                    name="eventName"
+                                    type="text"
+                                    value={formData.eventName}
+                                    onChange={handleChange}
+                                    maxLength={200}
+                                    required
+                                    className="form-input"
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="eventDescription" className="form-label">Description</label>
+                                <textarea
+                                    id="eventDescription"
+                                    name="eventDescription"
+                                    value={formData.eventDescription}
+                                    onChange={handleChange}
+                                    maxLength={2000}
+                                    rows={4}
+                                    className="form-input"
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="startTime" className="form-label">Start Time</label>
+                                <input
+                                    id="startTime"
+                                    name="startTime"
+                                    type="datetime-local"
+                                    value={formData.startTime}
+                                    onChange={handleChange}
+                                    required
+                                    className="form-input"
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="endTime" className="form-label">End Time</label>
+                                <input
+                                    id="endTime"
+                                    name="endTime"
+                                    type="datetime-local"
+                                    value={formData.endTime || ""}
+                                    onChange={handleChange}
+                                    className="form-input"
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <fieldset className="border rounded-lg p-4">
+                                <legend className="text-sm font-medium text-gray-700">Location</legend>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label htmlFor="address" className="form-label">Address</label>
+                                        <input
+                                            id="address"
+                                            name="address"
+                                            type="text"
+                                            value={formData.location?.address || ""}
+                                            onChange={handleLocationChange}
+                                            maxLength={500}
+                                            className="form-input"
+                                            disabled={loading}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="onlineLink" className="form-label">Online Link</label>
+                                        <input
+                                            id="onlineLink"
+                                            name="onlineLink"
+                                            type="url"
+                                            value={formData.location?.onlineLink || ""}
+                                            onChange={handleLocationChange}
+                                            maxLength={500}
+                                            className="form-input"
+                                            disabled={loading}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="roomNumber" className="form-label">Room Number</label>
+                                        <input
+                                            id="roomNumber"
+                                            name="roomNumber"
+                                            type="text"
+                                            value={formData.location?.roomNumber || ""}
+                                            onChange={handleLocationChange}
+                                            maxLength={30}
+                                            className="form-input"
+                                            disabled={loading}
+                                        />
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <div>
+                                <label htmlFor="category" className="form-label">Category</label>
+                                <input
+                                    id="category"
+                                    name="category"
+                                    type="text"
+                                    value={formData.category || ""}
+                                    onChange={handleChange}
+                                    maxLength={50}
+                                    className="form-input"
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <div className="card-footer">
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className={`btn btn-primary w-full ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                >
+                                    {loading ? (isEdit ? "Updating..." : "Creating...") : isEdit ? "Update" : "Create"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className={`w-full py-3 text-white font-semibold rounded-md transition ${
-                        loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-                    }`}
-                >
-                    {loading ? (isEdit ? "Updating..." : "Creating...") : isEdit ? "Update" : "Create"}
-                </button>
-            </form>
-        </div>
+            </div>
+        </main>
     );
 };
 

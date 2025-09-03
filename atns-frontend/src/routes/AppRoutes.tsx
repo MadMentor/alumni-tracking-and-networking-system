@@ -1,57 +1,23 @@
-import { Routes, Route } from 'react-router-dom';
-import Home from '../pages/Home';
-import Login from '../pages/LoginPage';
-import Register from '../pages/RegisterPage';
-import Dashboard from '../pages/Dashboard';
-import SkillList from '../pages/SkillList';
-import SkillForm from '../components/SkillForm.tsx';
-import ProfilePage from "../pages/ProfilePage.tsx";
-import ProtectedRoute from '../components/ProtectedRoute';
-import EventForm from "../components/EventForm.tsx";
-import React from "react";
-import EventList from "../pages/EventList.tsx";
+import { Routes, Route } from "react-router-dom";
+import Home from "../pages/Home";
+import LoginPage from "../pages/LoginPage";
+import RegisterPage from "../pages/RegisterPage";
+import Dashboard from "../pages/Dashboard";
+import ProfilePage from "../pages/ProfilePage";
+import EventList from "../pages/EventList";
+import SkillList from "../pages/SkillList";
 
 export default function AppRoutes() {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/dashboard" element={
-                <ProtectedRoute>
-                    <Dashboard />
-                </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-                <ProtectedRoute>
-                    <ProfilePage />
-                </ProtectedRoute>
-            } />
-            <Route path="/skills" element={
-                <ProtectedRoute>
-                    <SkillList />
-                </ProtectedRoute>
-            } />
-            <Route path="/skills/new" element={
-                <ProtectedRoute>
-                    <SkillForm />
-                </ProtectedRoute>
-            } />
-            <Route path="/skills/edit/:id" element={
-                <ProtectedRoute>
-                    <SkillForm />
-                </ProtectedRoute>
-            } />
-            <Route path="/events" element={
-                <ProtectedRoute>
-                    <EventList />
-                </ProtectedRoute>
-            } />
-            <Route path="/events/new" element={
-                <ProtectedRoute>
-                    <EventForm />
-                </ProtectedRoute>
-            } />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/events" element={<EventList />} />
+            <Route path="/skills" element={<SkillList />} />
+            <Route path="/skills/new" element={<SkillList />} />
         </Routes>
     );
 }

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import WelcomeCard from "../components/Dashboard/WelcomeCard";
 import ConnectionsCard from "../components/Dashboard/ConnectionsCard";
 // import MessagesCard from "../components/Dashboard/MessagesCard";
@@ -48,44 +48,64 @@ export default function Dashboard() {
     }, []);
 
     if (isLoading || !profile || !connections) {
-        return <div className="p-6">Loading dashboard...</div>;
+        return (
+            <div className="min-h-screen bg-gray-50 pt-20 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex items-center justify-center min-h-[60vh]">
+                        <div className="text-center">
+                            <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+                            <p className="text-gray-600 text-lg">Loading your dashboard...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
-
     return (
-        <main className="p-6 space-y-6 bg-gray-50 min-h-screen">
-            <WelcomeCard
-                fullName={profile.firstName + " " + profile.lastName}
-                profileImageUrl={profile.profileImageUrl}
-                address={profile.address}
-                batchYear={profile.batchYear}
-                faculty={profile.faculty}
-                currentPosition={profile.currentPosition}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {connections && (
-                    <ConnectionsCard
-                        total={connections.total}
-                        pendingRequests={connections.pendingRequests}
+        <main className="min-h-screen bg-gray-50 pt-20 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto space-y-8">
+                {/* Welcome Section */}
+                <div className="animate-fade-in">
+                    <WelcomeCard
+                        fullName={profile.firstName + " " + profile.lastName}
+                        profileImageUrl={profile.profileImageUrl}
+                        address={profile.address}
+                        batchYear={profile.batchYear}
+                        faculty={profile.faculty}
+                        currentPosition={profile.currentPosition}
                     />
-                )}
+                </div>
 
-                {/*{messages && (*/}
-                {/*    <MessagesCard*/}
-                {/*        newMessages={messages.newMessages}*/}
-                {/*        recentMessages={messages.recentMessages}*/}
-                {/*    />*/}
-                {/*)}*/}
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                    {connections && (
+                        <ConnectionsCard
+                            total={connections.total}
+                            pendingRequests={connections.pendingRequests}
+                        />
+                    )}
 
-                <EventsCard events={events}/>
-            </div>
+                    {/*{messages && (*/}
+                    {/*    <MessagesCard*/}
+                    {/*        newMessages={messages.newMessages}*/}
+                    {/*        recentMessages={messages.recentMessages}*/}
+                    {/*    />*/}
+                    {/*)}*/}
 
-            <SearchAlumni/>
+                    <EventsCard events={events}/>
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/*<OpportunitiesCard opportunities={opportunities} />*/}
-                <RecentActivityCard activities={activities}/>
+                {/* Search Section */}
+                <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                    <SearchAlumni/>
+                </div>
+
+                {/* Bottom Section */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                    {/*<OpportunitiesCard opportunities={opportunities} />*/}
+                    <RecentActivityCard activities={activities}/>
+                </div>
             </div>
         </main>
     );
