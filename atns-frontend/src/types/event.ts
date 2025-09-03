@@ -5,7 +5,7 @@ export interface EventLocation {
 }
 
 export interface Event {
-    id?: number;
+    eventId?: number;
     eventName: string;
     eventDescription?: string;
     startTime: string; // ISO string

@@ -71,7 +71,7 @@ const EventList: React.FC = () => {
                 ) : (
                     <div className="space-y-4">
                         {events.map((event) => (
-                            <div key={event.id} className="card">
+                            <div key={event.eventId} className="card">
                                 <div className="card-body">
                                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                                         <div className="min-w-0">
@@ -110,11 +110,11 @@ const EventList: React.FC = () => {
                                             )}
                                         </div>
                                         <div className="flex items-center gap-3 md:justify-end">
-                                            <Link to={`/events/edit/${event.id}`} className="btn btn-secondary btn-sm">
+                                            <Link to={`/events/edit/${event.eventId}`} className="btn btn-secondary btn-sm">
                                                 <Edit className="w-4 h-4" />
                                                 Edit
                                             </Link>
-                                            <button onClick={() => handleDelete(event.id)} className="btn btn-ghost btn-sm text-red-600 hover:text-red-700 hover:bg-red-50">
+                                            <button onClick={() => handleDelete(event.eventId)} className="btn btn-ghost btn-sm text-red-600 hover:text-red-700 hover:bg-red-50">
                                                 <Trash2 className="w-4 h-4" />
                                                 Delete
                                             </button>

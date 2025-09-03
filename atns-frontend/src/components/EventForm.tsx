@@ -12,6 +12,7 @@ const emptyLocation: EventLocation = {
 
 const EventForm: React.FC = () => {
     const { id } = useParams();
+    const eventId = id ? parseInt(id, 10) : undefined;
     const navigate = useNavigate();
     const isEdit = Boolean(id);
 
@@ -30,7 +31,7 @@ const EventForm: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (isEdit && id) {
+        if (isEdit && eventId != undefined) {// <-- parse here
             setFetching(true);
             setError(null);
             fetchEventById(parseInt(id))

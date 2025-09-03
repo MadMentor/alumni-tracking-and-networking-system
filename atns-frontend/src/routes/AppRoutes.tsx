@@ -7,6 +7,7 @@ import ProfilePage from "../pages/ProfilePage";
 import EventList from "../pages/EventList";
 import SkillList from "../pages/SkillList";
 import SkillForm from "../components/SkillForm";
+import EventForm from "../components/EventForm";
 
 export default function AppRoutes() {
     return (
@@ -17,6 +18,8 @@ export default function AppRoutes() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/events" element={<EventList />} />
+            <Route path="/events/new" element={<EventForm />} />
+            <Route path="/events/edit/:id" element={<EventForm />} />
             <Route path="/skills" element={<SkillList />} />
             <Route path="/skills/new" element={<SkillForm />} />
             <Route path="/skills/:id/edit" element={<SkillForm /> }/>
