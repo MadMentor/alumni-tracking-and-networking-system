@@ -169,6 +169,7 @@ public class EventController {
         }
     }
 
+
     @GetMapping
     @Transactional(readOnly = true)
     public ResponseEntity<PageResponse<EventResponseDto>> getAllEvents(@PageableDefault(size = 20, sort = "startTime", direction = Sort.Direction.ASC) Pageable pageable,
@@ -192,6 +193,15 @@ public class EventController {
             log.error("Profile id {} not found", profileId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
         }
+    }
+
+    @GetMapping("/myevents")
+    @Transactional(readOnly = true)
+    public ResponseEntity<Page<EventResponseDto>> getMyEvents(
+            @RequestHeader(value = "X-Organizer-Id") @Min(1) Integer organizerId,
+            @PageableDefault(size = 20, sort = "startTime", direction = Sort.Direction.ASC) Pageable pageable) {
+        log.info("Organizer {} requesting their events", organizerId);
+        return ResponseEntity.ok(eventService.getEventsByOrganizer(organizerId, pageable));
     }
 
     @GetMapping("/organizers/{organizerId}")

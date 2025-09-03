@@ -5,7 +5,7 @@ import type { Event } from "../types/event";
 
 const EventList: React.FC = () => {
     const [events, setEvents] = useState<Event[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     const loadEvents = async () => {
@@ -35,9 +35,9 @@ const EventList: React.FC = () => {
         }
     };
 
-    // useEffect(() => {
-    //     loadEvents();
-    // }, []);
+    useEffect(() => {
+        loadEvents();
+    }, []);
 
     useEffect(() => {
         const loadEvents = async () => {

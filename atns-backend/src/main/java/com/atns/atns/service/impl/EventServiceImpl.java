@@ -198,6 +198,7 @@ public class EventServiceImpl implements EventService {
         return events;
     }
 
+
     @Override
     @Transactional(readOnly = true)
     public Page<EventResponseDto> getEventsByOrganizer(Integer organizerProfileId, Pageable pageable) {
@@ -256,6 +257,7 @@ public class EventServiceImpl implements EventService {
         // Convert to DTOs and return
         return events.map(eventResponseConverter::toDto);
     }
+
 
     /**
      * Validates event timing constraints

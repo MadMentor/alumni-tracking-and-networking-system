@@ -80,6 +80,7 @@ const EventForm: React.FC = () => {
         // Convert date-time local string to ISO string for backend
         const payload = {
             ...formData,
+            organizerProfileId: parseInt(localStorage.getItem("profileId")!),
             startTime: new Date(formData.startTime).toISOString(),
             endTime: formData.endTime ? new Date(formData.endTime).toISOString() : null,
         };

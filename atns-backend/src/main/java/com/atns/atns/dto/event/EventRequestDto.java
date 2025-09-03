@@ -34,7 +34,7 @@ public class EventRequestDto {
     @Size(max = 50)
     private String category;
 
-    @NotBlank(message = "Organization Profile Id is mandatory")
+    @NotNull(message = "Organization Profile Id is mandatory")
     private Integer organizerProfileId;
 
     @NotNull
