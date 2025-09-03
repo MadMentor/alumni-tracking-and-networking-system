@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { fetchEvents, deleteEvent } from "../api/eventApi";
 import type { Event } from "../types/event";
 import { MapPin, Clock, Plus, Edit, Trash2, ExternalLink, Search } from "lucide-react";
-import { useAuthStore } from "../store/authStore";
+// import { useAuthStore } from "../store/authStore";
 
 const EventList: React.FC = () => {
     const [events, setEvents] = useState<Event[]>([]);
@@ -11,8 +11,15 @@ const EventList: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [query, setQuery] = useState("");
 
-    const user = useAuthStore((s) => s.user);
-    const isAdmin = !!user?.roles?.some((r) => r.toUpperCase() === "ADMIN");
+    const storedRoles = useMemo(() => {
+        try {
+            return JSON.parse(localStorage.getItem("roles") || "[]");
+        } catch {
+            return [];
+        }
+    }, []);
+
+    const isAdmin = storedRoles.some((r: string) => r.toUpperCase().includes("ADMIN"));
 
     const loadEvents = async () => {
         setLoading(true);
@@ -52,7 +59,7 @@ const EventList: React.FC = () => {
             const inName = e.eventName?.toLowerCase().includes(q);
             const inDesc = e.eventDescription?.toLowerCase().includes(q);
             const inCat = e.category?.toLowerCase().includes(q);
-            const inAddr = e.location?.address?.toLowerCase().includes(q);
+            const inAddr = e.eventLocation?.address?.toLowerCase().includes(q);
             return inName || inDesc || inCat || inAddr;
         });
     }, [events, query]);
@@ -117,15 +124,15 @@ const EventList: React.FC = () => {
                                                     {new Date(event.startTime).toLocaleString()}
                                                     {event.endTime ? ` - ${new Date(event.endTime).toLocaleString()}` : ""}
                                                 </span>
-                                                {event.location?.address && (
+                                                {event.eventLocation?.address && (
                                                     <span className="inline-flex items-center gap-1">
                                                         <MapPin className="w-4 h-4" />
-                                                        {event.location.address}
+                                                        {event.eventLocation.address}
                                                     </span>
                                                 )}
-                                                {event.location?.onlineLink && (
+                                                {event.eventLocation?.onlineLink && (
                                                     <a
-                                                        href={event.location.onlineLink}
+                                                        href={event.eventLocation.onlineLink}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="inline-flex items-center gap-1 text-blue-600 hover:underline"

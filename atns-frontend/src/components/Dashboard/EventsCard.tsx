@@ -1,12 +1,6 @@
 import Card from "../ui/Card";
 import { Calendar, MapPin, Clock, ExternalLink } from "lucide-react";
-
-interface Event {
-    id: number;
-    title: string;
-    date: string;
-    rsvpLink: string;
-}
+import type { Event } from "../../types/event.ts";
 
 interface Props {
     events: Event[];
@@ -33,17 +27,17 @@ export default function EventsCard({ events }: Props) {
             ) : (
                 <div className="space-y-4">
                     {events.slice(0, 3).map(event => (
-                        <div key={event.id} className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div key={event.eventId} className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                             <div className="flex items-start justify-between gap-3">
                                 <div className="flex-1 min-w-0">
                                     <h4 className="font-medium text-gray-900 text-sm mb-2 line-clamp-2">
-                                        {event.title}
+                                        {event.eventName}
                                     </h4>
                                     <div className="flex items-center gap-4 text-xs text-gray-600">
                                         <div className="flex items-center gap-1">
                                             <Clock className="w-3 h-3" />
                                             <span>
-                                                {new Date(event.date).toLocaleDateString(undefined, {
+                                                {new Date(event.startTime).toLocaleDateString(undefined, {
                                                     year: "numeric",
                                                     month: "short",
                                                     day: "numeric",
@@ -51,24 +45,30 @@ export default function EventsCard({ events }: Props) {
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <MapPin className="w-3 h-3" />
-                                            <span>Online</span>
+                                            <MapPin className="w-3 h-3"/>
+                                            <span>
+                                                {event.eventLocation?.address
+                                                    ? event.eventLocation.address
+                                                    : event.eventLocation?.onlineLink
+                                                        ? "Online"
+                                                        : "TBA"}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
-                                <a
-                                    href={event.rsvpLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-secondary btn-sm flex-shrink-0"
-                                >
-                                    <ExternalLink className="w-3 h-3" />
-                                    RSVP
-                                </a>
+                                {/*<a*/}
+                                {/*    href={event.rsvpLink}*/}
+                                {/*    target="_blank"*/}
+                                {/*    rel="noopener noreferrer"*/}
+                                {/*    className="btn btn-secondary btn-sm flex-shrink-0"*/}
+                                {/*>*/}
+                                {/*    <ExternalLink className="w-3 h-3" />*/}
+                                {/*    RSVP*/}
+                                {/*</a>*/}
                             </div>
                         </div>
                     ))}
-                    
+
                     {events.length > 3 && (
                         <div className="text-center pt-2">
                             <p className="text-xs text-gray-500">

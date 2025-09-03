@@ -10,7 +10,7 @@ export interface Event {
     eventDescription?: string;
     startTime: string; // ISO string
     endTime?: string | null; // ISO string or null
-    location?: EventLocation;
+    eventLocation?: EventLocation;
     category?: string;
     active?: boolean;
 }

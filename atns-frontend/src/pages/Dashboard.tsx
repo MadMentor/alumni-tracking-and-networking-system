@@ -7,6 +7,8 @@ import SearchAlumni from "../components/Dashboard/SearchAlumni";
 // import OpportunitiesCard from "../components/Dashboard/OpportunitiesCard";
 import RecentActivityCard from "../components/Dashboard/RecentActivityCard";
 import type {Profile} from "../types/profile";
+import type { Event } from "../types/event";
+
 
 import {
     fetchProfile,
@@ -58,6 +60,14 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
+            </div>
+        );
+    }
+
+    if (!profile) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p className="text-gray-600">Failed to load profile.</p>
             </div>
         );
     }

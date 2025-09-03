@@ -90,6 +90,10 @@ const LoginPage: React.FC = () => {
                 localStorage.setItem("profileId", profile.id.toString());
             }
 
+            if (response.data.roles) {
+                localStorage.setItem("roles", JSON.stringify(response.data.roles));
+            }
+
             setAlertType("success");
             setAlertMessage("Login success! Redirecting to dashboard...");
 

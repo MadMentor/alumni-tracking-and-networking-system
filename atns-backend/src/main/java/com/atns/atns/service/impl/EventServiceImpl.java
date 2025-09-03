@@ -10,6 +10,7 @@ import com.atns.atns.dto.event.EventResponseDto;
 import com.atns.atns.dto.event.EventUpdateRequestDto;
 import com.atns.atns.entity.Event;
 import com.atns.atns.entity.Profile;
+import com.atns.atns.enums.Role;
 import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.exception.UnauthorizedOperationException;
 import com.atns.atns.repo.EventRepo;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -39,6 +41,7 @@ public class EventServiceImpl implements EventService {
     private final EventResponseConverter eventResponseConverter;
     private final EventRepo eventRepo;
     private final EventLocationConverter eventLocationConverter;
+    private final ProfileService profileService;
 
     @Transactional
     @Override
@@ -156,8 +159,12 @@ public class EventServiceImpl implements EventService {
                     return new ResourceNotFoundException("Event", eventId);
                 });
 
-        // Verify the organizer id
-        if (!event.getOrganizer().getId().equals(organizerId)) {
+        Set<Role> roles = profileService.getUserRole(organizerId);
+
+        boolean isAdminOrModerator = roles.contains(Role.ADMIN) || roles.contains(Role.MODERATOR);
+
+        // allow if organizer OR admin/moderator
+        if (!event.getOrganizer().getId().equals(organizerId) && !isAdminOrModerator) {
             throw new UnauthorizedOperationException("Not authorized to delete this event");
         }
 
