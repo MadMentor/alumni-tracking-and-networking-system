@@ -86,6 +86,15 @@ public class ProfileServiceImpl implements ProfileService {
                 });
     }
 
+    @Override
+    public void removeSkillFromProfile(String email, Integer skillId) {
+        Profile profile = profileRepo.findByUserEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile", email));
+
+        profile.getSkills().removeIf(skill -> skill.getId().equals(skillId));
+        profileRepo.save(profile);
+    }
+
 
     public List<ProfileDto> findAll() {
         return profileRepo.findAll().stream()

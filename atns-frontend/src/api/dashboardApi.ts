@@ -2,6 +2,18 @@ import axiosInstance from "./axiosInstance.ts";
 
 const API_BASE = "/api/v1";
 
+import type { Event } from "../types/event";
+
+type PageResponse<T> = {
+    content: T[];
+    totalPages: number;
+    totalElements: number;
+    size: number;
+    number: number;
+    last: boolean;
+};
+
+
 export async function fetchProfile() {
     const res = await axiosInstance.get("/profiles/me");
     return res.data;
@@ -17,9 +29,11 @@ export async function fetchConnections() {
 //     return res.data; // e.g. { newMessages: 3, recentMessages: [...] }
 // }
 
-export async function fetchEvents() {
-    const res = await axiosInstance.get(`${API_BASE}/events/upcoming`);
-    return res.data; // e.g. [{id, title, date, rsvpLink}, ...]
+export async function fetchEvents():Promise<PageResponse<Event[]>> {
+    const res = await axiosInstance.get<PageResponse<Event>>(`${API_BASE}/events/upcoming`, {
+        headers: { "X-Profile-Id": localStorage.getItem("profileId") || "0" }
+    });
+    return res.data;
 }
 
 // export async function fetchOpportunities() {

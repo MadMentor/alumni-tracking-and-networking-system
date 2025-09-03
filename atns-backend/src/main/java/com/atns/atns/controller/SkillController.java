@@ -7,6 +7,7 @@ import com.atns.atns.repo.UserRepo;
 import com.atns.atns.service.ProfileService;
 import com.atns.atns.service.SkillService;
 import com.atns.atns.service.UserService;
+import com.atns.atns.service.impl.ProfileServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class SkillController {
 
     private final SkillService skillService;
     private final ProfileService profileService;
+    private final ProfileServiceImpl profileServiceImpl;
 
     @Transactional
     @PostMapping
@@ -61,10 +63,22 @@ public class SkillController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        log.info("Deleting skill with id: {}", id);
-        skillService.delete(id);
-        log.info("Deleted skill: {}", id);
+    public ResponseEntity<Void> delete(@PathVariable Integer id, Authentication authentication) {
+        String email = authentication.getName();
+        log.info("Deleting skill with id: {} for user {}", id, email);
+
+        ProfileDto profileDto = profileServiceImpl.findByEmail(email);
+
+        boolean hasSkill = profileDto.getSkills().stream()
+                .anyMatch(skill -> skill.getId().equals(id));
+        if (!hasSkill) {
+            log.warn("Skill {} not found for user {}", id, email);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        profileService.removeSkillFromProfile(email, id);
+
+        log.info("Skill {} removed from profile of user {}", id, email);
         return ResponseEntity.noContent().build();
     }
 }

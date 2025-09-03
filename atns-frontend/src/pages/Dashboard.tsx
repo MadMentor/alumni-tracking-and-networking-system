@@ -21,7 +21,7 @@ export default function Dashboard() {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [connections, setConnections] = useState<{ total: number; pendingRequests: number } | null>(null);
     // const [messages, setMessages] = useState(null);
-    const [events, setEvents] = useState([]);
+    const [events, setEvents] = useState<Event[]>([]);
     // const [opportunities, setOpportunities] = useState([]);
     const [activities, setActivities] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -36,9 +36,9 @@ export default function Dashboard() {
                 console.error("Failed to fetch connections:", err);
                 setConnections(null);
             }),
-            fetchEvents().then(setEvents).catch((err) => {
+            fetchEvents().then((page) => setEvents(page.content)).catch((err) => {
                 console.error("Failed to fetch events:", err);
-                setEvents([]); // empty fallback
+                setEvents([]);
             }),
             fetchRecentActivity().then(setActivities).catch((err) => {
                 console.error("Failed to fetch recent activity:", err);
@@ -47,7 +47,7 @@ export default function Dashboard() {
         ]).finally(() => setIsLoading(false));
     }, []);
 
-    if (isLoading || !profile || !connections) {
+    if (isLoading) {
         return (
             <div className="min-h-screen bg-gray-50 pt-20 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
