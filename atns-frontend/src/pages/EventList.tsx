@@ -1,13 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchEvents, deleteEvent } from "../api/eventApi";
 import type { Event } from "../types/event";
-import { Calendar, MapPin, Clock, Plus, Edit, Trash2, ExternalLink } from "lucide-react";
+import { MapPin, Clock, Plus, Edit, Trash2, ExternalLink, Search } from "lucide-react";
+import { useAuthStore } from "../store/authStore";
 
 const EventList: React.FC = () => {
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [query, setQuery] = useState("");
+
+    const user = useAuthStore((s) => s.user);
+    const isAdmin = !!user?.roles?.some((r) => r.toUpperCase() === "ADMIN");
 
     const loadEvents = async () => {
         setLoading(true);
@@ -40,6 +45,18 @@ const EventList: React.FC = () => {
         loadEvents();
     }, []);
 
+    const filteredEvents = useMemo(() => {
+        if (!query.trim()) return events;
+        const q = query.toLowerCase();
+        return events.filter((e) => {
+            const inName = e.eventName?.toLowerCase().includes(q);
+            const inDesc = e.eventDescription?.toLowerCase().includes(q);
+            const inCat = e.category?.toLowerCase().includes(q);
+            const inAddr = e.location?.address?.toLowerCase().includes(q);
+            return inName || inDesc || inCat || inAddr;
+        });
+    }, [events, query]);
+
     if (loading) return (
         <div className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto">
@@ -58,19 +75,35 @@ const EventList: React.FC = () => {
     return (
         <main className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-4 flex-wrap">
                     <h2 className="text-3xl font-bold text-gray-900">Events</h2>
-                    <Link to="/events/new" className="btn btn-primary">
-                        <Plus className="w-4 h-4" />
-                        Add New Event
-                    </Link>
+                    <div className="flex-1 min-w-[240px] max-w-md ml-auto">
+                        <div className="flex">
+                            <span className="inline-flex items-center px-3 rounded-l-md border border-gray-300 bg-gray-100 text-gray-500">
+                                <Search className="w-4 h-4" />
+                            </span>
+                            <input
+                                type="text"
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                placeholder="Search events by name, description, category, or address"
+                                className="form-input rounded-l-none"
+                            />
+                        </div>
+                    </div>
+                    {isAdmin && (
+                        <Link to="/events/new" className="btn btn-primary">
+                            <Plus className="w-4 h-4" />
+                            Add New Event
+                        </Link>
+                    )}
                 </div>
 
-                {events.length === 0 ? (
+                {filteredEvents.length === 0 ? (
                     <div className="card p-8 text-center text-gray-600">No events found.</div>
                 ) : (
                     <div className="space-y-4">
-                        {events.map((event) => (
+                        {filteredEvents.map((event) => (
                             <div key={event.id} className="card">
                                 <div className="card-body">
                                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -109,16 +142,18 @@ const EventList: React.FC = () => {
                                                 <p className="text-sm text-gray-700 mt-3 line-clamp-2">{event.eventDescription}</p>
                                             )}
                                         </div>
-                                        <div className="flex items-center gap-3 md:justify-end">
-                                            <Link to={`/events/edit/${event.id}`} className="btn btn-secondary btn-sm">
-                                                <Edit className="w-4 h-4" />
-                                                Edit
-                                            </Link>
-                                            <button onClick={() => handleDelete(event.id)} className="btn btn-ghost btn-sm text-red-600 hover:text-red-700 hover:bg-red-50">
-                                                <Trash2 className="w-4 h-4" />
-                                                Delete
-                                            </button>
-                                        </div>
+                                        {isAdmin && (
+                                            <div className="flex items-center gap-3 md:justify-end">
+                                                <Link to={`/events/edit/${event.id}`} className="btn btn-secondary btn-sm">
+                                                    <Edit className="w-4 h-4" />
+                                                    Edit
+                                                </Link>
+                                                <button onClick={() => handleDelete(event.id)} className="btn btn-ghost btn-sm text-red-600 hover:text-red-700 hover:bg-red-50">
+                                                    <Trash2 className="w-4 h-4" />
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
