@@ -130,6 +130,7 @@ export default function ProfilePage() {
             <ProfileForm formData={formData} onChange={handleChange} onSubmit={handleSubmit} />
             {toast && (
                 <Toast
+                    title={toast.type === "success" ? "Success" : "Error"}
                     message={toast.message}
                     type={toast.type}
                     onClose={() => setToast(null)}

@@ -1,6 +1,7 @@
-import React, {useState } from "react";
+import {useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createSkill, updateSkill } from "../api/skillApi";
+import { Hammer } from "lucide-react";
 
 const SkillForm: React.FC = () => {
     const [name, setName] = useState("");
@@ -30,27 +31,42 @@ const SkillForm: React.FC = () => {
     };
 
     return (
-        <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold mb-4">{id ? "Edit Skill" : "Add Skill"}</h2>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Skill Name</label>
-                <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-                    required
-                />
-                <button
-                    type="submit"
-                    className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
-                    disabled={loading}
-                >
-                    {loading ? "Saving..." : id ? "Update Skill" : "Create Skill"}
-                </button>
-            </form>
-        </div>
+        <main className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md mx-auto">
+                <div className="card">
+                    <div className="card-header">
+                        <h2 className="text-xl font-semibold flex items-center gap-2">
+                            <Hammer className="w-5 h-5 text-blue-600" />
+                            {id ? "Edit Skill" : "Add Skill"}
+                        </h2>
+                    </div>
+                    <div className="card-body">
+                        {error && <div className="mb-4 p-2 bg-red-50 text-red-700 rounded border border-red-200">{error}</div>}
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="form-label">Skill Name</label>
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="form-input"
+                                    required
+                                />
+                            </div>
+                            <div className="card-footer">
+                                <button
+                                    type="submit"
+                                    className={`btn btn-primary w-full ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                    disabled={loading}
+                                >
+                                    {loading ? "Saving..." : id ? "Update Skill" : "Create Skill"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
     );
 };
 

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchEvents, deleteEvent } from "../api/eventApi";
 import type { Event } from "../types/event";
+import { Calendar, MapPin, Clock, Plus, Edit, Trash2, ExternalLink } from "lucide-react";
 
 const EventList: React.FC = () => {
     const [events, setEvents] = useState<Event[]>([]);
@@ -39,84 +40,93 @@ const EventList: React.FC = () => {
         loadEvents();
     }, []);
 
-    useEffect(() => {
-        const loadEvents = async () => {
-            try {
-                const data = await fetchEvents();
-                setEvents(Array.isArray(data) ? data : []); // safety check
-            } catch (e) {
-                console.error("Failed to load events", e);
-                setEvents([]);
-            }
-        };
-
-        loadEvents();
-    }, []);
-
-    if (loading) return <div className="p-4 text-center">Loading events...</div>;
-    if (error) return <div className="p-4 text-center text-red-600">{error}</div>;
+    if (loading) return (
+        <div className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-5xl mx-auto">
+                <div className="text-center text-gray-600">Loading events...</div>
+            </div>
+        </div>
+    );
+    if (error) return (
+        <div className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-5xl mx-auto">
+                <div className="text-center text-red-600">{error}</div>
+            </div>
+        </div>
+    );
 
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md mt-8 font-sans">
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">Events</h2>
-            <Link
-                to="/events/new"
-                className="inline-block mb-6 px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-            >
-                Add New Event
-            </Link>
-            <ul className="space-y-4">
-                {Array.isArray(events) && events.map((event) => (
-                    <li
-                        key={event.id}
-                        className="flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-100 p-4 rounded shadow"
-                    >
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-900">{event.eventName}</h3>
-                            <p className="text-gray-700">
-                                {new Date(event.startTime).toLocaleString()}
-                                {event.endTime ? ` - ${new Date(event.endTime).toLocaleString()}` : ""}
-                            </p>
-                            <p className="text-gray-600">{event.eventDescription}</p>
-                            {event.location && (
-                                <div className="mt-1 text-sm text-gray-500">
-                                    {event.location.address && <div>Address: {event.location.address}</div>}
-                                    {event.location.onlineLink && (
-                                        <div>
-                                            Online:{" "}
-                                            <a
-                                                href={event.location.onlineLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-600 underline"
-                                            >
-                                                Link
-                                            </a>
+        <main className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-5xl mx-auto space-y-6">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-3xl font-bold text-gray-900">Events</h2>
+                    <Link to="/events/new" className="btn btn-primary">
+                        <Plus className="w-4 h-4" />
+                        Add New Event
+                    </Link>
+                </div>
+
+                {events.length === 0 ? (
+                    <div className="card p-8 text-center text-gray-600">No events found.</div>
+                ) : (
+                    <div className="space-y-4">
+                        {events.map((event) => (
+                            <div key={event.id} className="card">
+                                <div className="card-body">
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                        <div className="min-w-0">
+                                            <h3 className="text-lg font-semibold text-gray-900 truncate">
+                                                {event.eventName}
+                                            </h3>
+                                            <div className="mt-1 flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                                                <span className="inline-flex items-center gap-1">
+                                                    <Clock className="w-4 h-4" />
+                                                    {new Date(event.startTime).toLocaleString()}
+                                                    {event.endTime ? ` - ${new Date(event.endTime).toLocaleString()}` : ""}
+                                                </span>
+                                                {event.location?.address && (
+                                                    <span className="inline-flex items-center gap-1">
+                                                        <MapPin className="w-4 h-4" />
+                                                        {event.location.address}
+                                                    </span>
+                                                )}
+                                                {event.location?.onlineLink && (
+                                                    <a
+                                                        href={event.location.onlineLink}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-blue-600 hover:underline"
+                                                    >
+                                                        <ExternalLink className="w-4 h-4" />
+                                                        Online Link
+                                                    </a>
+                                                )}
+                                            </div>
+                                            {event.category && (
+                                                <p className="text-xs text-gray-500 mt-2">Category: {event.category}</p>
+                                            )}
+                                            {event.eventDescription && (
+                                                <p className="text-sm text-gray-700 mt-3 line-clamp-2">{event.eventDescription}</p>
+                                            )}
                                         </div>
-                                    )}
-                                    {event.location.roomNumber && <div>Room: {event.location.roomNumber}</div>}
+                                        <div className="flex items-center gap-3 md:justify-end">
+                                            <Link to={`/events/edit/${event.id}`} className="btn btn-secondary btn-sm">
+                                                <Edit className="w-4 h-4" />
+                                                Edit
+                                            </Link>
+                                            <button onClick={() => handleDelete(event.id)} className="btn btn-ghost btn-sm text-red-600 hover:text-red-700 hover:bg-red-50">
+                                                <Trash2 className="w-4 h-4" />
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                            )}
-                            {event.category && <p className="text-sm italic text-gray-500 mt-1">Category: {event.category}</p>}
-                        </div>
-                        <div className="space-x-4 mt-4 md:mt-0">
-                            <Link
-                                to={`/events/edit/${event.id}`}
-                                className="text-blue-600 hover:underline font-semibold"
-                            >
-                                Edit
-                            </Link>
-                            <button
-                                onClick={() => handleDelete(event.id)}
-                                className="text-red-600 hover:underline font-semibold"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </li>
-                ))}
-            </ul>
-        </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </main>
     );
 };
 

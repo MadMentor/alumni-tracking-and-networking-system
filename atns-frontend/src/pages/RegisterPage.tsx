@@ -1,5 +1,5 @@
 // src/pages/RegisterPage.tsx
-import React, {useState} from "react";
+import {useState} from "react";
 import axios from "axios";
 import RegisterForm from "../components/RegisterForm";
 import {useNavigate} from "react-router-dom";
@@ -33,9 +33,16 @@ const RegisterPage: React.FC = () => {
             }
 
         } catch (error: unknown) {
-            console.error("Registration failed:", error.response?.data || error.message);
-            setAlertType("error")
-            setAlertMessage("Registration failed: " + (error.response?.data?.message || "Please try again."));
+            console.error("Registration failed:", error);
+            
+            let errorMessage = "Please try again.";
+            if (error && typeof error === 'object' && 'response' in error) {
+                const axiosError = error as { response?: { data?: { message?: string } } };
+                errorMessage = axiosError.response?.data?.message || errorMessage;
+            }
+            
+            setAlertType("error");
+            setAlertMessage("Registration failed: " + errorMessage);
 
             setTimeout(() => {
                 setAlertMessage(null);
