@@ -76,15 +76,11 @@ const LoginPage: React.FC = () => {
 
     const handleLogin = async (email: string, password: string) => {
         try {
-
             const response = await axiosInstance.post("/auth/login", {
                 email,
                 password,
             });
 
-            // Login successful
-
-            // Store token if received
             if (response.data.token) {
                 localStorage.setItem("token", response.data.token);
             }
@@ -93,7 +89,7 @@ const LoginPage: React.FC = () => {
             if (profile.id !== undefined && profile.id !== null) {
                 localStorage.setItem("profileId", profile.id.toString());
             }
-            // Redirect or show success
+
             setAlertType("success");
             setAlertMessage("Login success! Redirecting to dashboard...");
 
@@ -116,7 +112,7 @@ const LoginPage: React.FC = () => {
     if (checkingAuth) return <div className="text-center mt-20">Checking authentication...</div>;
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <>
             {/* Alert Banner */}
             {alertMessage && (
                 <div
@@ -151,11 +147,10 @@ const LoginPage: React.FC = () => {
                     </button>
                 </div>
             )}
-            <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
-                <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
-                <LoginForm onLogin={handleLogin}/>
-            </div>
-        </div>
+
+            {/* Full-screen layout delegated to LoginForm */}
+            <LoginForm onLogin={handleLogin} />
+        </>
     );
 };
 

@@ -14,18 +14,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     const [isLoading, setIsLoading] = useState(false);
 
     const validateInputs = (email: string, password: string): string | null => {
-        if (!email.trim()) {
-            return "Email is required.";
-        }
-        if (!password.trim()) {
-            return "Password is required.";
-        }
-        if (email.trim().length < 3) {
-            return "Email must be at least 3 characters long.";
-        }
-        if (password.length < 1) {
-            return "Password is required.";
-        }
+        if (!email.trim()) return "Email is required.";
+        if (!password.trim()) return "Password is required.";
+        if (email.trim().length < 3) return "Email must be at least 3 characters long.";
         return null;
     };
 
@@ -51,111 +42,96 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-            <div className="max-w-md w-full space-y-8">
-                {/* Header */}
-                <div className="text-center">
-                    <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
-                        <LogIn className="w-8 h-8 text-white" />
+        <div className="h-screen w-screen overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+            {/* Left visual panel */}
+            <div className="hidden lg:flex h-full w-full bg-gradient-to-br from-blue-600 to-purple-600 text-white items-center justify-center">
+                <div className="max-w-lg px-12">
+                    <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
+                        <LogIn className="w-8 h-8" />
                     </div>
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                        Welcome back
-                    </h2>
-                    <p className="text-gray-600">
-                        Sign in to your ATNS account
-                    </p>
+                    <h2 className="text-4xl font-extrabold mb-4 leading-tight">Welcome back to ATNS</h2>
+                    <p className="text-blue-100 text-lg">Connect, collaborate, and grow with your alumni network.</p>
                 </div>
+            </div>
 
-                {/* Form */}
-                <div className="card p-8">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {error && (
-                            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                                <p className="text-sm text-red-600 font-medium">{error}</p>
-                            </div>
-                        )}
+            {/* Right form panel */}
+            <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+                <div className="w-full max-w-lg px-6">
+                    <div className="card">
+                        <div className="card-body">
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                {error && (
+                                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                        <p className="text-sm text-red-600 font-medium">{error}</p>
+                                    </div>
+                                )}
 
-                        <div className="form-group">
-                            <label htmlFor="email" className="form-label">
-                                Email Address
-                            </label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-gray-400" />
+                                <div className="form-group">
+                                    <label htmlFor="email" className="form-label">Email Address</label>
+                                    <div className="flex">
+                                        <span className="inline-flex items-center px-3 rounded-l-md border border-gray-300 bg-gray-100 text-gray-500">
+                                            <Mail className="h-5 w-5" />
+                                        </span>
+                                        <input
+                                            id="email"
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            placeholder="Enter your email address"
+                                            className="form-input rounded-l-none"
+                                            disabled={isLoading}
+                                        />
+                                    </div>
                                 </div>
-                                <input
-                                    id="email"
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    placeholder="Enter your email address"
-                                    className="form-input pl-10"
-                                    disabled={isLoading}
-                                />
-                            </div>
-                        </div>
 
-                        <div className="form-group">
-                            <label htmlFor="password" className="form-label">
-                                Password
-                            </label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-gray-400" />
+                                <div className="form-group">
+                                    <label htmlFor="password" className="form-label">Password</label>
+                                    <div className="flex">
+                                        <span className="inline-flex items-center px-3 rounded-l-md border border-gray-300 bg-gray-100 text-gray-500">
+                                            <Lock className="h-5 w-5" />
+                                        </span>
+                                        <input
+                                            id="password"
+                                            type={showPassword ? "text" : "password"}
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                            placeholder="Enter your password"
+                                            className="form-input rounded-l-none rounded-r-none"
+                                            disabled={isLoading}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-100 text-gray-500 hover:text-gray-700"
+                                            disabled={isLoading}
+                                            aria-label={showPassword ? "Hide password" : "Show password"}
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="h-5 w-5" />
+                                            ) : (
+                                                <Eye className="h-5 w-5" />
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
-                                <input
-                                    id="password"
-                                    type={showPassword ? "text" : "password"}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    placeholder="Enter your password"
-                                    className="form-input pl-10 pr-10"
-                                    disabled={isLoading}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                                    disabled={isLoading}
-                                >
-                                    {showPassword ? (
-                                        <EyeOff className="h-5 w-5" />
+
+                                <button type="submit" disabled={isLoading} className="btn btn-primary w-full">
+                                    {isLoading ? (
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                            Signing in...
+                                        </div>
                                     ) : (
-                                        <Eye className="h-5 w-5" />
+                                        <div className="flex items-center gap-2">
+                                            <LogIn className="w-5 h-5" />
+                                            Sign In
+                                        </div>
                                     )}
                                 </button>
-                            </div>
+                            </form>
                         </div>
-
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="btn btn-primary w-full btn-lg"
-                        >
-                            {isLoading ? (
-                                <div className="flex items-center gap-2">
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    Signing in...
-                                </div>
-                            ) : (
-                                <div className="flex items-center gap-2">
-                                    <LogIn className="w-5 h-5" />
-                                    Sign In
-                                </div>
-                            )}
-                        </button>
-                    </form>
-
-                    {/* Footer */}
-                    <div className="mt-6 text-center">
-                        <p className="text-sm text-gray-600">
-                            Don't have an account?{" "}
-                            <a href="/register" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
-                                Sign up here
-                            </a>
-                        </p>
                     </div>
                 </div>
             </div>
