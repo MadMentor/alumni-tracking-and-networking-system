@@ -1,32 +1,52 @@
-import {useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createSkill, updateSkill } from "../api/skillApi";
+import axiosInstance from "../api/axiosInstance"; // for fetching skill by id
+import type { Skill } from "../types/skill";
 import { Hammer } from "lucide-react";
 
 const SkillForm: React.FC = () => {
     const [name, setName] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
+
+    const [submitting, setSubmitting] = useState(false); // when saving form
+    const [fetching, setFetching] = useState(false); // when loading existing skill
 
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
 
+    // Fetch existing skill when editing
+    useEffect(() => {
+        if (id) {
+            setFetching(true);
+            axiosInstance
+                .get<Skill>(`/skills/${id}`)
+                .then((res) => setName(res.data.name))
+                .catch(() => setError("Failed to load skill."))
+                .finally(() => setFetching(false));
+        }
+    }, [id]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
+        setSubmitting(true);
         setError(null);
 
         try {
+            const skillData = id
+                ? { id: Number(id), name: name.trim().toLowerCase() }
+                : { name: name.trim().toLowerCase() };
             if (id) {
-                await updateSkill(Number(id), { name });
+                await updateSkill(Number(id), skillData);
             } else {
-                await createSkill({ name });
+                await createSkill(skillData);
             }
+
             navigate("/skills");
         } catch (err) {
             setError("Failed to save skill. Please try again.");
         } finally {
-            setLoading(false);
+            setSubmitting(false);
         }
     };
 
@@ -41,28 +61,47 @@ const SkillForm: React.FC = () => {
                         </h2>
                     </div>
                     <div className="card-body">
-                        {error && <div className="mb-4 p-2 bg-red-50 text-red-700 rounded border border-red-200">{error}</div>}
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="form-label">Skill Name</label>
-                                <input
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    className="form-input"
-                                    required
-                                />
+                        {error && (
+                            <div className="mb-4 p-2 bg-red-50 text-red-700 rounded border border-red-200">
+                                {error}
                             </div>
-                            <div className="card-footer">
-                                <button
-                                    type="submit"
-                                    className={`btn btn-primary w-full ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
-                                    disabled={loading}
-                                >
-                                    {loading ? "Saving..." : id ? "Update Skill" : "Create Skill"}
-                                </button>
+                        )}
+
+                        {fetching ? (
+                            <div className="text-gray-600 text-center py-6">
+                                Loading skill...
                             </div>
-                        </form>
+                        ) : (
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div>
+                                    <label className="form-label">Skill Name</label>
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="form-input"
+                                        required
+                                    />
+                                </div>
+                                <div className="card-footer">
+                                    <button
+                                        type="submit"
+                                        className={`btn btn-primary w-full ${
+                                            submitting
+                                                ? "opacity-70 cursor-not-allowed"
+                                                : ""
+                                        }`}
+                                        disabled={submitting}
+                                    >
+                                        {submitting
+                                            ? "Saving..."
+                                            : id
+                                                ? "Update Skill"
+                                                : "Create Skill"}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
                     </div>
                 </div>
             </div>
