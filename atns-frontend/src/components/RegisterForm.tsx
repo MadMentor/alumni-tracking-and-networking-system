@@ -11,10 +11,15 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister }) => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [selectedRoles, setSelectedRoles] = useState<UserRole[]>([UserRole.STUDENT]);
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
+    const showMatchHint = confirmPassword.length > 0;
 
     const validatePassword = (password: string): string | null => {
         if (password.length < 8) return "Password must be at least 8 characters long.";
@@ -42,7 +47,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister }) => {
         setError("");
         setIsLoading(true);
 
-        if (!username.trim() || !email.trim() || !password.trim()) {
+        if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
             setError("All fields are required.");
             setIsLoading(false);
             return;
@@ -57,11 +62,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister }) => {
         const passwordError = validatePassword(password);
         if (passwordError) { setError(passwordError); setIsLoading(false); return; }
 
+        if (!passwordsMatch) { setError("Passwords do not match."); setIsLoading(false); return; }
+
         if (selectedRoles.length === 0) { setError("Please select at least one role."); setIsLoading(false); return; }
 
         try {
             await onRegister(username.trim(), email.trim(), password, selectedRoles);
-            setUsername(""); setEmail(""); setPassword(""); setSelectedRoles([UserRole.STUDENT]);
+            setUsername(""); setEmail(""); setPassword(""); setConfirmPassword(""); setSelectedRoles([UserRole.STUDENT]);
         } catch (error: any) {
             setError(error.message || "Registration failed. Please try again.");
         } finally {
@@ -195,7 +202,41 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister }) => {
                                     </div>
                                 </div>
 
-                                <button type="submit" disabled={isLoading} className="btn btn-primary w-full">
+                                <div className="form-group">
+                                    <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                                    <div className="flex">
+                                        <span className="inline-flex items-center px-3 rounded-l-md border border-gray-300 bg-gray-100 text-gray-500">
+                                            <Lock className="h-5 w-5" />
+                                        </span>
+                                        <input
+                                            id="confirmPassword"
+                                            type={showConfirmPassword ? "text" : "password"}
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            required
+                                            placeholder="Re-enter password"
+                                            className="form-input rounded-l-none rounded-r-none"
+                                            disabled={isLoading}
+                                            aria-describedby="password-match-hint"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-100 text-gray-500 hover:text-gray-700"
+                                            disabled={isLoading}
+                                            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                                        >
+                                            {showConfirmPassword ? (<EyeOff className="h-5 w-5" />) : (<Eye className="h-5 w-5" />)}
+                                        </button>
+                                    </div>
+                                    {showMatchHint && (
+                                        <p id="password-match-hint" aria-live="polite" className={`text-xs mt-2 font-medium ${passwordsMatch ? 'text-green-600' : 'text-red-600'}`}>
+                                            {passwordsMatch ? 'Passwords match' : 'Passwords do not match'}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <button type="submit" disabled={isLoading || (showMatchHint && !passwordsMatch)} className="btn btn-primary w-full">
                                     {isLoading ? (
                                         <div className="flex items-center gap-2">
                                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
