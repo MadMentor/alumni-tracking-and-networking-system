@@ -18,7 +18,9 @@ export default function ProfilePage() {
         batchYear: new Date().getFullYear(),
         faculty: "",
         currentPosition: "",
+        profileImageUrl: "",
     });
+    const [selectedFile, setSelectedFile] = useState<File | null>(null); // for image
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
 
@@ -29,6 +31,7 @@ export default function ProfilePage() {
                 if (data) {
                     setProfile(data);
                     setFormData({
+                        ...formData,
                         firstName: data.firstName || "",
                         middleName: data.middleName || "",
                         lastName: data.lastName || "",
@@ -39,6 +42,7 @@ export default function ProfilePage() {
                         batchYear: data.batchYear || new Date().getFullYear(),
                         faculty: data.faculty || "",
                         currentPosition: data.currentPosition || "",
+                        profileImageUrl: data.profileImageUrl || "",
                     });
                 }
             } catch (error) {
@@ -54,9 +58,29 @@ export default function ProfilePage() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    // Handle file selection
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const fileList = e.target.files;
+        if (!fileList || fileList.length === 0) return; // no file selected
+
+        const file = fileList[0];
+        setSelectedFile(file);
+        setFormData(prev => ({
+            ...prev,
+            profileImageUrl: URL.createObjectURL(file), // preview
+        }));
+    };
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
+        const formPayload = new FormData();
+        formPayload.append("profile", new Blob([JSON.stringify(formData)], { type: "application/json" }));
+        if (selectedFile) {
+            formPayload.append("image", selectedFile);
+        }
+
         // Check if user is authenticated
         const token = localStorage.getItem("token");
         if (!token) {
@@ -84,12 +108,12 @@ export default function ProfilePage() {
         
         try {
             if (profile && profile.id) {
-                const updatedFormData = { ...formData, id: profile.id };
-                const updatedProfile = await updateProfile(profile.id, updatedFormData);
+                // const updatedFormData = { ...formData, id: profile.id };
+                const updatedProfile = await updateProfile(profile.id, formPayload);
                 setProfile(updatedProfile);
                 setToast({ message: "Profile updated successfully!", type: "success" });
             } else {
-                const createdProfile = await createProfile(formData);
+                const createdProfile = await createProfile(formPayload);
                 setProfile(createdProfile);
                 setToast({ message: "Profile created successfully!", type: "success" });
             }
@@ -127,7 +151,7 @@ export default function ProfilePage() {
 
     return (
         <>
-            <ProfileForm formData={formData} onChange={handleChange} onSubmit={handleSubmit} />
+            <ProfileForm formData={formData} onChange={handleChange} onFileChange={handleFileChange} onSubmit={handleSubmit} />
             {toast && (
                 <Toast
                     title={toast.type === "success" ? "Success" : "Error"}

@@ -5,9 +5,10 @@ interface ProfileFormProps {
     formData: Profile;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function ProfileForm({ formData, onChange, onSubmit }: ProfileFormProps) {
+export default function ProfileForm({ formData, onChange, onSubmit, onFileChange }: ProfileFormProps) {
     return (
         <div className="max-w-3xl mx-auto pt-24 px-4 sm:px-6 lg:px-8">
             <div className="card">
@@ -16,6 +17,7 @@ export default function ProfileForm({ formData, onChange, onSubmit }: ProfileFor
                 </div>
                 <div className="card-body">
                     <form onSubmit={onSubmit} className="space-y-5">
+                        {/* --- Existing text inputs --- */}
                         <div>
                             <label htmlFor="firstName" className="form-label">First Name</label>
                             <input
@@ -137,18 +139,29 @@ export default function ProfileForm({ formData, onChange, onSubmit }: ProfileFor
                             />
                         </div>
 
+                        {/* --- File input for image --- */}
                         <div>
-                            <label htmlFor="profileImageUrl" className="form-label">Profile Image URL</label>
+                            <label htmlFor="profileImage" className="form-label">Profile Image</label>
                             <input
-                                id="profileImageUrl"
-                                name="profileImageUrl"
-                                type="url"
-                                value={formData.profileImageUrl || ""}
-                                onChange={onChange}
-                                placeholder="https://example.com/your-photo.jpg"
+                                id="profileImage"
+                                name="profileImage"
+                                type="file"
+                                accept="image/*"
+                                onChange={onFileChange}
                                 className="form-input"
                             />
                         </div>
+
+                        {/* Optional preview if you want */}
+                        {formData.profileImageUrl && (
+                            <div>
+                                <img
+                                    src={formData.profileImageUrl}
+                                    alt="Profile Preview"
+                                    className="h-24 w-24 object-cover rounded-full mt-2"
+                                />
+                            </div>
+                        )}
 
                         <div className="card-footer">
                             <button type="submit" className="btn btn-primary w-full sm:w-auto">Save Profile</button>

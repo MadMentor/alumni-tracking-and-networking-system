@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Card from "../ui/Card";
 import { Calendar, MapPin, Clock, ExternalLink } from "lucide-react";
 import type { Event } from "../../types/event.ts";
@@ -12,10 +13,12 @@ export default function EventsCard({ events }: Props) {
             title="Upcoming Events"
             icon={<Calendar className="w-5 h-5 text-purple-600" />}
             footer={
-                <button className="btn btn-primary w-full">
-                    <Calendar className="w-4 h-4" />
-                    See All Events
-                </button>
+                <Link to="/events" className="w-full">
+                    <button className="btn btn-primary w-full flex items-center justify-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        See All Events
+                    </button>
+                </Link>
             }
         >
             {events.length === 0 ? (
