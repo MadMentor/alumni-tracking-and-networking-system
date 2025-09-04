@@ -3,11 +3,14 @@ import WelcomeCard from "../components/Dashboard/WelcomeCard";
 import ConnectionsCard from "../components/Dashboard/ConnectionsCard";
 // import MessagesCard from "../components/Dashboard/MessagesCard";
 import EventsCard from "../components/Dashboard/EventsCard";
+import RecommendedEventCard from "../components/Dashboard/RecommendedEventCard.tsx";
+import RecommendedUsersCard from "../components/Dashboard/RecommendedUsersCard.tsx";
 import SearchAlumni from "../components/Dashboard/SearchAlumni";
 // import OpportunitiesCard from "../components/Dashboard/OpportunitiesCard";
 import RecentActivityCard from "../components/Dashboard/RecentActivityCard";
 import type {Profile} from "../types/profile";
 import type { Event } from "../types/event";
+import type {RecommendedEvent, RecommendedUser} from "../types/recommendation";
 
 
 import {
@@ -19,11 +22,15 @@ import {
     fetchRecentActivity,
 } from "../api/dashboardApi";
 
+import { fetchRecommendedEvents, fetchRecommendedUsers} from "../api/recommendationApi";
+
 export default function Dashboard() {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [connections, setConnections] = useState<{ total: number; pendingRequests: number } | null>(null);
     // const [messages, setMessages] = useState(null);
     const [events, setEvents] = useState<Event[]>([]);
+    const [recommendedEvents, setRecommendedEvents] = useState<RecommendedEvent[]>([]);
+    const [recommendedUsers, setRecommendedUsers] = useState<RecommendedUser[]>([]);
     // const [opportunities, setOpportunities] = useState([]);
     const [activities, setActivities] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -46,6 +53,18 @@ export default function Dashboard() {
                 console.error("Failed to fetch recent activity:", err);
                 setActivities([]);
             }),
+            fetchRecommendedEvents(3) // fetch top 3 recommended events
+                .then(setRecommendedEvents)
+                .catch((err) => {
+                    console.error("Failed to fetch recommended events:", err);
+                    setRecommendedEvents([]);
+                }),
+            fetchRecommendedUsers(3)
+                .then(setRecommendedUsers)
+                .catch((err) => {
+                    console.error("Failed to fetch recommended users:", err);
+                    setRecommendedUsers([]);
+                }),
         ]).finally(() => setIsLoading(false));
     }, []);
 
@@ -75,7 +94,7 @@ export default function Dashboard() {
     return (
         <main className="min-h-screen bg-gray-50 pt-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto space-y-8">
-                {/* Welcome Section */}
+                {/* Welcome, Section */}
                 <div className="animate-fade-in">
                     <WelcomeCard
                         fullName={profile.firstName + " " + profile.lastName}
@@ -88,7 +107,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
                     {connections && (
                         <ConnectionsCard
                             total={connections.total}
@@ -106,13 +125,22 @@ export default function Dashboard() {
                     <EventsCard events={events}/>
                 </div>
 
+                <div className="flex flex-col md:flex-row gap-6">
+                    <div className="flex-1">
+                        <RecommendedEventCard events={recommendedEvents}/>
+                    </div>
+                    <div className="flex-1">
+                        <RecommendedUsersCard users={recommendedUsers}/>
+                    </div>
+                </div>
+
                 {/* Search Section */}
-                <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                <div className="animate-fade-in" style={{animationDelay: '0.2s'}}>
                     <SearchAlumni/>
                 </div>
 
                 {/* Bottom Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in" style={{animationDelay: '0.3s'}}>
                     {/*<OpportunitiesCard opportunities={opportunities} />*/}
                     <RecentActivityCard activities={activities}/>
                 </div>

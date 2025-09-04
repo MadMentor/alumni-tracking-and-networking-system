@@ -96,9 +96,7 @@ public class ProfileController {
     public ResponseEntity<ProfileDto> update(@PathVariable int id,
                                              @RequestPart("profile") @Valid ProfileDto profileDto,
                                              @RequestPart(value = "image", required = false) MultipartFile image) {
-//        if (!Objects.equals(id, profileDto.getId())) {
-//            throw new IllegalArgumentException("ID in URl and body must match!");
-//        }
+
         log.info("Updating profile with id: {}", id);
         profileDto.setId(id);
         log.info("ProfileDto after setting ID: {}", profileDto);

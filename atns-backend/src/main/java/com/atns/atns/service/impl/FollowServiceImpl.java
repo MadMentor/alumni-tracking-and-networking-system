@@ -43,19 +43,21 @@ public class FollowServiceImpl implements FollowService {
                 .build();
 
         followRepo.save(follow);
+        log.info("Profile {} followed profile {}", followerId, followedId);
     }
 
     @Override
     @Transactional
     public void unfollowProfile(Integer followerId, Integer followedId) {
-        Profile follower = validateProfileExists(followedId);
-        Profile followed = validateProfileExists(followerId);
+        Profile follower = validateProfileExists(followerId);
+        Profile followed = validateProfileExists(followedId);
 
         if (!followRepo.existsByFollowerAndFollowed(follower, followed)) {
             throw new IllegalStateException("Not following this profile");
         }
 
         followRepo.deleteByFollowerAndFollowed(follower, followed);
+        log.info("Profile {} unfollowed profile {}", followerId, followedId);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class FollowServiceImpl implements FollowService {
     public Page<ProfileDto> getFollowers(Integer profileId, Pageable pageable) {
         Profile profile = validateProfileExists(profileId);
 
-        return followRepo.findByFollowed(profile,pageable)
+        return followRepo.findAllByFollowed(profile,pageable)
                 .map(profileConverter::toDto);
     }
 
@@ -72,7 +74,7 @@ public class FollowServiceImpl implements FollowService {
     public Page<ProfileDto> getFollowing(Integer profileId, Pageable pageable) {
         Profile profile = validateProfileExists(profileId);
 
-        return followRepo.findByFollower(profile, pageable)
+        return followRepo.findAllByFollowed(profile, pageable)
                 .map(profileConverter::toDto);
     }
 

@@ -18,20 +18,22 @@ public interface FollowRepo extends JpaRepository<Follow, Integer> {
     long countByFollowed(Profile profile);
     long countByFollower(Profile profile);
 
-    @Query("SELECT f.follower FROM Follow f WHERE f.followed = :profile")
-    Page<Profile> findByFollowed(@Param("profile") Profile profile, Pageable pageable);
+    Page<Profile> findAllByFollower(Profile profile, Pageable pageable);
+    Page<Profile> findAllByFollowed(Profile profile, Pageable pageable);
 
-    @Query("SELECT f.followed FROM Follow f WHERE f.follower =: profile")
-    Page<Profile> findByFollower(@Param("profile") Profile profile, Pageable pageable);
+    List<Follow> findAllByFollower(Profile profile);
+    List<Follow> findAllByFollowed(Profile profile);
 
     @Query("""
-            SELECT f.followed FROM Follow f
-            WHERE f.follower = :profileId
-            AND EXISTS (
-                SELECT 1 FROM Follow f2
-                WHERE f2.follower = f.followed AND f2.followed = :profileId)
-            """)
-    Page<Profile> getMutualConnection(Integer profileId, Pageable pageable);
+        SELECT f.followed FROM Follow f
+        WHERE f.follower.id = :profileId
+        AND EXISTS (
+            SELECT 1 FROM Follow f2
+            WHERE f2.follower.id = f.followed.id AND f2.followed.id = :profileId
+        )
+        """)
+    Page<Profile> getMutualConnection(@Param("profileId") Integer profileId, Pageable pageable);
+
 
     @Query("SELECT f.followed.id FROM Follow f WHERE f.follower.id = :followerId")
     List<Integer> findFollowedIdsByFollowerId(@Param("followerId") Integer followerId, Pageable pageable);
