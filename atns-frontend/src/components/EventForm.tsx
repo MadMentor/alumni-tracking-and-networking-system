@@ -21,7 +21,7 @@ const EventForm: React.FC = () => {
         eventDescription: "",
         startTime: new Date().toISOString().slice(0, 16), // yyyy-MM-ddTHH:mm for datetime-local input
         endTime: "",
-        location: emptyLocation,
+        eventLocation: emptyLocation,
         category: "",
         active: true,
     });
@@ -41,7 +41,7 @@ const EventForm: React.FC = () => {
                         ...data,
                         startTime: data.startTime ? data.startTime.slice(0, 16) : "",
                         endTime: data.endTime ? data.endTime.slice(0, 16) : "",
-                        location: data.location || emptyLocation,
+                        eventLocation: data.eventLocation || emptyLocation,
                     });
                 })
                 .catch(() => setError("Failed to load event data"))
@@ -58,7 +58,7 @@ const EventForm: React.FC = () => {
     const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData,
-            location: { ...formData.location, [e.target.name]: e.target.value },
+            eventLocation: { ...formData.eventLocation, [e.target.name]: e.target.value },
         });
     };
 
@@ -183,7 +183,7 @@ const EventForm: React.FC = () => {
                                             id="address"
                                             name="address"
                                             type="text"
-                                            value={formData.location?.address || ""}
+                                            value={formData.eventLocation?.address || ""}
                                             onChange={handleLocationChange}
                                             maxLength={500}
                                             className="form-input"
@@ -196,7 +196,7 @@ const EventForm: React.FC = () => {
                                             id="onlineLink"
                                             name="onlineLink"
                                             type="url"
-                                            value={formData.location?.onlineLink || ""}
+                                            value={formData.eventLocation?.onlineLink || ""}
                                             onChange={handleLocationChange}
                                             maxLength={500}
                                             className="form-input"
@@ -209,7 +209,7 @@ const EventForm: React.FC = () => {
                                             id="roomNumber"
                                             name="roomNumber"
                                             type="text"
-                                            value={formData.location?.roomNumber || ""}
+                                            value={formData.eventLocation?.roomNumber || ""}
                                             onChange={handleLocationChange}
                                             maxLength={30}
                                             className="form-input"
