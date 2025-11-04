@@ -18,8 +18,12 @@ public interface FollowRepo extends JpaRepository<Follow, Integer> {
     long countByFollowed(Profile profile);
     long countByFollower(Profile profile);
 
-    Page<Profile> findAllByFollower(Profile profile, Pageable pageable);
-    Page<Profile> findAllByFollowed(Profile profile, Pageable pageable);
+    @Query("SELECT f.follower FROM Follow f WHERE f.followed = :profile")
+    Page<Profile> findByFollowed(@Param("profile") Profile profile, Pageable pageable);
+
+    @Query("SELECT f.followed FROM Follow f WHERE f.follower = :profile")
+    Page<Profile> findByFollower(@Param("profile") Profile profile, Pageable pageable);
+
 
     List<Follow> findAllByFollower(Profile profile);
     List<Follow> findAllByFollowed(Profile profile);

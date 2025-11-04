@@ -1,13 +1,44 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Card from "../ui/Card";
-import { User } from "lucide-react";
+import { User, UserPlus, UserCheck } from "lucide-react";
 import type { RecommendedUser } from "../../types/recommendation";
+import { followUser, unfollowUser, fetchFollowingIds } from "../../api/followApi";
+// import axiosInstance from "../../api/axiosInstance";
 
 interface Props {
     users: RecommendedUser[];
+    profileId: number;
 }
 
-export default function RecommendedUsersCard({ users }: Props) {
+export default function RecommendedUsersCard({ users, profileId }: Props) {
+    const [followingIds, setFollowingIds] = useState<Set<number>>(new Set());
+
+    // Fetch initial following ids
+    useEffect(() => {
+        fetchFollowingIds(profileId)
+            .then(ids => setFollowingIds(new Set(ids)))
+            .catch(err => console.error("Failed to fetch following ids:", err));
+    }, [profileId]);
+
+    const toggleFollow = async (targetId: number) => {
+        try {
+            if (followingIds.has(targetId)) {
+                await unfollowUser(profileId, targetId);
+                setFollowingIds(prev => {
+                    const newSet = new Set(prev);
+                    newSet.delete(targetId);
+                    return newSet;
+                });
+            } else {
+                await followUser(profileId, targetId);
+                setFollowingIds(prev => new Set(prev).add(targetId));
+            }
+        } catch (err) {
+            console.error("Failed to toggle follow:", err);
+        }
+    };
+
     return (
         <Card
             title="Recommended Users"
@@ -28,25 +59,40 @@ export default function RecommendedUsersCard({ users }: Props) {
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {users.slice(0, 5).map(user => (
+                    {users.slice(0, 3).map(user => (
                         <div
                             key={user.profileId}
-                            className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-between"
+                            className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors flex justify-between items-center"
                         >
                             <div>
-                                <h4 className="font-medium text-gray-900 text-sm mb-1 line-clamp-1">
+                                <h4 className="font-medium text-gray-900 text-sm mb-1 line-clamp-2">
                                     {user.firstName} {user.lastName}
                                 </h4>
-                                <p className="text-xs text-gray-600 mb-1">{user.faculty}</p>
-                                <p className="text-xs text-purple-600">
-                                    Skills: {Array.from(user.skills).join(", ")}
-                                </p>
+                                <p className="text-xs text-gray-600">{user.faculty}</p>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                    {Array.from(user.skills).map(skill => (
+                                        <span key={skill} className="text-xs bg-gray-200 rounded px-1">
+                      {skill}
+                    </span>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="text-xs text-green-600 font-medium">
-                                {(user.score * 100).toFixed(0)}% match
-                            </div>
+                            <button
+                                onClick={() => toggleFollow(user.profileId)}
+                                className={`btn btn-sm flex items-center gap-1 ${
+                                    followingIds.has(user.profileId) ? "btn-success" : "btn-outline"
+                                }`}
+                            >
+                                {followingIds.has(user.profileId) ? <UserCheck className="w-3 h-3" /> : <UserPlus className="w-3 h-3" />}
+                                {followingIds.has(user.profileId) ? "Following" : "Follow"}
+                            </button>
                         </div>
                     ))}
+                    {users.length > 3 && (
+                        <div className="text-center pt-2">
+                            <p className="text-xs text-gray-500">+{users.length - 3} more recommendations</p>
+                        </div>
+                    )}
                 </div>
             )}
         </Card>

@@ -12,8 +12,11 @@ import com.atns.atns.repo.EventRepo;
 import com.atns.atns.repo.ProfileRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +30,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     private final ProfileRepo profileRepo;
     private final EventRepo eventRepo;
 
+    @Transactional(readOnly = true)
     @Override
     public List<RecommendedEventDto> recommendEvents(Integer profileId, int limit) {
         Profile profile = profileRepo.findById(profileId).orElseThrow(() -> {
@@ -37,7 +41,7 @@ public class RecommendationServiceImpl implements RecommendationService {
                 .map(Skill::getName)
                 .collect(Collectors.toSet());
 
-        List<Event> events = eventRepo.findAllActive(); // you can filter by future events
+        List<Event> events = eventRepo.findUpcomingEvent(LocalDateTime.now(), Pageable.unpaged()).getContent();
 
         return events.stream().map(event -> {
                     Set<String> organizerSkills = event.getOrganizer().getSkills().stream()
@@ -70,6 +74,8 @@ public class RecommendationServiceImpl implements RecommendationService {
                     // Weighted sum
                     double totalScore = skillScore * 0.5 + categoryScore * 0.2 + connectionScore * 0.2 + timeScore * 0.1;
 
+                    totalScore = Math.max(0.05, totalScore);
+
                     String location = event.getLocation() != null
                             ? (event.getLocation().getAddress() != null ? event.getLocation().getAddress() : event.getLocation().getOnlineLink())
                             : "";
@@ -83,11 +89,13 @@ public class RecommendationServiceImpl implements RecommendationService {
                             .score(totalScore)
                             .build();
                 })
-                .sorted(Comparator.comparingDouble(RecommendedEventDto::getScore).reversed())
+                .sorted(Comparator.comparingDouble(RecommendedEventDto::getScore).reversed()
+                        .thenComparing(RecommendedEventDto::getStartTime))
                 .limit(limit)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<RecommendedUserDto> recommendUsers(Integer profileId, int limit) {
         Profile profile = profileRepo.findById(profileId).orElseThrow(() -> {
@@ -127,6 +135,8 @@ public class RecommendationServiceImpl implements RecommendationService {
                     // Weighted sum
                     double totalScore = skillScore * 0.5 + facultyScore * 0.2 + batchScore * 0.2 + connectionScore * 0.1;
 
+                    totalScore = Math.max(0.05, totalScore);
+
                     return RecommendedUserDto.builder()
                             .profileId(p.getId())
                             .firstName(p.getFirstName())
@@ -136,6 +146,7 @@ public class RecommendationServiceImpl implements RecommendationService {
                             .score(totalScore)
                             .build();
                 })
+                .filter(u -> u.getScore() > 0.0)
                 .sorted(Comparator.comparingDouble(RecommendedUserDto::getScore).reversed())
                 .limit(limit)
                 .collect(Collectors.toList());

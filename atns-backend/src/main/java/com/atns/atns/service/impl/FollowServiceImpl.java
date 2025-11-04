@@ -65,7 +65,7 @@ public class FollowServiceImpl implements FollowService {
     public Page<ProfileDto> getFollowers(Integer profileId, Pageable pageable) {
         Profile profile = validateProfileExists(profileId);
 
-        return followRepo.findAllByFollowed(profile,pageable)
+        return followRepo.findByFollowed(profile,pageable)
                 .map(profileConverter::toDto);
     }
 
@@ -74,7 +74,7 @@ public class FollowServiceImpl implements FollowService {
     public Page<ProfileDto> getFollowing(Integer profileId, Pageable pageable) {
         Profile profile = validateProfileExists(profileId);
 
-        return followRepo.findAllByFollowed(profile, pageable)
+        return followRepo.findByFollowed(profile, pageable)
                 .map(profileConverter::toDto);
     }
 

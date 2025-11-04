@@ -127,10 +127,10 @@ export default function Dashboard() {
 
                 <div className="flex flex-col md:flex-row gap-6">
                     <div className="flex-1">
-                        <RecommendedEventCard events={recommendedEvents}/>
+                        <RecommendedEventCard events={recommendedEvents} />
                     </div>
                     <div className="flex-1">
-                        <RecommendedUsersCard users={recommendedUsers}/>
+                        <RecommendedUsersCard users={recommendedUsers} profileId={profile?.id!} />
                     </div>
                 </div>
 

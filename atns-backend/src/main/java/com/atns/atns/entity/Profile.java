@@ -14,7 +14,8 @@ import java.util.*;
 
 @Entity
 @Builder
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
@@ -95,12 +96,16 @@ public class Profile {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Event> events = new ArrayList<>();
 
-    @OneToMany(mappedBy = "follower")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "follower", fetch = FetchType.LAZY)
     private Set<Follow> following = new HashSet<>();
 
-    @OneToMany(mappedBy = "followed")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "followed", fetch = FetchType.LAZY)
     private Set<Follow> followers = new HashSet<>();
 }
