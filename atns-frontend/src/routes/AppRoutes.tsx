@@ -4,6 +4,7 @@ import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import Dashboard from "../pages/Dashboard";
 import ProfilePage from "../pages/ProfilePage";
+import ExplorePage from "../pages/ExplorePage";
 import EventList from "../pages/EventList";
 import SkillList from "../pages/SkillList";
 import SkillForm from "../components/SkillForm";
@@ -31,6 +32,7 @@ export default function AppRoutes() {
             <Route path="/users/recommended" element={<RecommendedUsersPage/>}/>
             <Route path="/settings/password" element={<ChangePassword/>}/>
             <Route path="/settings/email" element={<ChangeEmail/>}/>
+            <Route path="/explore" element={<ExplorePage/>}/>
         </Routes>
     );
 }

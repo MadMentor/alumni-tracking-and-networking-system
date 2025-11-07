@@ -18,4 +18,10 @@ public interface ProfileRepo extends JpaRepository<Profile, Integer> {
 
     @Query("SELECT p from Profile p JOIN p.skills s WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :skill, '%'))")
     Page<Profile> findBySkill(@Param("skill") String skill, Pageable pageable);
+
+    Page<Profile> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName, Pageable pageable);
+    Page<Profile> findByBatchYearContainingIgnoreCase(String batchYear, Pageable pageable);
+    Page<Profile> findByCurrentPositionContainingIgnoreCase(String company, Pageable pageable);
+    Page<Profile> findDistinctBySkills_NameContainingIgnoreCase(String skillName, Pageable pageable);
+
 }

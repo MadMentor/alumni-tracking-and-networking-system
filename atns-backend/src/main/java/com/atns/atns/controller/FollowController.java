@@ -2,6 +2,7 @@ package com.atns.atns.controller;
 
 import com.atns.atns.annotation.AuditLog;
 import com.atns.atns.dto.ProfileDto;
+import com.atns.atns.enums.ConnectionStatus;
 import com.atns.atns.service.FollowService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -101,4 +102,19 @@ public class FollowController {
                 .header("X-Total-Count", String.valueOf(count))
                 .body(count);
     }
+
+    @GetMapping("/status/{targetId}")
+    @Transactional(readOnly = true)
+    @AuditLog(action = "CHECK_CONNECTION_STATUS")
+    public ResponseEntity<ConnectionStatus> getConnectionStatus(
+            @PathVariable @Min(1) Integer profileId,
+            @PathVariable @Min(1) Integer targetId) {
+
+        log.debug("Checking connection status between profile {} and {}", profileId, targetId);
+        ConnectionStatus status = followService.getConnectionStatus(profileId, targetId);
+        log.info("Connection status between {} and {}: {}", profileId, targetId, status);
+
+        return ResponseEntity.ok(status);
+    }
+
 }

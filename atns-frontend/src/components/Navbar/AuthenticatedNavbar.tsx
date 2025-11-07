@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, LogOut, User, Calendar, Award, Home, Settings } from "lucide-react";
 
-export default function DashboardNavbar() {
+export default function AuthenticatedNavbar() {
     const navigate = useNavigate();
     const location = useLocation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,7 +17,7 @@ export default function DashboardNavbar() {
 
     const navItems = [
         { to: "/dashboard", label: "Dashboard", icon: <Home className="w-4 h-4" /> },
-        { to: "/profile", label: "Profile", icon: <User className="w-4 h-4" /> },
+        { to: "/explore", label: "Explore", icon: <User className="w-4 h-4" /> },
         { to: "/events", label: "Events", icon: <Calendar className="w-4 h-4" /> },
         { to: "/skills", label: "Skills", icon: <Award className="w-4 h-4" /> },
     ];

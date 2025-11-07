@@ -16,6 +16,9 @@ import com.atns.atns.service.ProfileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -155,6 +158,35 @@ public class ProfileServiceImpl implements ProfileService {
         User user = userRepo.findById(profileDto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", profileDto.getUserId()));
         return user.getRoles();
+    }
+
+    @Override
+    public List<ProfileDto> exploreProfiles(Integer profileId, int page, int size, String search, String type) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Profile> profilesPage;
+
+        if (search == null || search.trim().isEmpty()) {
+            profilesPage = profileRepo.findAll(pageable);
+        } else {
+            switch (type.toLowerCase()) {
+                case "batch":
+                    profilesPage = profileRepo.findByBatchYearContainingIgnoreCase(search, pageable);
+                    break;
+                case "company":
+                    profilesPage = profileRepo.findByCurrentPositionContainingIgnoreCase(search, pageable);
+                    break;
+                case "skill":
+                    profilesPage = profileRepo.findDistinctBySkills_NameContainingIgnoreCase(search, pageable);
+                    break;
+                default: // name
+                    profilesPage = profileRepo.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(search, search, pageable);
+            }
+        }
+
+        return profilesPage.stream()
+                .filter(p -> !p.getId().equals(profileId))
+                .map(profileConverter::toDto)
+                .toList();
     }
 
 

@@ -1,5 +1,6 @@
 package com.atns.atns.controller;
 
+import com.atns.atns.annotation.AuditLog;
 import com.atns.atns.dto.ProfileDto;
 import com.atns.atns.dto.SkillDto;
 import com.atns.atns.entity.User;
@@ -124,5 +125,21 @@ public class ProfileController {
         profileService.delete(id);
         log.info("Deleted profile: {}", id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/explore")
+    @Transactional(readOnly = true)
+    @AuditLog(action = "EXPLORE_PROFILES")
+    public ResponseEntity<List<ProfileDto>> exploreProfiles(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "name") String type,
+            @RequestHeader("X-Profile-Id") Integer profileId
+    ) {
+        log.debug("Exploring profiles (page={}, size={}, search='{}', type='{}')", page, size, search, type);
+
+        List<ProfileDto> results = profileService.exploreProfiles(profileId, page, size, search, type);
+        return ResponseEntity.ok(results);
     }
 }

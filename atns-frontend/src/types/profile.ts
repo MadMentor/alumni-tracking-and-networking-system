@@ -11,4 +11,5 @@ export interface Profile {
     faculty: string;
     currentPosition: string;
     profileImageUrl?: string;
+    skills?: { id: number; name: string }[];
 }

@@ -5,7 +5,7 @@ import ConnectionsCard from "../components/Dashboard/ConnectionsCard";
 import EventsCard from "../components/Dashboard/EventsCard";
 import RecommendedEventCard from "../components/Dashboard/RecommendedEventCard.tsx";
 import RecommendedUsersCard from "../components/Dashboard/RecommendedUsersCard.tsx";
-import SearchAlumni from "../components/Dashboard/SearchAlumni";
+import Explore from "../components/Dashboard/Explore.tsx";
 // import OpportunitiesCard from "../components/Dashboard/OpportunitiesCard";
 import RecentActivityCard from "../components/Dashboard/RecentActivityCard";
 import type {Profile} from "../types/profile";
@@ -136,7 +136,7 @@ export default function Dashboard() {
 
                 {/* Search Section */}
                 <div className="animate-fade-in" style={{animationDelay: '0.2s'}}>
-                    <SearchAlumni/>
+                    <Explore/>
                 </div>
 
                 {/* Bottom Section */}

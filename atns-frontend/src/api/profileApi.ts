@@ -1,60 +1,53 @@
 import axiosInstance from "./axiosInstance";
 import type { Profile } from "../types/profile";
 
-// Fetch the current user's profile
+interface FetchProfilesParams {
+    page?: number;
+    size?: number;
+    search?: string;
+    searchType?: string;
+}
+
 export async function fetchProfile(): Promise<Profile> {
     const res = await axiosInstance.get<Profile>("/profiles/me");
     return res.data;
 }
 
-// Update profile by ID
+export async function fetchProfileById(profileId: number): Promise<Profile> {
+    const res = await axiosInstance.get<Profile>(`/profiles/${profileId}`);
+    return res.data;
+}
+
 export async function updateProfile(profileId: number, formData: FormData): Promise<Profile> {
-    // Convert dateOfBirth to proper format if it exists
-    // const profileData = { ...data };
-    // if (profileData.dateOfBirth) {
-    //     // Ensure dateOfBirth is in YYYY-MM-DD format
-    //     const date = new Date(profileData.dateOfBirth);
-    //     profileData.dateOfBirth = date.toISOString().split('T')[0];
-    // }
-    //
-    // // Ensure batchYear is a number
-    // if (profileData.batchYear) {
-    //     profileData.batchYear = typeof profileData.batchYear === 'string'
-    //         ? parseInt(profileData.batchYear)
-    //         : profileData.batchYear;
-    // }
-    
-    const res = await axiosInstance.put<Profile>(`/profiles/${profileId}`, formData,{
-        headers : {
-            "Content-Type": "multipart/form-data",
-        },
-        });
-    return res.data as Profile;
-}
-
-// Create a new profile
-export async function createProfile(formData: FormData) {
-    // Convert dateOfBirth to proper format if it exists
-    // const profileData = { ...data };
-    // if (profileData.dateOfBirth) {
-    //     // Ensure dateOfBirth is in YYYY-MM-DD format
-    //     const date = new Date(profileData.dateOfBirth);
-    //     profileData.dateOfBirth = date.toISOString().split('T')[0];
-    // }
-    //
-    // // Ensure batchYear is a number
-    // if (profileData.batchYear) {
-    //     profileData.batchYear = typeof profileData.batchYear === 'string'
-    //         ? parseInt(profileData.batchYear)
-    //         : profileData.batchYear;
-    // }
-    
-    const res = await axiosInstance.post("/profiles", formData, {
-        headers: {
-            "Content-Type": "multipart/form-data",
-        }
+    const res = await axiosInstance.put<Profile>(`/profiles/${profileId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
     });
-    return res.data as Profile;
+    return res.data;
 }
 
+export async function createProfile(formData: FormData): Promise<Profile> {
+    const res = await axiosInstance.post<Profile>("/profiles", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data;
+}
 
+// Fetch profiles for Explore page
+export async function fetchProfilesExplore(
+    profileId: number,
+    page: number,
+    size: number,
+    search: string,
+    searchType: string
+): Promise<Profile[]> {
+    const res = await axiosInstance.get<Profile[]>("/profiles/explore", {
+        params: {
+            page: Number(page) || 0,
+            size: Number(size) || 10,
+            search: search || "",
+            searchType: searchType || "",
+        },
+        headers: { "X-Profile-Id": profileId },
+    });
+    return res.data;
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchRecommendedUsers } from "../api/recommendationApi";
 import type { RecommendedUser } from "../types/recommendation";
 
@@ -9,7 +9,7 @@ export default function RecommendedUsersPage({ profileId }: { profileId: number 
     useEffect(() => {
         async function loadUsers() {
             try {
-                const data = await fetchRecommendedUsers(profileId, 20); // increase limit
+                const data = await fetchRecommendedUsers(profileId); // increase limit
                 setUsers(data);
             } catch (err) {
                 console.error("Failed to fetch recommended users", err);

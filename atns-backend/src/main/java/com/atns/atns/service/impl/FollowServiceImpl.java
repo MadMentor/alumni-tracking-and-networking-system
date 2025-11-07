@@ -4,6 +4,7 @@ import com.atns.atns.converter.ProfileConverter;
 import com.atns.atns.dto.ProfileDto;
 import com.atns.atns.entity.Follow;
 import com.atns.atns.entity.Profile;
+import com.atns.atns.enums.ConnectionStatus;
 import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.repo.FollowRepo;
 import com.atns.atns.repo.ProfileRepo;
@@ -74,7 +75,7 @@ public class FollowServiceImpl implements FollowService {
     public Page<ProfileDto> getFollowing(Integer profileId, Pageable pageable) {
         Profile profile = validateProfileExists(profileId);
 
-        return followRepo.findByFollowed(profile, pageable)
+        return followRepo.findByFollower(profile, pageable)
                 .map(profileConverter::toDto);
     }
 
@@ -92,6 +93,21 @@ public class FollowServiceImpl implements FollowService {
         Profile profile = validateProfileExists(profileId);
 
         return followRepo.countByFollower(profile);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ConnectionStatus getConnectionStatus(Integer currentProfileId, Integer otherProfileId) {
+        Profile current = validateProfileExists(currentProfileId);
+        Profile other = validateProfileExists(otherProfileId);
+
+        if (followRepo.existsByFollowerAndFollowed(current, other)) {
+            if (followRepo.existsByFollowerAndFollowed(other, current)) {
+                return ConnectionStatus.CONNECTED;
+            }
+            return ConnectionStatus.FOLLOWED;
+        }
+        return ConnectionStatus.NONE;
     }
 
     private Profile validateProfileExists(Integer profileId) {

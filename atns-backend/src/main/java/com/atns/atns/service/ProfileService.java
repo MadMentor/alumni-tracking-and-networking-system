@@ -19,4 +19,5 @@ public interface ProfileService {
     List<SkillDto> findSkillsByProfileId(Integer id);
     void delete(Integer id);
     Set<Role> getUserRole(Integer organizerId);
+    List<ProfileDto> exploreProfiles(Integer profileId, int page, int size, String search, String type);
 }
