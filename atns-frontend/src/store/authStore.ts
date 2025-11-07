@@ -1,53 +1,57 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+// src/store/authStore.ts
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-interface User {
-    id: number;
-    username: string;
-    email: string;
-    roles: string[];
-}
-
-interface AuthState {
-    user: User | null;
+export interface AuthState {
+    username: string | null;
     token: string | null;
+    refreshToken: string | null;
+    roles: string[] | null;
     isAuthenticated: boolean;
-    login: (user: User, token: string) => void;
+    login: (username: string, token: string, refreshToken: string, roles: string[]) => void;
     logout: () => void;
-    updateUser: (user: User) => void;
+    updateUser: (username: string) => void;
+    updateToken: (token: string) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
     persist(
         (set) => ({
-            user: null,
+            username: null,
             token: null,
+            refreshToken: null,
+            roles: null,
             isAuthenticated: false,
-            login: (user: User, token: string) =>
+            login: (username, token, refreshToken, roles) =>
                 set({
-                    user,
+                    username,
                     token,
+                    refreshToken,
+                    roles,
                     isAuthenticated: true,
                 }),
+
             logout: () =>
                 set({
-                    user: null,
+                    username: null,
                     token: null,
+                    refreshToken: null,
+                    roles: null,
                     isAuthenticated: false,
                 }),
-            updateUser: (user: User) =>
-                set((state) => ({
-                    ...state,
-                    user,
-                })),
+
+            updateUser: (username) => set((state) => ({ ...state, username })),
+            updateToken: (token) => set((state) => ({ ...state, token })),
         }),
         {
-            name: 'auth-storage',
+            name: "auth-storage",
             partialize: (state) => ({
-                user: state.user,
+                username: state.username,
                 token: state.token,
+                refreshToken: state.refreshToken,
                 isAuthenticated: state.isAuthenticated,
+                roles: state.roles,
             }),
         }
     )
-); 
+);

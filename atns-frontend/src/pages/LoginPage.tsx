@@ -1,101 +1,99 @@
-// src/pages/LoginPage.tsx
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import LoginForm from "../components/LoginForm";
-import {useNavigate} from "react-router-dom";
-import axiosInstance from "../api/axiosInstance.ts";
-import {fetchProfile} from "../api/profileApi.ts";
+import { useAuthStore } from "../store/authStore";
+import { loginApi } from "../api/loginApi";
+import { fetchProfile } from "../api/profileApi";
 
 const LoginPage: React.FC = () => {
     const navigate = useNavigate();
+    const authStore = useAuthStore();
+
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
     const [checkingAuth, setCheckingAuth] = useState(true);
 
+    // Auto-hide alerts
     useEffect(() => {
         if (alertMessage) {
             const timer = setTimeout(() => {
                 setAlertMessage(null);
                 setAlertType(null);
             }, 2000);
-
             return () => clearTimeout(timer);
         }
     }, [alertMessage]);
 
-    function isTokenExpired(token: string | null): boolean {
-        if (!token) return true;
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const expiry = payload.exp * 1000;
-            return Date.now() > expiry;
-        } catch (e) {
-            return true; // invalid token format treated as expired
-        }
-    }
-
+    // Check token on mount - FIXED: Only run once on component mount
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token || isTokenExpired(token)) {
-            localStorage.removeItem('token');
+        const token = authStore.token;
+
+        if (!token) {
+            setCheckingAuth(false);
+            return;
+        }
+
+        if (isTokenExpired(token)) {
+            authStore.logout();
             setCheckingAuth(false);
         } else {
             navigate("/dashboard");
         }
-    }, []);
+    }, []); // Empty dependency array to run only once on mount
+
+    function isTokenExpired(token: string | null): boolean {
+        if (!token) return true;
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            const expiry = payload.exp * 1000;
+            return Date.now() > expiry;
+        } catch {
+            return true;
+        }
+    }
 
     const getErrorMessage = (error: unknown): string => {
-        if (error && typeof error === 'object' && 'response' in error) {
-            const errorResponse = error as { response?: { status?: number; data?: { message?: string } } };
-            const status = errorResponse.response?.status;
-            const message = errorResponse.response?.data?.message;
-            
+        if (error && typeof error === "object" && "response" in error) {
+            const err = error as { response?: { status?: number; data?: { message?: string } } };
+            const status = err.response?.status;
+            const message = err.response?.data?.message;
+
             switch (status) {
-                case 401:
-                    return "Invalid username or password. Please check your credentials.";
-                case 404:
-                    return "Account not found. Please check your username or register a new account.";
-                case 400:
-                    if (message?.includes("username")) {
-                        return "Username is required. Please enter your username.";
-                    }
-                    if (message?.includes("password")) {
-                        return "Password is required. Please enter your password.";
-                    }
-                    return "Invalid login data. Please check your input.";
-                case 422:
-                    return "Validation failed. Please check your input and try again.";
-                case 500:
-                    return "Server error. Please try again later.";
-                default:
-                    return message || "Login failed. Please check your credentials and try again.";
+                case 401: return "Invalid email or password.";
+                case 404: return "Account not found.";
+                case 400: return message || "Invalid login data.";
+                case 422: return "Validation failed. Check your input.";
+                case 500: return "Server error. Try again later.";
+                default: return message || "Login failed.";
             }
         }
-        
-        return "Login failed. Please check your credentials and try again.";
+        return "Login failed. Please check your credentials.";
     };
 
     const handleLogin = async (email: string, password: string) => {
         try {
-            const response = await axiosInstance.post("/auth/login", {
-                email,
-                password,
-            });
-
-            if (response.data.token) {
-                localStorage.setItem("token", response.data.token);
+            console.log("Starting login...");
+            // Call backend login API
+            const data = await loginApi({ email, password });
+            console.log("Login API response:", data);
+            if (!data.token || data.token === "null" || data.token === "undefined") {
+                throw new Error("Invalid token received from server");
             }
 
+            // Save user & token in Zustand
+            authStore.login(
+                data.username,
+                data.token,
+                data.refreshToken,
+                Array.from(data.roles)
+            );
+
+            // Fetch profile after login
             const profile = await fetchProfile();
-            if (profile.id !== undefined && profile.id !== null) {
-                localStorage.setItem("profileId", profile.id.toString());
-            }
-
-            if (response.data.roles) {
-                localStorage.setItem("roles", JSON.stringify(response.data.roles));
-            }
+            if (profile.id) localStorage.setItem("profileId", profile.id.toString());
 
             setAlertType("success");
-            setAlertMessage("Login success! Redirecting to dashboard...");
+            setAlertMessage("Login successful! Redirecting...");
 
             setTimeout(() => {
                 setAlertMessage(null);
@@ -113,11 +111,11 @@ const LoginPage: React.FC = () => {
         setAlertType(null);
     };
 
-    if (checkingAuth) return <div className="text-center mt-20">Checking authentication...</div>;
+    if (checkingAuth)
+        return <div className="text-center mt-20">Checking authentication...</div>;
 
     return (
         <>
-            {/* Alert Banner */}
             {alertMessage && (
                 <div
                     style={{
@@ -151,8 +149,6 @@ const LoginPage: React.FC = () => {
                     </button>
                 </div>
             )}
-
-            {/* Full-screen layout delegated to LoginForm */}
             <LoginForm onLogin={handleLogin} />
         </>
     );

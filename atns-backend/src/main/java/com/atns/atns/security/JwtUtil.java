@@ -42,13 +42,22 @@ public class JwtUtil {
         }
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails);
+    public String generateAccessToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, expirationTime);
     }
 
-    public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder().claims(extraClaims).subject(((CustomUserDetails) userDetails).getEmail()).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(
-                System.currentTimeMillis() + expirationTime)).signWith(secretKey).compact();
+    public String generateRefreshToken(UserDetails userDetails) {
+        long refreshExpiration = 24 * 60 * 60 * 1000L;
+        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+    }
+    public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long validity) {
+        return Jwts.builder()
+                .claims(extraClaims)
+                .subject(((CustomUserDetails) userDetails).getEmail())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + validity))
+                .signWith(secretKey)
+                .compact();
     }
 
     public String extractUsername(String token) {

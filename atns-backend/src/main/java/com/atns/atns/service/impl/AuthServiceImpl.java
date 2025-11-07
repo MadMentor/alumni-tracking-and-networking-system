@@ -45,12 +45,21 @@ public class AuthServiceImpl implements AuthService {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String token = jwtUtil.generateToken((UserDetails) authentication.getPrincipal());
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+            String accessToken = jwtUtil.generateAccessToken(userDetails);
+            String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
             Set<String> roles =
                     authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
 
-            return LoginResponseDto.builder().username(loginRequestDto.getEmail()).token(token).roles(roles).build();
+            return LoginResponseDto.builder()
+                    .username(loginRequestDto
+                            .getEmail())
+                    .token(accessToken)
+                    .refreshToken(refreshToken)
+                    .roles(roles)
+                    .build();
         } catch (BadCredentialsException e) {
             throw new InvalidCredentialsException();
         }
@@ -59,8 +68,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponseDto register(RegisterRequestDto registerRequestDto) {
         validateRegistrationInput(registerRequestDto);
-
-
 
         Set<Role> role = processRoles(registerRequestDto.getRole());
 
@@ -72,11 +79,17 @@ public class AuthServiceImpl implements AuthService {
 
         User savedUser = userRepo.save(user);
 
-        String token = jwtUtil.generateToken(new CustomUserDetails(savedUser));
+        UserDetails userDetails = new CustomUserDetails(savedUser);
 
+        String accessToken = jwtUtil.generateAccessToken(userDetails);
+        String refreshToken = jwtUtil.generateRefreshToken(userDetails);
         log.info("Successfully registered user {}", savedUser.getId());
 
-        return LoginResponseDto.builder().username(user.getUsername()).token(token).build();
+        return LoginResponseDto.builder()
+                .username(user.getUsername())
+                .token(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     private void validateRegistrationInput(RegisterRequestDto dto) {

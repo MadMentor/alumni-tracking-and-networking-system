@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, LogOut, User, Calendar, Award, Home, Settings } from "lucide-react";
+import { useAuthStore } from "../../store/authStore.ts";
 
 export default function AuthenticatedNavbar() {
     const navigate = useNavigate();
@@ -11,8 +12,8 @@ export default function AuthenticatedNavbar() {
     const handleLogout = () => {
         const confirmed = window.confirm("Are you sure you want to logout?");
         if (!confirmed) return;
-        localStorage.removeItem("token");
-        navigate("/login");
+        useAuthStore.getState().logout();
+        navigate("");
     };
 
     const navItems = [

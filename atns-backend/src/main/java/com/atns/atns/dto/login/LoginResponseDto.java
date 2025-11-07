@@ -12,7 +12,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginResponseDto {
-    private String token;
     private String username;
+    private String token;
+    private String refreshToken;
     private Set<String> roles;
 }

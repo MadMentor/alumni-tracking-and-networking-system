@@ -4,11 +4,11 @@ import AuthenticatedNavbar from "./components/Navbar/AuthenticatedNavbar.tsx";
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastContainer } from './components/ui/Toast';
 import { useLocation } from 'react-router-dom';
+import { useAuthStore } from "./store/authStore.ts";
 
 function App() {
     const location = useLocation();
-    const token = localStorage.getItem("token"); // force login for UI/UX work
-
+    const token = useAuthStore.getState().token;
     // Define public routes (where AuthenticatedNavbar should NOT be shown)
     const publicRoutes = ['/login', '/signup'];
     const isPublicRoute = publicRoutes.some(route => location.pathname.startsWith(route));

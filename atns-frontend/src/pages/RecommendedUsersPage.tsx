@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { fetchRecommendedUsers } from "../api/recommendationApi";
 import type { RecommendedUser } from "../types/recommendation";
 
-export default function RecommendedUsersPage({ profileId }: { profileId: number }) {
+export default function RecommendedUsersPage() {
+    const profileId = Number(localStorage.getItem("profileId"));
     const [users, setUsers] = useState<RecommendedUser[]>([]);
     const [loading, setLoading] = useState(true);
 

@@ -5,7 +5,7 @@ import ConnectionsCard from "../components/Dashboard/ConnectionsCard";
 import EventsCard from "../components/Dashboard/EventsCard";
 import RecommendedEventCard from "../components/Dashboard/RecommendedEventCard.tsx";
 import RecommendedUsersCard from "../components/Dashboard/RecommendedUsersCard.tsx";
-import Explore from "../components/Dashboard/Explore.tsx";
+// import Explore from "../components/Dashboard/Explore.tsx";
 // import OpportunitiesCard from "../components/Dashboard/OpportunitiesCard";
 import RecentActivityCard from "../components/Dashboard/RecentActivityCard";
 import type {Profile} from "../types/profile";
@@ -134,10 +134,10 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* Search Section */}
-                <div className="animate-fade-in" style={{animationDelay: '0.2s'}}>
-                    <Explore/>
-                </div>
+                {/*/!* Search Section *!/*/}
+                {/*<div className="animate-fade-in" style={{animationDelay: '0.2s'}}>*/}
+                {/*    <Explore onSearch={}/>*/}
+                {/*</div>*/}
 
                 {/* Bottom Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in" style={{animationDelay: '0.3s'}}>

@@ -1,4 +1,5 @@
-import { MapPin, GraduationCap, Briefcase, Clock } from "lucide-react";
+import {MapPin, GraduationCap, Briefcase, Clock} from "lucide-react";
+import {Link} from "react-router-dom";
 
 interface Props {
     fullName: string;
@@ -11,6 +12,7 @@ interface Props {
     status?: 'active' | 'away';
 }
 
+const profileId = localStorage.getItem('profileId');
 const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face';
 
 export default function WelcomeCard({
@@ -98,12 +100,17 @@ export default function WelcomeCard({
                         {/* Quick Actions */}
                         <div className="flex-shrink-0">
                             <div className="flex flex-col gap-2">
-                                <button className="btn btn-primary btn-sm">
-                                    Update Profile
-                                </button>
-                                <button className="btn btn-secondary btn-sm">
-                                    View Details
-                                </button>
+                                <Link to="/profile" className="w-full">
+                                    <button className="btn btn-primary w-full flex items-center justify-center gap-2">
+                                        Update Profile
+                                    </button>
+                                </Link>
+                                {/* View Details button */}
+                                <Link to={`/profiledetails/${profileId}`} className="w-full">
+                                    <button className="btn btn-secondary w-full flex items-center justify-center gap-2">
+                                        View Details
+                                    </button>
+                                </Link>
                             </div>
                         </div>
                     </div>

@@ -141,7 +141,7 @@ export default function ExplorePage() {
                                 className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors flex justify-between items-center"
                             >
                                 <Link
-                                    to={`/profiles/${user.id}`}
+                                    to={`/profiledetails/${user.id}`}
                                     className="flex-1 hover:no-underline"
                                 >
                                     <div>
