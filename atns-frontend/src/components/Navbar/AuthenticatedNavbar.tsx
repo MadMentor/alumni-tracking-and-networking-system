@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, LogOut, User, Calendar, Award, Home, Settings, Sparkles } from "lucide-react";
+import { Menu, X, LogOut, User, Calendar, Home, Settings, Sparkles } from "lucide-react";
 import { useAuthStore } from "../../store/authStore.ts";
 
 export default function AuthenticatedNavbar() {

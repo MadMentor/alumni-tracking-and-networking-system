@@ -87,17 +87,18 @@ public class AuthServiceImpl implements AuthService {
 
         Profile profile = Profile.builder()
                 .user(savedUser)
-                .firstName("")
-                .middleName("")
-                .lastName("")
+                .firstName("First")
+                .middleName("Middle")
+                .lastName("Last")
                 .dateOfBirth(LocalDate.of(2001,01,01))
-                .phoneNumber("")
-                .address("")
+                .phoneNumber("9999999999")
+                .address("Address")
                 .bio("")
-                .profileImageUrl("")
-                .faculty("")
+                .profileImageUrl("\"C:\\Users\\Dell\\OneDrive\\Pictures\\933-9332131_profile-picture-default-png.jpg\"")
+                .faculty("Faculty")
                 .skills(null)
                 .batchYear(2000)
+                .currentPosition("Current Position")
                 .build();
 
         Profile savedProfile = profileRepo.save(profile);
