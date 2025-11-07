@@ -1,6 +1,7 @@
 import axiosInstance from "./axiosInstance";
 
 export interface LoginResponseDto {
+    profileId: number;
     username: string;
     token: string;
     refreshToken: string;

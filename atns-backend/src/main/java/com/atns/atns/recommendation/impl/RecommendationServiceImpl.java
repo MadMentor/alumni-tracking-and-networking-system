@@ -144,6 +144,8 @@ public class RecommendationServiceImpl implements RecommendationService {
                             .faculty(p.getFaculty())
                             .skills(p.getSkills().stream().map(Skill::getName).collect(Collectors.toSet()))
                             .score(totalScore)
+                            .profileImageUrl(p.getProfileImageUrl())
+                            .currentPosition(p.getCurrentPosition())
                             .build();
                 })
                 .filter(u -> u.getScore() > 0.0)

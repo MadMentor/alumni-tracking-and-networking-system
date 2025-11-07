@@ -7,8 +7,9 @@ export interface AuthState {
     token: string | null;
     refreshToken: string | null;
     roles: string[] | null;
+    profileId: number | null;
     isAuthenticated: boolean;
-    login: (username: string, token: string, refreshToken: string, roles: string[]) => void;
+    login: (profileId: number, username: string, token: string, refreshToken: string, roles: string[]) => void;
     logout: () => void;
     updateUser: (username: string) => void;
     updateToken: (token: string) => void;
@@ -21,9 +22,11 @@ export const useAuthStore = create<AuthState>()(
             token: null,
             refreshToken: null,
             roles: null,
+            profileId: null,
             isAuthenticated: false,
-            login: (username, token, refreshToken, roles) =>
+            login: (profileId, username, token, refreshToken, roles) =>
                 set({
+                    profileId,
                     username,
                     token,
                     refreshToken,
@@ -33,6 +36,7 @@ export const useAuthStore = create<AuthState>()(
 
             logout: () =>
                 set({
+                    profileId: null,
                     username: null,
                     token: null,
                     refreshToken: null,
@@ -46,6 +50,7 @@ export const useAuthStore = create<AuthState>()(
         {
             name: "auth-storage",
             partialize: (state) => ({
+                profileId: state.profileId,
                 username: state.username,
                 token: state.token,
                 refreshToken: state.refreshToken,

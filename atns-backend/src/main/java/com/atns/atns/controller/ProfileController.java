@@ -11,6 +11,7 @@ import com.atns.atns.service.impl.ProfileServiceImpl;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -134,12 +135,10 @@ public class ProfileController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String search,
-            @RequestParam(defaultValue = "name") String type,
-            @RequestHeader("X-Profile-Id") Integer profileId
+            @RequestParam(defaultValue = "name") String searchType,
+            @RequestHeader(value = "X-Profile-Id") @Min(1) Integer profileId
     ) {
-        log.debug("Exploring profiles (page={}, size={}, search='{}', type='{}')", page, size, search, type);
-
-        List<ProfileDto> results = profileService.exploreProfiles(profileId, page, size, search, type);
+        List<ProfileDto> results = profileService.exploreProfiles(profileId, page, size, search, searchType);
         return ResponseEntity.ok(results);
     }
 }

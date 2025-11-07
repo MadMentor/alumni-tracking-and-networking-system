@@ -1,5 +1,6 @@
 import {MapPin, GraduationCap, Briefcase, Clock} from "lucide-react";
 import {Link} from "react-router-dom";
+import { useAuthStore } from "../../store/authStore.ts";
 
 interface Props {
     fullName: string;
@@ -12,7 +13,7 @@ interface Props {
     status?: 'active' | 'away';
 }
 
-const profileId = localStorage.getItem('profileId');
+const profileId = useAuthStore.getState().profileId;
 const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face';
 
 export default function WelcomeCard({

@@ -1,7 +1,7 @@
 import axiosInstance from "./axiosInstance";
 import type { Skill } from "../types/skill";
 
-// Get all skills by Id
+// Get all skills by id
 export async function fetchSkills(): Promise<Skill[]> {
     const res = await axiosInstance.get<Skill[]>(`/profiles/me/skills`);
     return res.data;

@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { fetchRecommendedUsers } from "../api/recommendationApi";
 import type { RecommendedUser } from "../types/recommendation";
+import { useAuthStore } from "../store/authStore.ts";
 
 export default function RecommendedUsersPage() {
-    const profileId = Number(localStorage.getItem("profileId"));
+    const profileId = useAuthStore.getState().profileId;
     const [users, setUsers] = useState<RecommendedUser[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function loadUsers() {
             try {
-                const data = await fetchRecommendedUsers(profileId); // increase limit
+                const data = await fetchRecommendedUsers(profileId!); // increase limit
                 setUsers(data);
             } catch (err) {
                 console.error("Failed to fetch recommended users", err);

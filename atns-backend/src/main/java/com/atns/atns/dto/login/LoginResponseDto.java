@@ -16,4 +16,5 @@ public class LoginResponseDto {
     private String token;
     private String refreshToken;
     private Set<String> roles;
+    private Integer profileId;
 }

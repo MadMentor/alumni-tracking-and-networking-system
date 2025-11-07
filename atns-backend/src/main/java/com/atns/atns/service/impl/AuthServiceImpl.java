@@ -3,10 +3,12 @@ package com.atns.atns.service.impl;
 import com.atns.atns.dto.login.LoginRequestDto;
 import com.atns.atns.dto.login.LoginResponseDto;
 import com.atns.atns.dto.RegisterRequestDto;
+import com.atns.atns.entity.Profile;
 import com.atns.atns.entity.User;
 import com.atns.atns.enums.Role;
 import com.atns.atns.exception.EmailAlreadyExistsException;
 import com.atns.atns.exception.InvalidCredentialsException;
+import com.atns.atns.repo.ProfileRepo;
 import com.atns.atns.repo.UserRepo;
 import com.atns.atns.security.CustomUserDetails;
 import com.atns.atns.security.JwtUtil;
@@ -24,6 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final ProfileRepo profileRepo;
 
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
@@ -53,7 +57,9 @@ public class AuthServiceImpl implements AuthService {
             Set<String> roles =
                     authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
 
+            Integer profileId = profileRepo.findByUserEmail(loginRequestDto.getEmail()).get().getId();
             return LoginResponseDto.builder()
+                    .profileId(profileId)
                     .username(loginRequestDto
                             .getEmail())
                     .token(accessToken)
@@ -79,6 +85,23 @@ public class AuthServiceImpl implements AuthService {
 
         User savedUser = userRepo.save(user);
 
+        Profile profile = Profile.builder()
+                .user(savedUser)
+                .firstName("")
+                .middleName("")
+                .lastName("")
+                .dateOfBirth(LocalDate.of(2001,01,01))
+                .phoneNumber("")
+                .address("")
+                .bio("")
+                .profileImageUrl("")
+                .faculty("")
+                .skills(null)
+                .batchYear(2000)
+                .build();
+
+        Profile savedProfile = profileRepo.save(profile);
+
         UserDetails userDetails = new CustomUserDetails(savedUser);
 
         String accessToken = jwtUtil.generateAccessToken(userDetails);
@@ -86,6 +109,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("Successfully registered user {}", savedUser.getId());
 
         return LoginResponseDto.builder()
+                .profileId(savedProfile.getId())
                 .username(user.getUsername())
                 .token(accessToken)
                 .refreshToken(refreshToken)

@@ -14,6 +14,7 @@ import RecommendedUsersPage from "../pages/RecommendedUsersPage.tsx";
 import ChangePassword from "../pages/settings/ChangePassword";
 import ChangeEmail from "../pages/settings/ChangeEmail";
 import ProfileDetailsPage from "../pages/ProfileDetailsPage.tsx";
+import RecommendationPage from "../pages/RecommendationPage.tsx";
 
 export default function AppRoutes() {
     return (
@@ -29,8 +30,9 @@ export default function AppRoutes() {
             <Route path="/skills" element={<SkillList/>}/>
             <Route path="/skills/new" element={<SkillForm/>}/>
             <Route path="/skills/:id/edit" element={<SkillForm/>}/>
+            <Route path="/recommendations" element={<RecommendationPage/>}/>
             <Route path="/events/recommended" element={<RecommendedEventsPage/>}/>
-            <Route path="/users/recommended" element={<RecommendedUsersPage />}/>
+            <Route path="/users/recommended" element={<RecommendedUsersPage/>}/>
             <Route path="/settings/password" element={<ChangePassword/>}/>
             <Route path="/settings/email" element={<ChangeEmail/>}/>
             <Route path="/explore" element={<ExplorePage/>}/>

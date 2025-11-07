@@ -1,10 +1,11 @@
 import axiosInstance from "./axiosInstance";
 import type { RecommendedEvent, RecommendedUser } from "../types/recommendation";
+import { useAuthStore } from "../store/authStore.ts";
 
 function getProfileId(): number {
-    const profileId = localStorage.getItem("profileId");
-    if (!profileId) throw new Error("Profile ID not found in localStorage");
-    return parseInt(profileId, 10);
+    const profileId = useAuthStore.getState().profileId;
+    if (!profileId) throw new Error("Profile ID not found in authStore");
+    return profileId;
 }
 
 export async function fetchRecommendedEvents( limit = 10): Promise<RecommendedEvent[]> {

@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { fetchRecommendedEvents } from "../api/recommendationApi";
 import type { RecommendedEvent } from "../types/recommendation";
+import { useAuthStore } from "../store/authStore.ts";
 
 export default function RecommendedEventsPage() {
-    const profileId = Number(localStorage.getItem("profileId"));
+    const profileId = useAuthStore.getState().profileId;
     const [events, setEvents] = useState<RecommendedEvent[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function loadEvents() {
             try {
-                const data = await fetchRecommendedEvents(profileId); // increase limit
+                const data = await fetchRecommendedEvents(profileId!); // increase limit
                 setEvents(data);
             } catch (err) {
                 console.error("Failed to fetch recommended events", err);

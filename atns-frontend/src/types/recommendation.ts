@@ -14,4 +14,6 @@ export interface RecommendedUser {
     faculty: string;
     skills: string[];
     score: number;
+    profileImageUrl?: string;
+    currentPosition: string;
 }

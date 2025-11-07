@@ -17,5 +17,7 @@ public class RecommendedUserDto {
     private String lastName;
     private String faculty;
     private Set<String> skills;
-    private double score;
+    private Double score;
+    private String profileImageUrl;
+    private String currentPosition;
 }

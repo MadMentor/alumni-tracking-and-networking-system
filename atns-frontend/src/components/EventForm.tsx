@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createEvent, updateEvent, fetchEventById } from "../api/eventApi";
 import type { Event, EventLocation } from "../types/event";
 import { CalendarPlus } from "lucide-react";
+import { useAuthStore } from "../store/authStore.ts";
 
 const emptyLocation: EventLocation = {
     address: "",
@@ -82,7 +83,7 @@ const EventForm: React.FC = () => {
         // Convert date-time local string to ISO string for backend
         const payload = {
             ...formData,
-            organizerProfileId: parseInt(localStorage.getItem("profileId")!),
+            organizerProfileId: useAuthStore.getState().profileId,
             startTime: new Date(formData.startTime).toISOString(),
             endTime: formData.endTime ? new Date(formData.endTime).toISOString() : null,
         };

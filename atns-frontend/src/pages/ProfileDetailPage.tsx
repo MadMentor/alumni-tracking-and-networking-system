@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import FollowButton from "../components/FollowButton";
+import { useAuthStore } from "../store/authStore.ts";
 
 type Profile = {
     profileId: number;
@@ -23,7 +24,7 @@ type Event = {
 
 export default function ProfileDetailPage() {
     const { id } = useParams<{ id: string }>();
-    const profileId = Number(localStorage.getItem("profileId"));
+    const profileId = useAuthStore.getState().profileId;
     const [profile, setProfile] = useState<Profile | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -63,7 +64,7 @@ export default function ProfileDetailPage() {
                     </p>
                 </div>
                 <FollowButton
-                    currentProfileId={profileId}
+                    currentProfileId={profileId!}
                     targetProfileId={profile.profileId}
                 />
             </div>

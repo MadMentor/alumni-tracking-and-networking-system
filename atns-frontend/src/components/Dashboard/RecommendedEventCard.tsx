@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Card from "../ui/Card";
-import { Calendar, MapPin, Clock, Sparkles } from "lucide-react";
+import { /*Calendar,*/ MapPin, Clock, Sparkles } from "lucide-react";
 import type { RecommendedEvent } from "../../types/recommendation"; // define this type separately
 
 interface Props {

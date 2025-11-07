@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import LoginForm from "../components/LoginForm";
 import { useAuthStore } from "../store/authStore";
 import { loginApi } from "../api/loginApi";
-import { fetchProfile } from "../api/profileApi";
 
 const LoginPage: React.FC = () => {
     const navigate = useNavigate();
@@ -82,6 +81,7 @@ const LoginPage: React.FC = () => {
 
             // Save user & token in Zustand
             authStore.login(
+                data.profileId,
                 data.username,
                 data.token,
                 data.refreshToken,
@@ -89,9 +89,6 @@ const LoginPage: React.FC = () => {
             );
 
             // Fetch profile after login
-            const profile = await fetchProfile();
-            if (profile.id) localStorage.setItem("profileId", profile.id.toString());
-
             setAlertType("success");
             setAlertMessage("Login successful! Redirecting...");
 

@@ -1,39 +1,28 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Card from "../components/ui/Card";
-import { User, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import FollowButton from "../components/FollowButton";
-import { fetchRecommendedUsers } from "../api/recommendationApi";
 import { fetchProfilesExplore } from "../api/profileApi";
-import type { RecommendedUser } from "../types/recommendation";
 import type { Profile } from "../types/profile";
 import Explore from "../components/Dashboard/Explore";
+import { useAuthStore } from "../store/authStore"
 
 export default function ExplorePage() {
-    const [recommended, setRecommended] = useState<RecommendedUser[]>([]);
     const [explore, setExplore] = useState<Profile[]>([]);
     const [search, setSearch] = useState("");
     const [searchType, setSearchType] = useState<"name" | "batch" | "company" | "skill">("name");
     const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(false);
     const size = 10;
-    const profileId = Number(localStorage.getItem("profileId"));
-
-    // Fetch recommended users
-    useEffect(() => {
-        const fetchRecommended = async () => {
-            const data = await fetchRecommendedUsers(10);
-            setRecommended(data);
-        };
-        fetchRecommended();
-    }, []);
+    const profileId = useAuthStore().profileId;
 
     // Fetch explore users
     useEffect(() => {
         const fetchExplore = async () => {
             setLoading(true);
             try {
-                const data = await fetchProfilesExplore(profileId, page, size, search, searchType);
+                const data = await fetchProfilesExplore(page, size, search, searchType);
                 setExplore(data);
             } catch (err) {
                 console.error(err);
@@ -58,61 +47,6 @@ export default function ExplorePage() {
 
     return (
         <div className="max-w-5xl mx-auto mt-6 space-y-6">
-            {/* Recommended Users Card */}
-            <Card
-                title="Recommended Users"
-                icon={<User className="w-5 h-5 text-blue-500" />}
-                footer={
-                    recommended.length > 0 && (
-                        <Link to="/users/recommended" className="w-full">
-                            <button className="btn btn-primary w-full flex items-center justify-center gap-2">
-                                <User className="w-4 h-4" />
-                                See All Recommendations
-                            </button>
-                        </Link>
-                    )
-                }
-            >
-                {recommended.length === 0 ? (
-                    <div className="text-center py-8">
-                        <User className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                        <p className="text-gray-500 text-sm">No recommended users yet</p>
-                    </div>
-                ) : (
-                    <div className="space-y-4">
-                        {recommended.slice(0, 3).map((user) => (
-                            <div
-                                key={user.profileId}
-                                className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors flex justify-between items-center"
-                            >
-                                <div>
-                                    <h4 className="font-medium text-gray-900 text-sm mb-1 line-clamp-2">
-                                        {user.firstName} {user.lastName}
-                                    </h4>
-                                    <p className="text-xs text-gray-600">{user.faculty}</p>
-                                    <div className="flex flex-wrap gap-1 mt-1">
-                                        {Array.from(user.skills).map((skill) => (
-                                            <span key={skill} className="text-xs bg-gray-200 rounded px-1">
-                                                {skill}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                                <FollowButton
-                                    currentProfileId={profileId}
-                                    targetProfileId={user.profileId}
-                                />
-                            </div>
-                        ))}
-                        {recommended.length > 3 && (
-                            <div className="text-center pt-2">
-                                <p className="text-xs text-gray-500">+{recommended.length - 3} more recommendations</p>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </Card>
-
             {/* Explore Component */}
             <Explore onSearch={handleExploreSearch} />
 
@@ -152,20 +86,19 @@ export default function ExplorePage() {
                                         <div className="flex flex-wrap gap-1 mt-1">
                                             {user.skills?.slice(0, 3).map((skill) => (
                                                 <span key={skill.id} className="text-xs bg-gray-200 rounded px-1">
-            {skill.name} {/* use skill.name */}
-        </span>
+                                                    {skill.name}
+                                                </span>
                                             ))}
                                             {user.skills && user.skills.length > 3 && (
                                                 <span className="text-xs text-gray-500">
-            +{user.skills.length - 3} more
-        </span>
+                                                    +{user.skills.length - 3} more
+                                                </span>
                                             )}
                                         </div>
-
                                     </div>
                                 </Link>
                                 <FollowButton
-                                    currentProfileId={profileId}
+                                    currentProfileId={profileId!}
                                     targetProfileId={user.id!}
                                 />
                             </div>

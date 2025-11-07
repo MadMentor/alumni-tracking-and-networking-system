@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Card from "../ui/Card";
-import { Calendar, MapPin, Clock, ExternalLink } from "lucide-react";
+import { Calendar, MapPin, Clock, /*ExternalLink*/ } from "lucide-react";
 import type { Event } from "../../types/event.ts";
 
 interface Props {

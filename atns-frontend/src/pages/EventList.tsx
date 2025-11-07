@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchEvents, deleteEvent } from "../api/eventApi";
 import type { Event } from "../types/event";
 import { MapPin, Clock, Plus, Edit, Trash2, ExternalLink, Search } from "lucide-react";
-// import { useAuthStore } from "../store/authStore";
+import { useAuthStore } from "../store/authStore";
 
 const EventList: React.FC = () => {
     const [events, setEvents] = useState<Event[]>([]);
@@ -13,7 +13,7 @@ const EventList: React.FC = () => {
 
     const storedRoles = useMemo(() => {
         try {
-            return JSON.parse(localStorage.getItem("roles") || "[]");
+            return useAuthStore.getState().roles || [];
         } catch {
             return [];
         }

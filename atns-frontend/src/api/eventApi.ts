@@ -1,17 +1,18 @@
 import axiosInstance from "./axiosInstance";
 import type { Event } from "../types/event";
+import { useAuthStore } from "../store/authStore.ts";
 
 function getProfileIdHeader() {
-    const profileId = localStorage.getItem("profileId");
+    const profileId = useAuthStore.getState().profileId;
     if (!profileId) {
-        throw new Error("Profile ID not found in localStorage");
+        throw new Error("Profile ID not found in authStore");
     }
     return { "X-Profile-Id": profileId };
 }
 
-function getOrganizerIdHeader(): { "X-Organizer-Id": string } {
-    const organizerId = localStorage.getItem("profileId");
-    if (!organizerId) throw new Error("Organizer ID (profileId) not found in localStorage");
+function getOrganizerIdHeader(): { "X-Organizer-Id": number } {
+    const organizerId = useAuthStore.getState().profileId;
+    if (!organizerId) throw new Error("Organizer ID (profileId) not found in authStore");
     return { "X-Organizer-Id": organizerId };
 }
 

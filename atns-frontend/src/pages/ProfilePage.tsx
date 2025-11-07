@@ -4,6 +4,7 @@ import type { Profile } from "../types/profile";
 import { fetchProfile, updateProfile, createProfile } from "../api/profileApi";
 import Toast from "../components/ui/Toast";
 import type { ToastType } from "../components/ui/Toast";
+import { useAuthStore } from "../store/authStore.ts";
 
 export default function ProfilePage() {
     const [profile, setProfile] = useState<Profile | null>(null);
@@ -82,7 +83,7 @@ export default function ProfilePage() {
         }
 
         // Check if user is authenticated
-        const token = localStorage.getItem("token");
+        const token = useAuthStore.getState().token;
         if (!token) {
             setToast({ message: "You must be logged in to save your profile. Please log in first.", type: "error" });
             return;

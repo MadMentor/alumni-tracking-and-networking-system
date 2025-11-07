@@ -1,8 +1,8 @@
 import axiosInstance from "./axiosInstance.ts";
 
-// const API_BASE = "/api/v1";
 
 import type { Event } from "../types/event";
+import { useAuthStore } from "../store/authStore.ts";
 
 type PageResponse<T> = {
     content: T[];
@@ -31,7 +31,7 @@ export async function fetchConnections() {
 
 export async function fetchEvents():Promise<PageResponse<Event>> {
     const res = await axiosInstance.get<PageResponse<Event>>(`/events/upcoming`, {
-        headers: { "X-Profile-Id": localStorage.getItem("profileId") || "0" }
+        headers: { "X-Profile-Id": useAuthStore.getState().profileId || "0" }
     });
     return res.data;
 }
