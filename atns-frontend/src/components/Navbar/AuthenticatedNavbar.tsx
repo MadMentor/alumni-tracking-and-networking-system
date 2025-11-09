@@ -86,6 +86,20 @@ export default function AuthenticatedNavbar() {
                                         Change Email
                                     </Link>
                                     <Link
+                                        to="/profile"
+                                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                        onClick={() => setIsSettingsOpen(false)}
+                                    >
+                                        Update Profile
+                                    </Link>
+                                    <Link
+                                        to="/skills"
+                                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                        onClick={() => setIsSettingsOpen(false)}
+                                    >
+                                        Update Skill
+                                    </Link>
+                                    <Link
                                         to="/settings/security"
                                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                                         onClick={() => setIsSettingsOpen(false)}
@@ -171,6 +185,26 @@ export default function AuthenticatedNavbar() {
                                             }}
                                         >
                                             Change Email
+                                        </Link>
+                                        <Link
+                                            to="/profile"
+                                            className="flex items-center px-2 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                                            onClick={() => {
+                                                setIsMenuOpen(false);
+                                                setIsSettingsOpen(false);
+                                            }}
+                                        >
+                                            Update Profile
+                                        </Link>
+                                        <Link
+                                            to="/skills"
+                                            className="flex items-center px-2 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                                            onClick={() => {
+                                                setIsMenuOpen(false);
+                                                setIsSettingsOpen(false);
+                                            }}
+                                        >
+                                            Update Skill
                                         </Link>
                                         <Link
                                             to="/settings/security"

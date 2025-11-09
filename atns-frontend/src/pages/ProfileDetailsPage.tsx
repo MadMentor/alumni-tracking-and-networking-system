@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { User, Briefcase, Calendar, ArrowLeft } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { User, Briefcase, Calendar } from "lucide-react";
 import Card from "../components/ui/Card";
 import { fetchProfileById } from "../api/profileApi";
 import type { Profile } from "../types/profile";
 
 export default function ProfileDetailsPage() {
+    const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const [profile, setProfile] = useState<Profile | null>(null);
     const [loading, setLoading] = useState(true);
@@ -43,18 +44,28 @@ export default function ProfileDetailsPage() {
         );
     }
 
+    const handleBack = () => {
+        navigate(-1); // Goes back to the previous page in history
+    };
+
     return (
         <div className="max-w-5xl mx-auto mt-8 space-y-6">
-            <Link to="/explore" className="text-sm text-blue-600 flex items-center gap-1 hover:underline">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Explore
-            </Link>
+            <div>
+                <button
+                    onClick={handleBack}
+                    className="btn btn-outline flex items-center gap-2"
+                >
+                    ← Back
+                </button>
+                {/* Rest of your profile details */}
+            </div>
 
             {/* Profile Header */}
             <Card>
                 <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-3xl">
-                        <User className="w-10 h-10" />
+                    <div
+                        className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-3xl">
+                    <User className="w-10 h-10" />
                     </div>
                     <div>
                         <h2 className="text-2xl font-semibold text-gray-900">

@@ -1,8 +1,10 @@
 package com.atns.atns.service.impl;
 
+import com.atns.atns.converter.RoleConverter;
 import com.atns.atns.dto.login.LoginRequestDto;
 import com.atns.atns.dto.login.LoginResponseDto;
 import com.atns.atns.dto.RegisterRequestDto;
+import com.atns.atns.dto.register.RegisterCompleteRequest;
 import com.atns.atns.entity.Profile;
 import com.atns.atns.entity.User;
 import com.atns.atns.enums.Role;
@@ -10,6 +12,7 @@ import com.atns.atns.exception.EmailAlreadyExistsException;
 import com.atns.atns.exception.InvalidCredentialsException;
 import com.atns.atns.repo.ProfileRepo;
 import com.atns.atns.repo.UserRepo;
+import com.atns.atns.repo.WhiteListRepo;
 import com.atns.atns.security.CustomUserDetails;
 import com.atns.atns.security.JwtUtil;
 import com.atns.atns.service.AuthService;
@@ -22,11 +25,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final ProfileRepo profileRepo;
+    private final WhiteListRepo whiteListRepo;
 
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
@@ -75,13 +79,13 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponseDto register(RegisterRequestDto registerRequestDto) {
         validateRegistrationInput(registerRequestDto);
 
-        Set<Role> role = processRoles(registerRequestDto.getRole());
+//        Set<Role> role = processRoles(registerRequestDto.getRole());
 
         User user = new User();
         user.setUsername(registerRequestDto.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
         user.setEmail(registerRequestDto.getEmail());
-        user.setRoles(role);
+        user.setRoles(registerRequestDto.getRole());
 
         User savedUser = userRepo.save(user);
 
@@ -90,7 +94,7 @@ public class AuthServiceImpl implements AuthService {
                 .firstName("First")
                 .middleName("Middle")
                 .lastName("Last")
-                .dateOfBirth(LocalDate.of(2001,01,01))
+                .dateOfBirth(LocalDate.of(2001, 1, 1))
                 .phoneNumber("9999999999")
                 .address("Address")
                 .bio("")
@@ -108,13 +112,30 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtUtil.generateAccessToken(userDetails);
         String refreshToken = jwtUtil.generateRefreshToken(userDetails);
         log.info("Successfully registered user {}", savedUser.getId());
-
+        log.info("saved role {}", savedUser.getRoles());
         return LoginResponseDto.builder()
                 .profileId(savedProfile.getId())
                 .username(user.getUsername())
                 .token(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    @Override
+    public LoginResponseDto registerComplete(RegisterCompleteRequest request) {
+        log.info("Requesting to register complete user {}", request.getUsername());
+        RegisterRequestDto registerRequestDto = RegisterRequestDto.builder()
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .username(request.getUsername())
+                .build();
+
+        String role = whiteListRepo.findRoleByEmail(request.getEmail());
+        log.info("Role={}", role);
+        registerRequestDto.setRole(RoleConverter.roleStringsToEnumSet(Collections.singleton(role)));
+        validateRegistrationInput(registerRequestDto);
+
+       return register(registerRequestDto);
     }
 
     private void validateRegistrationInput(RegisterRequestDto dto) {

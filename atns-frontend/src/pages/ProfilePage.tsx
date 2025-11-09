@@ -76,11 +76,40 @@ export default function ProfilePage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        // Create FormData that matches backend expectations
         const formPayload = new FormData();
-        formPayload.append("profile", new Blob([JSON.stringify(formData)], { type: "application/json" }));
+
+        // Create a ProfileDto object that matches your backend structure
+        const profileDto = {
+            id: profile?.id, // Include ID for updates
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            middleName: formData.middleName || "",
+            phoneNumber: formData.phoneNumber,
+            address: formData.address,
+            bio: formData.bio || "",
+            dateOfBirth: formData.dateOfBirth,
+            batchYear: formData.batchYear,
+            faculty: formData.faculty,
+            currentPosition: formData.currentPosition,
+            profileImageUrl: formData.profileImageUrl, // Keep existing image URL if no new file
+            // userId: profile?.userId, // Include if needed by backend
+            skills: profile?.skills || [] // Include existing skills
+        };
+
+        // Append as "profile" part (JSON) - this is what your backend expects
+        formPayload.append("profile", new Blob([JSON.stringify(profileDto)], {
+            type: "application/json"
+        }));
+
+        // Append image if a new file is selected
         if (selectedFile) {
             formPayload.append("image", selectedFile);
         }
+
+        // Debug: Log what's being sent
+        console.log("Sending profile DTO:", profileDto);
+        console.log("Selected file:", selectedFile?.name);
 
         // Check if user is authenticated
         const token = useAuthStore.getState().token;
@@ -88,16 +117,16 @@ export default function ProfilePage() {
             setToast({ message: "You must be logged in to save your profile. Please log in first.", type: "error" });
             return;
         }
-        
+
         // Validate required fields
         const requiredFields = ['firstName', 'lastName', 'phoneNumber', 'address', 'dateOfBirth', 'batchYear', 'faculty', 'currentPosition'];
         const missingFields = requiredFields.filter(field => !formData[field as keyof Profile]);
-        
+
         if (missingFields.length > 0) {
             setToast({ message: `Please fill in all required fields: ${missingFields.join(', ')}`, type: "error" });
             return;
         }
-        
+
         // Validate date format
         if (formData.dateOfBirth) {
             const date = new Date(formData.dateOfBirth);
@@ -106,13 +135,18 @@ export default function ProfilePage() {
                 return;
             }
         }
-        
+
         try {
             if (profile && profile.id) {
-                // const updatedFormData = { ...formData, id: profile.id };
                 const updatedProfile = await updateProfile(profile.id, formPayload);
                 setProfile(updatedProfile);
                 setToast({ message: "Profile updated successfully!", type: "success" });
+
+                // Refresh the form data with updated profile
+                setFormData({
+                    ...formData,
+                    ...updatedProfile
+                });
             } else {
                 const createdProfile = await createProfile(formPayload);
                 setProfile(createdProfile);
@@ -120,15 +154,15 @@ export default function ProfilePage() {
             }
         } catch (err: unknown) {
             console.error("Error saving profile:", err);
-            
+
             let errorMessage = "Error saving profile";
-            
+
             if (err && typeof err === 'object' && 'response' in err) {
                 const errorResponse = err as { response?: { status?: number; data?: { message?: string } } };
                 console.error("Error response:", errorResponse.response);
                 console.error("Error status:", errorResponse.response?.status);
                 console.error("Error data:", errorResponse.response?.data);
-                
+
                 if (errorResponse.response?.status === 401) {
                     errorMessage = "Authentication failed. Please log in again.";
                 } else if (errorResponse.response?.status === 400) {
@@ -139,7 +173,7 @@ export default function ProfilePage() {
             } else if (err && typeof err === 'object' && 'message' in err) {
                 errorMessage = (err as { message: string }).message;
             }
-            
+
             setToast({ message: `Error: ${errorMessage}`, type: "error" });
         }
     };

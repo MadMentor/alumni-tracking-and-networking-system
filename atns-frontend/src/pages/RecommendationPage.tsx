@@ -188,7 +188,7 @@ export default function RecommendationPage() {
 
                                 {/* Connect Button */}
                                 <Link
-                                    to={`/profiledetails/${profileId}`}
+                                    to={`/profiledetails/${user.profileId}`}
                                     className="flex-1 hover:no-underline"
                                 >
                                     <button className="w-full border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">

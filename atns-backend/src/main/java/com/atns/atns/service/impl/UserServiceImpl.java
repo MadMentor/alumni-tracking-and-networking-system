@@ -11,6 +11,7 @@ import com.atns.atns.exception.ResourceNotFoundException;
 import com.atns.atns.repo.UserRepo;
 import com.atns.atns.security.CustomUserDetails;
 import com.atns.atns.service.UserService;
+import com.atns.atns.service.WhiteListService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class UserServiceImpl implements UserService {
     private final RegisterRequestConverter registerRequestConverter;
     private final UserResponseConverter userResponseConverter;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final WhiteListService whiteListService;
 
     @Override
     public UserResponseDto save(RegisterRequestDto registerRequestDto) {
@@ -89,6 +91,7 @@ public class UserServiceImpl implements UserService {
         User saved = userRepo.save(existingUser);
         return userResponseConverter.toDto(saved);
     }
+
     @Override
     public UserResponseDto updateRoles(Integer id, Set<Role> newRoles) {
         User user = userRepo.findById(id)
@@ -99,6 +102,38 @@ public class UserServiceImpl implements UserService {
         log.info("Role changed for user with id {} to roles {}", updatedUser.getId(), updatedUser.getRoles());
 
         return userResponseConverter.toDto(updatedUser);
+    }
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepo.existsByEmail(email);
+    }
+
+    @Override
+    public void resetPassword(String email, String password) {
+        if (password != null && !password.isBlank()) {
+            passwordComplexityValidation(password);
+            User user = userRepo.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User with {} not found", email));
+            user.setPassword(bCryptPasswordEncoder.encode(password));
+            userRepo.save(user);
+            log.info("Password reset for user with id {} successfully", user.getId());
+        }
+    }
+
+    @Override
+    public boolean verifyCurrentPassword(String email, String currentPassword) {
+        User user = userRepo.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User with {} not found", email));
+        return bCryptPasswordEncoder.matches(currentPassword, user.getPassword());
+    }
+
+    @Override
+    public User updateEmail(String currentEmail, String newEmail) {
+        User user = userRepo.findByEmail(currentEmail).orElseThrow(() -> new ResourceNotFoundException("User", currentEmail));
+        if (userRepo.existsByEmail(newEmail)) {
+            throw new RuntimeException("Email already registered");
+        }
+        user.setEmail(newEmail);
+        whiteListService.replaceEmail(currentEmail, newEmail);
+        return userRepo.save(user);
     }
 
     public Integer getCurrentUserId() {

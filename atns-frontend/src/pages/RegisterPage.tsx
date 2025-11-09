@@ -1,103 +1,72 @@
 // src/pages/RegisterPage.tsx
-import React, { useState } from "react";
-import RegisterForm from "../components/RegisterForm";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import type { UserRole } from "../types/user";
-import { useAuthStore } from "../store/authStore";
-import axiosInstance from "../api/axiosInstance";
+// import { useAuthStore } from "../store/authStore";
+import RegistrationWizard from "../components/RegistrationWizard";
 
 const RegisterPage: React.FC = () => {
     const navigate = useNavigate();
-    const authStore = useAuthStore();
+    // const authStore = useAuthStore();
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
+    const [showAlert, setShowAlert] = useState(false);
 
-    const handleRegister = async (username: string, email: string, password: string, role: UserRole[]) => {
-        try {
-            const response = await axiosInstance.post("/auth/register", {
-                username,
-                email,
-                password,
-                role
-            });
+    // // Redirect if already authenticated
+    // useEffect(() => {
+    //     if (authStore.isAuthenticated) {
+    //         navigate("/dashboard");
+    //     }
+    // }, [authStore.isAuthenticated, navigate]);
 
-            const data = response.data;
-            console.log("Registration response:", data);
-
-            // Check if we have the expected response structure
-            if (data.token) {
-                // Store everything in authStore ONLY - the store will handle persistence
-                authStore.login(
-                    data.username || username,
-                    data.token,
-                    data.refreshToken || "",
-                    data.profileId,
-                    data.roles || role.map(r => r.toString())
-                );
-
-                setAlertType("success");
-                setAlertMessage("Registration successful! Logging you in...");
-
+    // Auto-hide alert after 5 seconds
+    useEffect(() => {
+        if (showAlert) {
+            const timer = setTimeout(() => {
+                setShowAlert(false);
+                // Clear message after fade-out animation
                 setTimeout(() => {
                     setAlertMessage(null);
-                    navigate("/profile");
-                }, 2000);
-            } else {
-                // If no token in response, just show success and redirect to log in
-                setAlertType("success");
-                setAlertMessage("Registration successful! Please login with your credentials.");
-
-                setTimeout(() => {
-                    setAlertMessage(null);
-                    navigate("/login");
-                }, 2000);
-            }
-
-        } catch (error: unknown) {
-            console.error("Registration failed:", error);
-
-            let errorMessage = "Please try again.";
-            if (error && typeof error === 'object' && 'response' in error) {
-                const axiosError = error as {
-                    response?: {
-                        status?: number;
-                        data?: {
-                            message?: string;
-                            error?: string;
-                        }
-                    }
-                };
-
-                if (axiosError.response?.data?.message) {
-                    errorMessage = axiosError.response.data.message;
-                } else if (axiosError.response?.data?.error) {
-                    errorMessage = axiosError.response.data.error;
-                } else if (axiosError.response?.status === 409) {
-                    errorMessage = "User with this email already exists.";
-                } else if (axiosError.response?.status === 400) {
-                    errorMessage = "Invalid registration data.";
-                } else if (axiosError.response?.status === 422) {
-                    errorMessage = "Validation failed. Please check your input.";
-                }
-            }
-
-            setAlertType("error");
-            setAlertMessage("Registration failed: " + errorMessage);
-
-            setTimeout(() => {
-                setAlertMessage(null);
+                    setAlertType(null);
+                }, 300);
             }, 5000);
+
+            return () => clearTimeout(timer);
         }
-    };
+    }, [showAlert]);
 
     const closeAlert = () => {
-        setAlertMessage(null);
-        setAlertType(null);
+        setShowAlert(false);
+        // Clear message after fade-out animation
+        setTimeout(() => {
+            setAlertMessage(null);
+            setAlertType(null);
+        }, 300);
+    };
+
+    const handleRegistrationSuccess = () => {
+        setAlertType("success");
+        setAlertMessage("Registration successful! Redirecting to profile...");
+        setShowAlert(true);
+
+        setTimeout(() => {
+            navigate("/profile");
+        }, 2000);
+    };
+
+    const handleRegistrationError = (error: string) => {
+        setAlertType("error");
+        // Format the error message for better user experience
+        const formattedError = error.includes("whitelist") || error.includes("authorized")
+            ? "This email is not authorized for registration. Please contact the College Administration."
+            : error;
+
+        setAlertMessage(formattedError);
+        setShowAlert(true);
     };
 
     return (
         <>
-            {/* Alert Banner */}
+            {/* Alert Banner with fade animation */}
             {alertMessage && (
                 <div
                     style={{
@@ -113,6 +82,8 @@ const RegisterPage: React.FC = () => {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
+                        transition: "opacity 0.3s ease-in-out",
+                        opacity: showAlert ? 1 : 0,
                     }}
                 >
                     <span style={{ flex: 1 }}>{alertMessage}</span>
@@ -132,7 +103,10 @@ const RegisterPage: React.FC = () => {
                 </div>
             )}
 
-            <RegisterForm onRegister={handleRegister} />
+            <RegistrationWizard
+                onSuccess={handleRegistrationSuccess}
+                onError={handleRegistrationError}
+            />
         </>
     );
 };

@@ -38,14 +38,14 @@ export default function Explore({ onSearch }: ExploreProps) {
                         <button
                             key={type.value}
                             onClick={() => setSearchType(type.value as any)}
-                            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0 ${
                                 searchType === type.value
                                     ? "bg-green-100 text-green-700 border border-green-200"
                                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                             }`}
                         >
                             {type.icon}
-                            {type.label}
+                            <span className="hidden sm:inline">{type.label}</span> {/* Text hidden on mobile */}
                         </button>
                     ))}
                 </div>

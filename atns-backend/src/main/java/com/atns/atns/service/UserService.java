@@ -3,6 +3,7 @@ package com.atns.atns.service;
 import com.atns.atns.dto.RegisterRequestDto;
 import com.atns.atns.dto.user.UserResponseDto;
 import com.atns.atns.dto.user.UserUpdateDto;
+import com.atns.atns.entity.User;
 import com.atns.atns.enums.Role;
 import jakarta.validation.Valid;
 
@@ -16,4 +17,8 @@ public interface UserService {
     void delete(Integer id);
     UserResponseDto update(UserUpdateDto userUpdateDto, Integer id);
     UserResponseDto updateRoles(Integer id, @Valid Set<Role> newRoles);
+    boolean existsByEmail(String email);
+    void resetPassword(String email, String password);
+    boolean verifyCurrentPassword(String email, String oldPassword);
+    User updateEmail(String currentEmail, String newEmail);
 }

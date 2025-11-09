@@ -65,6 +65,9 @@ public class ProfileServiceImpl implements ProfileService {
         existingProfile.setAddress(profileDto.getAddress());
         existingProfile.setDateOfBirth(profileDto.getDateOfBirth());
         existingProfile.setProfileImageUrl(profileDto.getProfileImageUrl());
+        existingProfile.setBatchYear(profileDto.getBatchYear());
+        existingProfile.setFaculty(profileDto.getFaculty());
+        existingProfile.setCurrentPosition(profileDto.getCurrentPosition());
         existingProfile.setSkills(Optional.ofNullable(profileDto.getSkills())
                 .orElse(Collections.emptySet())
                 .stream()
