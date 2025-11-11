@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createEvent, updateEvent, fetchEventById } from "../api/eventApi";
-import type { Event, EventLocation } from "../types/event";
+import type { Event, eventLocation } from "../types/event";
 import { CalendarPlus } from "lucide-react";
 import { useAuthStore } from "../store/authStore.ts";
 
-const emptyLocation: EventLocation = {
+const emptyLocation: eventLocation = {
     address: "",
     onlineLink: "",
     roomNumber: "",
@@ -76,6 +76,12 @@ const EventForm: React.FC = () => {
 
         if (!formData.startTime) {
             setError("Start time is required.");
+            setLoading(false);
+            return;
+        }
+
+        if (!formData.eventLocation || (!formData.eventLocation.address && !formData.eventLocation.onlineLink)) {
+            setError("Please provide either an address or online link for the event location.");
             setLoading(false);
             return;
         }

@@ -40,13 +40,21 @@ export async function fetchEventById(id: number): Promise<Event> {
 }
 
 export async function createEvent(event: Partial<Event>): Promise<Event> {
-    const res = await axiosInstance.post<Event>("/events", event, {
+    const validationErrors = validateEvent(event);
+    if (validationErrors.length > 0) {
+        throw new Error(`Validation failed: ${validationErrors.join(", ")}`);
+    }
+    const res = await axiosInstance.post<Event>("/events", event, /*{
         headers: getOrganizerIdHeader(),
-    });
+    }*/);
     return res.data;
 }
 
 export async function updateEvent(id: number, event: Partial<Event>): Promise<Event> {
+    console.log('=== FRONTEND UPDATE REQUEST ===');
+    console.log('Event ID:', id);
+    console.log('Event data:', event);
+    console.log('Headers:', getOrganizerIdHeader());
     const res = await axiosInstance.put<Event>(`/events/${id}`, event, {
         headers: getOrganizerIdHeader(),
     });
@@ -73,4 +81,24 @@ export async function searchEvents(query: string): Promise<Event[]> {
         headers: getProfileIdHeader(),
     });
     return res.data;
+}
+
+export function validateEvent(event: Partial<Event>): string[] {
+    const errors: string[] = [];
+
+    if (!event.eventName?.trim()) {
+        errors.push("Event name is required");
+    }
+
+    if (!event.eventLocation) {
+        errors.push("Event location is required");
+    } else if (!event.eventLocation.address && !event.eventLocation.onlineLink) {
+        errors.push("Event must have either address or online link");
+    }
+
+    if (!event.startTime) {
+        errors.push("Start time is required");
+    }
+
+    return errors;
 }

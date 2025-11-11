@@ -17,3 +17,12 @@ export interface RecommendedUser {
     profileImageUrl?: string;
     currentPosition: string;
 }
+
+export interface RecommendedJob {
+    jobId: number;
+    title: string;
+    companyName: string;
+    location: string;
+    requiredSkills: string[];
+    similarityScore: number;
+}

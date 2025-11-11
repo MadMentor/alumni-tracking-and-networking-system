@@ -4,6 +4,7 @@ import com.atns.atns.dto.RegisterRequestDto;
 import com.atns.atns.dto.user.UserResponseDto;
 import com.atns.atns.dto.user.UserUpdateDto;
 import com.atns.atns.enums.Role;
+import com.atns.atns.security.SecurityUtils;
 import com.atns.atns.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -17,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
-import static com.atns.atns.security.SecurityUtils.getCurrentUserId;
-
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -26,6 +25,7 @@ import static com.atns.atns.security.SecurityUtils.getCurrentUserId;
 public class UserController {
 
     private final UserService userService;
+    private final SecurityUtils securityUtils;
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
@@ -60,8 +60,8 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/me")
     public ResponseEntity<Void> deleteSelf() {
-        log.info("User deleted: {}", getCurrentUserId());
-        userService.delete(getCurrentUserId());
+        log.info("User deleted: {}", securityUtils.getCurrentUserId());
+        userService.delete(securityUtils.getCurrentUserId());
         return ResponseEntity.noContent().build();
     }
 

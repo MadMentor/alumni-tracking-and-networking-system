@@ -3,6 +3,7 @@ import WelcomeCard from "../components/Dashboard/WelcomeCard";
 import ConnectionsCard from "../components/Dashboard/ConnectionsCard";
 // import MessagesCard from "../components/Dashboard/MessagesCard";
 import EventsCard from "../components/Dashboard/EventsCard";
+import RecommendedJobsCard from "../components/Dashboard/RecommendedJobCard.tsx";
 import RecommendedEventCard from "../components/Dashboard/RecommendedEventCard.tsx";
 import RecommendedUsersCard from "../components/Dashboard/RecommendedUsersCard.tsx";
 // import Explore from "../components/Dashboard/Explore.tsx";
@@ -10,8 +11,7 @@ import RecommendedUsersCard from "../components/Dashboard/RecommendedUsersCard.t
 import RecentActivityCard from "../components/Dashboard/RecentActivityCard";
 import type {Profile} from "../types/profile";
 import type { Event } from "../types/event";
-import type {RecommendedEvent, RecommendedUser} from "../types/recommendation";
-
+import type {RecommendedJob, RecommendedUser, RecommendedEvent } from "../types/recommendation";
 
 import {
     fetchProfile,
@@ -22,12 +22,13 @@ import {
     fetchRecentActivity,
 } from "../api/dashboardApi";
 
-import { fetchRecommendedEvents, fetchRecommendedUsers} from "../api/recommendationApi";
+import { fetchRecommendedEvents, fetchRecommendedUsers, fetchRecommendedJobs } from "../api/recommendationApi";
 
 export default function Dashboard() {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [connections, setConnections] = useState<{ total: number; pendingRequests: number } | null>(null);
     // const [messages, setMessages] = useState(null);
+    const [recommendedJobs, setRecommendedJobs] = useState<RecommendedJob[]>([]);
     const [events, setEvents] = useState<Event[]>([]);
     const [recommendedEvents, setRecommendedEvents] = useState<RecommendedEvent[]>([]);
     const [recommendedUsers, setRecommendedUsers] = useState<RecommendedUser[]>([]);
@@ -65,6 +66,12 @@ export default function Dashboard() {
                     console.error("Failed to fetch recommended users:", err);
                     setRecommendedUsers([]);
                 }),
+            fetchRecommendedJobs(3) // fetch top 3 recommended jobs
+                .then(setRecommendedJobs)
+                .catch((err) => {
+                    console.error("Failed to fetch recommended jobs:", err);
+                    setRecommendedJobs([]);
+                }),
         ]).finally(() => setIsLoading(false));
     }, []);
 
@@ -94,7 +101,7 @@ export default function Dashboard() {
     return (
         <main className="min-h-screen bg-gray-50 pt-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto space-y-8">
-                {/* Welcome, Section */}
+                {/* Welcome-Section */}
                 <div className="animate-fade-in">
                     <WelcomeCard
                         fullName={profile.firstName + " " + profile.lastName}
@@ -125,13 +132,15 @@ export default function Dashboard() {
                     <EventsCard events={events}/>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-6">
-                    <div className="flex-1">
-                        <RecommendedEventCard events={recommendedEvents} />
-                    </div>
-                    <div className="flex-1">
-                        <RecommendedUsersCard users={recommendedUsers} profileId={profile?.id!} />
-                    </div>
+                {/* Job Recommendations Section */}
+                <div className="animate-fade-in" style={{animationDelay: '0.15s'}}>
+                    <RecommendedJobsCard jobs={recommendedJobs} />
+                </div>
+
+                {/* Event and User Recommendations Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in" style={{animationDelay: '0.2s'}}>
+                    <RecommendedEventCard events={recommendedEvents} />
+                    <RecommendedUsersCard users={recommendedUsers} profileId={profile?.id!} />
                 </div>
 
                 {/*/!* Search Section *!/*/}

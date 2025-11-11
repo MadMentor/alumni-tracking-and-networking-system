@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, LogOut, User, Calendar, Home, Settings, Sparkles } from "lucide-react";
+import { Menu, X, LogOut, User, Calendar, Home, Settings, Sparkles, Briefcase } from "lucide-react";
 import { useAuthStore } from "../../store/authStore.ts";
 
 export default function AuthenticatedNavbar() {
@@ -20,6 +20,7 @@ export default function AuthenticatedNavbar() {
         { to: "/dashboard", label: "Dashboard", icon: <Home className="w-4 h-4" /> },
         { to: "/explore", label: "Explore", icon: <User className="w-4 h-4" /> },
         { to: "/events", label: "Events", icon: <Calendar className="w-4 h-4" /> },
+        { to: "/jobs", label: "Jobs", icon: <Briefcase className="w-4 h-4"/> },
         { to: "/recommendations", label: "Recommendations", icon: <Sparkles className="w-4 h-4" /> },
     ];
 

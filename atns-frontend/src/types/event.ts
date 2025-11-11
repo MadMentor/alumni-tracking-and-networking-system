@@ -1,4 +1,4 @@
-export interface EventLocation {
+export interface eventLocation {
     address?: string;
     onlineLink?: string;
     roomNumber?: string;
@@ -10,7 +10,7 @@ export interface Event {
     eventDescription?: string;
     startTime: string; // ISO string
     endTime?: string | null; // ISO string or null
-    eventLocation?: EventLocation;
+    eventLocation?: eventLocation;
     category?: string;
     active?: boolean;
 }

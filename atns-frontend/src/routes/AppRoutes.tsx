@@ -15,6 +15,9 @@ import ChangePassword from "../pages/settings/ChangePassword";
 import ChangeEmail from "../pages/settings/ChangeEmail";
 import ProfileDetailsPage from "../pages/ProfileDetailsPage.tsx";
 import RecommendationPage from "../pages/RecommendationPage.tsx";
+import JobsPage from "../pages/job/JobsPage.tsx";
+import CreateJobPage from "../pages/job/CreateJobPage.tsx";
+import JobDetailsPage from "../pages/job/JobDetailsPage.tsx";
 
 export default function AppRoutes() {
     return (
@@ -33,10 +36,16 @@ export default function AppRoutes() {
             <Route path="/recommendations" element={<RecommendationPage/>}/>
             <Route path="/events/recommended" element={<RecommendedEventsPage/>}/>
             <Route path="/users/recommended" element={<RecommendedUsersPage/>}/>
+            {/*<Route path="/jobs/recommended" element={<RecommendedJobsPage/>}/>*/}
             <Route path="/settings/password" element={<ChangePassword/>}/>
             <Route path="/settings/email" element={<ChangeEmail/>}/>
             <Route path="/explore" element={<ExplorePage/>}/>
             <Route path="/profiledetails/:id" element={<ProfileDetailsPage/>}/>
+            <Route path="/jobs" element={<JobsPage/>}/>
+            <Route path="/jobs/create" element={<CreateJobPage/>}/>
+            <Route path="/jobs/:id" element={<JobDetailsPage/>}/>
+            {/*<Route path="/jobs/:id/edit" element={<EditJobPage/>}/>*/}
+            {/*<Route path="/recommendations" element={<RecommendationsPage/>}/>*/}
         </Routes>
     );
 }

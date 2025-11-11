@@ -3,7 +3,6 @@ package com.atns.atns.controller;
 import com.atns.atns.annotation.AuditLog;
 import com.atns.atns.converter.EventResponseConverter;
 import com.atns.atns.dto.PageResponse;
-import com.atns.atns.dto.ProfileDto;
 import com.atns.atns.dto.event.EventRequestDto;
 import com.atns.atns.dto.event.EventResponseDto;
 import com.atns.atns.dto.event.EventUpdateRequestDto;
@@ -46,11 +45,13 @@ public class EventController {
     @PostMapping
     @Transactional
     @AuditLog(action = "CREATE_EVENT")
-    public ResponseEntity<EventResponseDto> createEvent(@Valid @RequestBody EventRequestDto eventRequestDto,
-                                                        @RequestHeader(value = "X-Organizer-Id") @Min(1) Integer organizerId) {
+    public ResponseEntity<EventResponseDto> createEvent(@Valid @RequestBody EventRequestDto eventRequestDto
+                                                        /*,@RequestHeader(value = "X-Organizer-Id") @Min(1) Integer organizerId*/) {
         log.info("Creating event: {} for organizer {}", eventRequestDto.getEventName(), eventRequestDto.getEventName());
+        Integer organizerId = eventRequestDto.getOrganizerProfileId();
 
         try {
+
             Set<Role> roles = profileService.getUserRole(organizerId);
             if (!roles.contains(Role.ADMIN)) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only ADMIN roles are allowed");
@@ -83,8 +84,13 @@ public class EventController {
 
        try {
            Set<Role> roles = profileService.getUserRole(organizerId);
-           if (!(roles.contains(Role.ADMIN) || roles.contains(Role.MODERATOR) || eventUpdateRequestDto.getOrganizerProfileId() == organizerId)) {
-               throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only ADMIN or MODERATOR roles are allowed");
+           boolean isAdmin = roles.contains(Role.ADMIN);
+           boolean isModeratorAndOwner = roles.contains(Role.MODERATOR) &&
+                   eventUpdateRequestDto.getOrganizerProfileId().equals(organizerId);
+
+           if (!isAdmin && !isModeratorAndOwner) {
+               throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                       "Only ADMIN or event owner with MODERATOR role can update events");
            }
 
            EventResponseDto updatedEvent = eventService.updateEvent(eventUpdateRequestDto, eventId);

@@ -52,8 +52,7 @@ public class Profile {
     @Column(nullable = false)
     private String address;
 
-    @Lob
-    @Basic(fetch = FetchType.EAGER)
+    @Column(length = 10000)
     private String bio;
 
     @PastOrPresent(message = "Date of birth must be in past!")

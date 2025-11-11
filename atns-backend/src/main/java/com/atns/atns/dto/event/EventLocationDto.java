@@ -23,8 +23,8 @@ public class EventLocationDto {
     @Size(max = 30, message = "Room number must be less than 30 characters")
     private String roomNumber;
 
-    @AssertTrue(message = "Must provide either address or online link")
-    private boolean isLocationValid() {
-        return address != null || onlineLink != null;
-    }
+//    @AssertTrue(message = "Must provide either address or online link")
+//    private boolean isLocationValid() {
+//        return address != null || onlineLink != null;
+//    }
 }

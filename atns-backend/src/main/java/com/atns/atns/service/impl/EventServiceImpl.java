@@ -105,9 +105,9 @@ public class EventServiceImpl implements EventService {
         Optional.ofNullable(eventUpdateRequestDto.getEventName()).ifPresent(event::setEventName);
         Optional.ofNullable(eventUpdateRequestDto.getEventDescription()).ifPresent(event::setEventDescription);
         Optional.ofNullable(eventUpdateRequestDto.getCategory()).ifPresent(event::setCategory);
-        Optional.ofNullable(eventUpdateRequestDto.getLocation())
-                .map(eventLocationConverter::toEntity)
-                .ifPresent(event::setLocation);
+        if (eventUpdateRequestDto.getLocation() != null) {
+            event.setLocation(eventLocationConverter.toEntity(eventUpdateRequestDto.getLocation()));
+        }
         Optional.ofNullable(eventUpdateRequestDto.getActive()).ifPresent(event::setActive);
     }
 

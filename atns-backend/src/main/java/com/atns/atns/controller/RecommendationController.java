@@ -2,6 +2,7 @@ package com.atns.atns.controller;
 
 import com.atns.atns.recommendation.RecommendationService;
 import com.atns.atns.recommendation.dto.RecommendedEventDto;
+import com.atns.atns.recommendation.dto.RecommendedJobDto;
 import com.atns.atns.recommendation.dto.RecommendedUserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,17 @@ public class RecommendationController {
             @RequestParam(defaultValue = "10") int limit) {
         log.info("Fetching recommended users for profileId={}, limit={}", profileId, limit);
         List<RecommendedUserDto> recommendations = recommendationService.recommendUsers(profileId, limit);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .body(recommendations);
+    }
+
+    @GetMapping("/jobs/{profileId}")
+    public ResponseEntity<List<RecommendedJobDto>> getRecommendedJobs(
+            @PathVariable Integer profileId,
+            @RequestParam(defaultValue = "10") int limit) {
+        log.info("Fetching recommended jobs for profileId={}, limit={}", profileId, limit);
+        List<RecommendedJobDto> recommendations = recommendationService.recommendJobs(profileId, limit);
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.noStore())
                 .body(recommendations);

@@ -51,7 +51,7 @@ public class EmailServiceImpl implements EmailService {
             helper.setFrom(fromEmail);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(htmlContent);
+            helper.setText(htmlContent, true);
 
             mailSender.send(message);
             log.info("HTML Email sent successfully to: {}", to);
@@ -63,11 +63,16 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendOtpEmail(String to, String code, OtpType type) {
-        log.info("Sending OTP email to {}: {}", to, code);
-        log.info("reached here");
-        String subject = getOtpSubject(type);
-        String htmlContent = buildOtpEmailHtml(code, type);
-        sendHtmlEmail(to, subject, htmlContent);
+        try {
+            String subject = getOtpSubject(type);
+            String htmlContent = buildOtpEmailHtml(code, type);
+
+            sendHtmlEmail(to, subject, htmlContent);
+
+        } catch (Exception e) {
+            log.error("Failed to send OTP email to {}: {}", to, e.getMessage(), e);
+            throw new RuntimeException("Failed to send email: " + e.getMessage());
+        }
     }
 
     @Override

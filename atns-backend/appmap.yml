@@ -1,0 +1,5 @@
+language: "java"
+name: "Alumni Tracking and Management System"
+appmap_dir: "tmp/appmap"
+packages:
+- path: "com.atns.atns"

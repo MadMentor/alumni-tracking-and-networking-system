@@ -1,5 +1,5 @@
 import axiosInstance from "./axiosInstance";
-import type { RecommendedEvent, RecommendedUser } from "../types/recommendation";
+import type { RecommendedEvent, RecommendedUser, RecommendedJob } from "../types/recommendation";
 import { useAuthStore } from "../store/authStore.ts";
 
 function getProfileId(): number {
@@ -8,7 +8,7 @@ function getProfileId(): number {
     return profileId;
 }
 
-export async function fetchRecommendedEvents( limit = 10): Promise<RecommendedEvent[]> {
+export async function fetchRecommendedEvents(limit = 10): Promise<RecommendedEvent[]> {
     try {
         const profileId = getProfileId();
         const res = await axiosInstance.get<RecommendedEvent[]>(`/recommendations/events/${profileId}`, {
@@ -22,7 +22,7 @@ export async function fetchRecommendedEvents( limit = 10): Promise<RecommendedEv
     }
 }
 
-export async function fetchRecommendedUsers( limit = 10): Promise<RecommendedUser[]> {
+export async function fetchRecommendedUsers(limit = 10): Promise<RecommendedUser[]> {
     try {
         const profileId = getProfileId();
         const res = await axiosInstance.get<RecommendedUser[]>(`/recommendations/users/${profileId}`, {
@@ -32,6 +32,20 @@ export async function fetchRecommendedUsers( limit = 10): Promise<RecommendedUse
         return res.data;
     } catch (err) {
         console.error("Failed to fetch recommended users:", err);
+        return [];
+    }
+}
+
+export async function fetchRecommendedJobs(limit = 10): Promise<RecommendedJob[]> {
+    try {
+        const profileId = getProfileId();
+        const res = await axiosInstance.get<RecommendedJob[]>(`/recommendations/jobs/${profileId}`, {
+            params: { limit },
+        });
+        console.log("API response from /recommendations/jobs:", res.data);
+        return res.data;
+    } catch (err) {
+        console.error("Failed to fetch recommended jobs:", err);
         return [];
     }
 }
